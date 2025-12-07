@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react-native';
 import App from '../App';
 
 // UI (Title)
-describe('<App />', () => {
-  it('Title', () => {
+describe('<App /> - Recording Page', () => {
+  it('Should display a title for the recording page', () => {
     // Render the App component
     render(<App />);
 
@@ -17,8 +17,8 @@ describe('<App />', () => {
 });
 
 // UI (Record Button) 
-describe('<App />', () => {
-  it('Record Button', () => {
+describe('<App /> Recording Page', () => {
+  it('Should display a button to start recording', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     expect(recordButton).toBeTruthy();
@@ -40,7 +40,7 @@ describe('<App /> - Recording Controls', () => {
 
 // Remove Record button once it is pressed
 describe('<App /> - Recording Controls', () => {
-   it('should hide Record button when recording is active', () => {
+   it('Should hide Record button when recording is active', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
@@ -49,8 +49,8 @@ describe('<App /> - Recording Controls', () => {
 });
 
 // Recording Status Visual
-describe('<App /> - Recording Status', () => {
-  it('should display "Recording..." text when recording starts', () => {
+describe('<App /> - Recording Page', () => {
+  it('Should display "Recording" text when recording starts', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
@@ -60,7 +60,7 @@ describe('<App /> - Recording Status', () => {
 });
 
 // Microphone Permission Tests
-describe('<App /> - Permissions & Errors', () => {
+describe('<App /> - Permissions and Errors', () => {
   it.skip('should show permission error message if microphone not allowed', () => {
     render(<App />);
     // Mock permission denied state
@@ -72,7 +72,7 @@ describe('<App /> - Permissions & Errors', () => {
 });
 
 // Recording failed test
-describe('<App /> - Permissions & Errors', () => {
+describe('<App /> - Permissions and Errors', () => {
   it('should display error when recording fails', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
@@ -94,7 +94,7 @@ describe('<App /> - Permissions & Errors', () => {
 
 
 // Check save and delete buttons appear after stop button pressed
-describe('<App /> - UI State', () => {
+describe('<App /> - Recording Page', () => {
   it('should show Save/Delete buttons after recording', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
