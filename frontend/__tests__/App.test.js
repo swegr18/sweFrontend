@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, fireEvent, waitFor} from '@testing-library/react-native';
 import App from '../App';
 
 // UI (Title)
@@ -17,7 +17,7 @@ describe('<App /> - Recording Page', () => {
 });
 
 // UI (Record Button) 
-describe('<App /> Recording Page', () => {
+describe('<App /> - Recording Page', () => {
   it('Should display a button to start recording', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
@@ -28,11 +28,13 @@ describe('<App /> Recording Page', () => {
 
 // Record button press -> Display stop button
 describe('<App /> - Recording Controls', () => {
-  it('should display Stop button when recording starts', () => {
+  it('should display Stop button when recording starts', async () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    const stopButton = screen.getByRole('button', { name: /Stop/i });
+
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
+
     expect(stopButton).toBeTruthy();
   });
 });
@@ -40,11 +42,16 @@ describe('<App /> - Recording Controls', () => {
 
 // Remove Record button once it is pressed
 describe('<App /> - Recording Controls', () => {
-   it('Should hide Record button when recording is active', () => {
+   it('Should hide Record button when recording is active', async () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    expect(recordButton).not.toBeVisible();
+    
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /Record/i })).toBeNull();
+    });
+
+
   });
 });
 
