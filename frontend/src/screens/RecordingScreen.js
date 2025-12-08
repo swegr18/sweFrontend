@@ -27,21 +27,21 @@ export const RecordingScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (isRecording) {
-      // Start pulse animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 800,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      // Poll for audio metering every 100ms
+      const meteringInterval = setInterval(() => {
+        const db = audioRecorder.getMeteringLevel();
+        if (db > -160) {
+           // Map dB (-60 to 0) to scale (1 to 1.5)
+           const normalized = Math.max(0, (db + 60) / 60);
+           const scale = 1 + (normalized * 0.5);
+
+           Animated.timing(pulseAnim, {
+             toValue: scale,
+             duration: 100,
+             useNativeDriver: true,
+           }).start();
+        }
+      }, 100);
 
       // Start timer
       const interval = setInterval(() => {
@@ -52,19 +52,19 @@ export const RecordingScreen = ({ navigation }) => {
         }
       }, 1000);
       setTimerInterval(interval);
+
+      return () => {
+        clearInterval(meteringInterval);
+        if (interval) clearInterval(interval);
+      };
     } else {
       // Stop animation and timer
-      pulseAnim.stopAnimation();
       pulseAnim.setValue(1);
       if (timerInterval) {
         clearInterval(timerInterval);
         setTimerInterval(null);
       }
     }
-
-    return () => {
-      if (timerInterval) clearInterval(timerInterval);
-    };
   }, [isRecording, realtimeFeedback]);
 
   const formatTime = (seconds) => {

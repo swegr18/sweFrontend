@@ -1,4 +1,4 @@
-import { AudioModule, createAudioPlayer, requestRecordingPermissionsAsync } from 'expo-audio';
+import { AudioModule, createAudioPlayer, requestRecordingPermissionsAsync, RecordingPresets } from 'expo-audio';
 
 export class AudioRecorderService {
   constructor() {
@@ -24,6 +24,11 @@ export class AudioRecorderService {
         throw new Error('Audio recording permission denied');
       }
 
+      await AudioModule.setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
+      });
+
       // Stop any existing recording
       if (this.recorder) {
          if (this.recorder.isRecording) {
@@ -33,20 +38,16 @@ export class AudioRecorderService {
       }
 
       // Create new recorder instance
-      // Using default presets for now, can be customized with options
-      this.recorder = new AudioModule.AudioRecorder();
+      // Enable metering for visualizer
+      const options = {
+        ...RecordingPresets.HIGH_QUALITY,
+        isMeteringEnabled: true,
+      };
+      
+      this.recorder = new AudioModule.AudioRecorder(options);
       
       // Prepare and start
-      await this.recorder.prepareToRecordAsync({
-        android: {
-          outputFormat: 'mpeg_4',
-          audioEncoder: 'aac',
-        },
-        ios: {
-          outputFormat: 'mpeg4AAC',
-          audioQuality: 'high',
-        }
-      });
+      await this.recorder.prepareToRecordAsync(options);
       
       this.recorder.record();
       return this.recorder;
@@ -54,6 +55,17 @@ export class AudioRecorderService {
       console.error('Failed to start recording', error);
       throw error;
     }
+  }
+
+  addStatusListener(listener) {
+    if (!this.recorder) return null;
+    return this.recorder.addListener('recordingStatusUpdate', listener);
+  }
+
+  getMeteringLevel() {
+    if (!this.recorder) return -160;
+    const status = this.recorder.getStatus();
+    return status.metering ?? -160;
   }
 
   async stopRecording() {
