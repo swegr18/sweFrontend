@@ -19,10 +19,12 @@ export const RecordingScreen = ({ navigation }) => {
     setRealtimeFeedback,
     setCurrentWPM,
     setAudioUri,
+    setMetrics,
   } = useSpeechStore();
 
   const [recordingTime, setRecordingTime] = useState(0);
   const [timerInterval, setTimerInterval] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -89,9 +91,17 @@ export const RecordingScreen = ({ navigation }) => {
       setRecording(false);
       setAudioUri(uri);
       
+      setIsAnalyzing(true);
+      
+      // Simulate API call
+      const results = await audioRecorder.analyzeAudio(uri);
+      setMetrics(results);
+      
+      setIsAnalyzing(false);
       // Navigate to metrics screen
       navigation.navigate('Metrics');
     } catch (error) {
+      setIsAnalyzing(false);
       alert('Failed to stop recording: ' + error.message);
     }
   };
@@ -102,8 +112,12 @@ export const RecordingScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Ready to Practice</Text>
-            <Text style={styles.subtitle}>Configure your session below</Text>
+            <Text style={styles.title}>
+              {isAnalyzing ? 'Analyzing Speech...' : 'Ready to Practice'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {isAnalyzing ? 'Please wait while we process your audio' : 'Configure your session below'}
+            </Text>
           </View>
 
           {/* Context Mode Selector */}

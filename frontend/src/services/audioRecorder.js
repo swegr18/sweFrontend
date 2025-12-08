@@ -120,6 +120,29 @@ export class AudioRecorderService {
       this.player = null;
     }
   }
+  async analyzeAudio(uri) {
+    // Simulate API call to backend
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          wpm: 145,
+          fillerWords: 12,
+          fillerPercentage: 8,
+          volumeRange: 'Good',
+          transcribable: 92,
+          positiveFeedback: [
+            'Great pacing! Your words per minute is in the ideal range.',
+            'Clear pronunciation makes your speech easy to understand.',
+            'Good volume variation keeps the audience engaged.',
+          ],
+          negativeFeedback: [
+            'Try to reduce filler words like "um" and "uh".',
+            'Consider adding more pauses for emphasis.',
+          ],
+        });
+      }, 2000);
+    });
+  }
 }
 
 export default new AudioRecorderService();
