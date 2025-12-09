@@ -1,23 +1,43 @@
-// 1. ADD THIS MOCK AT THE VERY TOP
+import React from 'react';
+import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
+import App from '../App';
+
+
+// --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
+  AudioModule: {
+    requestRecordingPermissionsAsync: jest.fn(() => 
+      Promise.resolve({ status: 'granted' })
+    ),
+  },
   useAudioRecorder: jest.fn(() => ({
-    recordAsync: jest.fn(),
-    stopAsync: jest.fn(),
-    isRecording: false,
+    // Make these resolve immediately
+    prepareToRecordAsync: jest.fn(() => Promise.resolve()),
+    record: jest.fn(),
+    stop: jest.fn(() => Promise.resolve()),
     uri: 'file://test-audio.m4a',
   })),
-  AudioModule: {
-    requestRecordingPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
-  },
   RecordingPresets: {
-    HighQuality: 'HighQuality', // Simple string or object is fine for a mock
+    HIGH_QUALITY: 'high-quality-preset',
   },
 }));
 
+// Mock FileSystem to avoid crashes in handleStopRecording
+jest.mock('expo-file-system/legacy', () => ({
+  readAsStringAsync: jest.fn(() => Promise.resolve('base64-string-mock')),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, size: 100 })),
+  EncodingType: { Base64: 'base64' },
+}));
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor} from '@testing-library/react-native';
-import App from '../App';
+// Mock Platform to avoid "blob" errors in tests if your code checks Platform.OS
+jest.mock('react-native/Libraries/Utilities/Platform', () => ({
+  OS: 'android',
+  select: () => null,
+}));
+// -------------------------
+
+
+
 
 // UI (Title)
 describe('<App /> - Recording Page', () => {
@@ -74,11 +94,11 @@ describe('<App /> - Recording Controls', () => {
 
 // Recording Status Visual
 describe('<App /> - Recording Page', () => {
-  it('Should display "Recording" text when recording starts', () => {
+  it('Should display "Recording" text when recording starts', async () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    const recordingStatus = screen.getByText(/Recording\.\.\./);
+    const recordingStatus = screen.getByText("Recording");
     expect(recordingStatus).toBeTruthy();
   });
 });
@@ -97,7 +117,7 @@ describe('<App /> - Permissions and Errors', () => {
 
 // Recording failed test
 describe('<App /> - Permissions and Errors', () => {
-  it('should display error when recording fails', () => {
+  it('should display error when recording fails', async () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
@@ -110,7 +130,7 @@ describe('<App /> - Permissions and Errors', () => {
       expect(errorText).toBeTruthy();
     } else {
       // No Error
-      const stopButton = screen.getByRole('button', {name: /Stop/i});
+      const stopButton = await screen.getByRole('button', {name: /Stop/i});
       expect(stopButton).toBeTruthy();
     }
     });
@@ -119,11 +139,11 @@ describe('<App /> - Permissions and Errors', () => {
 
 // Check save and delete buttons appear after stop button pressed
 describe('<App /> - Recording Page', () => {
-  it('should show Save/Delete buttons after recording', () => {
+  it('should show Save/Delete buttons after recording', async () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    const stopButton = screen.getByRole('button', { name: /Stop/i });
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
     fireEvent.press(stopButton);
 
     const saveButton = screen.getByRole('button', { name: /Save/i });
