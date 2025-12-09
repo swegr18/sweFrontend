@@ -1,3 +1,20 @@
+// 1. ADD THIS MOCK AT THE VERY TOP
+jest.mock('expo-audio', () => ({
+  useAudioRecorder: jest.fn(() => ({
+    recordAsync: jest.fn(),
+    stopAsync: jest.fn(),
+    isRecording: false,
+    uri: 'file://test-audio.m4a',
+  })),
+  AudioModule: {
+    requestRecordingPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+  },
+  RecordingPresets: {
+    HighQuality: 'HighQuality', // Simple string or object is fine for a mock
+  },
+}));
+
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor} from '@testing-library/react-native';
 import App from '../App';
@@ -46,7 +63,7 @@ describe('<App /> - Recording Controls', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    
+
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: /Record/i })).toBeNull();
     });
