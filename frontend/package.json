@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "expo": "~54.0.25",
+    "expo-av": "~16.0.8",
+    "expo-file-system": "~19.0.20",
     "expo-status-bar": "~3.0.8",
     "jest-expo": "~54.0.13",
     "react": "19.1.0",
