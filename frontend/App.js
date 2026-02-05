@@ -94,7 +94,7 @@ export default function App() {
     console.log("Content (formData):", formData);
 
     // Send to Backend API
-    const response = await fetch('https://localhost:8000/api/v1', {
+    const response = await fetch('http://localhost:8000/api/v1/upload-audio', {
       method: 'POST',
       body: formData,
     });
