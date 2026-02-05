@@ -106,14 +106,13 @@ export default function App() {
     
     console.log("Form Data is ready. Content:", formData);
 
-    /* // UNCOMMENT THIS to test against a real dummy URL:
-    const response = await fetch('https://webhook.site/YOUR-UNIQUE-ID', {
+    const response = await fetch('https://localhost:8000/api/v1', {
       method: 'POST',
       body: formData,
     });
     const result = await response.text(); 
     console.log("Mock Server Response:", result);
-    */
+    
 
   } catch (error) {
     console.error("Process failed:", error);
