@@ -9,18 +9,15 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 
 export default function App() {
-  // status of the recording page
+  // Status of the recording page - Idle, Recording, Finished
   const [status, setStatus] = useState('idle');
   const [permissionResponse, setPermissionResponse] = useState(null);
 
-  // Setup microphone
-  // We pass the preset directly to the hook
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  
-  // REMOVED: const recorderState = useAudioRecorderState(audioRecorder); 
-  // You don't need this hook since you are managing 'status' yourself.
 
-  // Request permissions on app load
+  // Audio Recorder Object
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+
+  // Persmissions
   useEffect(() => {
     (async () => {
       const response = await AudioModule.requestRecordingPermissionsAsync();
@@ -28,7 +25,7 @@ export default function App() {
     })();
   }, []);
 
-  // Transition: Idle -> Recording
+  // Start Recording
   const handleStartRecording = async () => {
     try {
       if (permissionResponse?.status !== 'granted') {
@@ -40,33 +37,29 @@ export default function App() {
         }
       }
 
-      // Start recording
-      // Note: prepareToRecordAsync is often called internally by record(), 
-      // but calling it explicitly ensures the file is ready.
       await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
       audioRecorder.record();
       
-      setStatus('recording');
+      setStatus('recording'); // Update Status for Button change
     } catch (error) {
       console.error("Failed to start recording:", error);
     }
   };
 
 
+  // End Recording
   const handleStopRecording = async () => {
   try {
-    // 1. Stop the recorder
+    
     await audioRecorder.stop();
-    setStatus('finished');
+    setStatus('finished'); // Update Status for button changes
     
     const uri = audioRecorder.uri;
     console.log("Recording saved at:", uri);
     if (!uri) return;
 
 
-    
-
-    // IF YOU WANT TO SAVE AUTOMATICALLY:
+    // TEST - SAVE TO COMPUTER - Will be deleted later after backend is hooked up
     if (Platform.OS === 'web') {
       await saveToComputer(uri);
     } else {
@@ -75,62 +68,57 @@ export default function App() {
 
     const formData = new FormData();
 
-    // 2. Prepare Data & Test Logs
+    // In Web
     if (Platform.OS === 'web') {
       const response = await fetch(uri);
       const blob = await response.blob();
       
-      // TEST LOG: Check the size of the blob
+      // Check Blob Exists
       console.log("Web Blob created. Size:", blob.size, "bytes");
-      
-      formData.append('file', blob, 'recording.m4a');
-    } else {
+      formData.append('file', blob, 'recording.m4a'); // Create data to send
+    } 
+    // In Native
+    else {
       const fileUri = Platform.OS === 'android' && !uri.startsWith('file://') 
                       ? `file://${uri}` 
                       : uri;
-
-      // TEST LOG: Verify file existence (if using expo-file-system)
-      // const info = await FileSystem.getInfoAsync(fileUri);
-      // console.log("Native File exists:", info.exists, "Size:", info.size);
 
       formData.append('file', {
         uri: fileUri,
         type: 'audio/m4a',
         name: 'recording.m4a'
-      }); // Type cast for TS if needed
+      }); 
     }
-
-    // 3. The "Mock" Backe  nd Test
-    // Instead of hitting a real URL, we'll hit Webhook.site 
-    // or just log that we are "ready" to send.
     
-    console.log("Form Data is ready. Content:", formData);
+    // Check Data Processing is fine
+    console.log("Content (formData):", formData);
 
+    // Send to Backend API
     const response = await fetch('https://localhost:8000/api/v1', {
       method: 'POST',
       body: formData,
     });
     const result = await response.text(); 
-    console.log("Mock Server Response:", result);
+    console.log("Backend Server Response:", result);
     
 
   } catch (error) {
-    console.error("Process failed:", error);
+    console.error("Upload failed:", error);
   }
 };
 
 
+// TESTING - checking audio is working locally
 const saveToComputer = async (uri) => {
   if (Platform.OS === 'web') {
     const response = await fetch(uri);
     const blob = await response.blob();
     
-    // Create a link in the background
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     
     link.href = url;
-    link.download = 'my-recording.m4a'; // The name of the file
+    link.download = 'my-recording.m4a'; 
     document.body.appendChild(link);
     link.click(); // Trigger the download
     
@@ -141,8 +129,7 @@ const saveToComputer = async (uri) => {
 };
 
   
-
-  // Transition: Finished -> Idle (Reset)
+  // Updates status back to idle post recording and save
   const handleReset = () => {
     setStatus('idle');
   };
