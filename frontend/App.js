@@ -52,59 +52,97 @@ export default function App() {
     }
   };
 
-  // Transition: Recording -> Finished
+
   const handleStopRecording = async () => {
-    try {
-      // 1. Stop recording
-      await audioRecorder.stop();
-      setStatus('finished');
+  try {
+    // 1. Stop the recorder
+    await audioRecorder.stop();
+    setStatus('finished');
+    
+    const uri = audioRecorder.uri;
+    console.log("Recording saved at:", uri);
+    if (!uri) return;
 
-      const uri = audioRecorder.uri;
-      console.log("Recording URI:", uri);
 
-      if (!uri) return;
+    
 
-      // 2. WEB HANDLING
-      if (Platform.OS === 'web') {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          // The result is "data:audio/m4a;base64,....."
-          // We split at the comma to get just the base64 part
-          const base64data = reader.result.split(',')[1];
-          console.log("Base64 Length (Web):", base64data.length);
-        };
-        return; // Exit early for Web
-      }
-
-      // 3. NATIVE HANDLING (Android/iOS)
-      // Ensure Android URI is correct
-      let correctUri = uri;
-      if (Platform.OS === 'android' && !correctUri.startsWith('file://')) {
-        correctUri = `file://${correctUri}`;
-      }
-
-      // Verify file exists
-      const fileInfo = await FileSystem.getInfoAsync(correctUri);
-      if (!fileInfo.exists) {
-        console.error("File does not exist");
-        return;
-      }
-
-      // Read as Base64
-      const base64String = await FileSystem.readAsStringAsync(correctUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      console.log("Base64 Length (Native):", base64String.length);
-
-    } catch (error) {
-      console.error("Failed to process recording:", error);
+    // IF YOU WANT TO SAVE AUTOMATICALLY:
+    if (Platform.OS === 'web') {
+      await saveToComputer(uri);
+    } else {
+      await shareFile(uri);
     }
-  };
+
+    const formData = new FormData();
+
+    // 2. Prepare Data & Test Logs
+    if (Platform.OS === 'web') {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      
+      // TEST LOG: Check the size of the blob
+      console.log("Web Blob created. Size:", blob.size, "bytes");
+      
+      formData.append('file', blob, 'recording.m4a');
+    } else {
+      const fileUri = Platform.OS === 'android' && !uri.startsWith('file://') 
+                      ? `file://${uri}` 
+                      : uri;
+
+      // TEST LOG: Verify file existence (if using expo-file-system)
+      // const info = await FileSystem.getInfoAsync(fileUri);
+      // console.log("Native File exists:", info.exists, "Size:", info.size);
+
+      formData.append('file', {
+        uri: fileUri,
+        type: 'audio/m4a',
+        name: 'recording.m4a'
+      }); // Type cast for TS if needed
+    }
+
+    // 3. The "Mock" Backe  nd Test
+    // Instead of hitting a real URL, we'll hit Webhook.site 
+    // or just log that we are "ready" to send.
+    
+    console.log("Form Data is ready. Content:", formData);
+
+    /* // UNCOMMENT THIS to test against a real dummy URL:
+    const response = await fetch('https://webhook.site/YOUR-UNIQUE-ID', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.text(); 
+    console.log("Mock Server Response:", result);
+    */
+
+  } catch (error) {
+    console.error("Process failed:", error);
+  }
+};
+
+
+const saveToComputer = async (uri) => {
+  if (Platform.OS === 'web') {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    
+    // Create a link in the background
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    link.href = url;
+    link.download = 'my-recording.m4a'; // The name of the file
+    document.body.appendChild(link);
+    link.click(); // Trigger the download
+    
+    // Clean up
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+};
+
   
+
   // Transition: Finished -> Idle (Reset)
   const handleReset = () => {
     setStatus('idle');
