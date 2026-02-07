@@ -32,7 +32,7 @@ export default function App() {
         const response = await AudioModule.requestRecordingPermissionsAsync();
         setPermissionResponse(response);
         if (response.status !== 'granted') {
-          Alert.alert("Permission required", "Please grant microphone permission to record.");
+          setStatus('nomicrophone')
           return;
         }
       }
@@ -138,12 +138,21 @@ const saveToComputer = async (uri) => {
     <View style={styles.container}>
       <Text style={styles.title}>Record Speech</Text>
 
+
       {status === 'recording' && (
         <Text style={styles.statusText}>Recording...</Text>
       )}
 
       {status === 'idle' && (
         <Button title="Record" onPress={handleStartRecording} />
+      )}
+
+      {status === 'nomicrophone' && (
+        <Button title="Record" onPress={handleStartRecording} />
+      )}
+
+      {status === 'nomicrophone' && (
+        <Text style={styles.statusText}>Microphone permission denied</Text>
       )}
 
       {status === 'recording' && (

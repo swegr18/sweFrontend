@@ -105,12 +105,12 @@ describe('<App /> - Recording Page', () => {
 
 // Microphone Permission Tests
 describe('<App /> - Permissions and Errors', () => {
-  it.skip('should show permission error message if microphone not allowed', () => {
+  it.skip('should show permission error message if microphone not allowed', async () => {
     render(<App />);
     // Mock permission denied state
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    const errorMessage = screen.getByText(/Microphone permission denied/i);
+    const errorMessage = await screen.findByText(/Microphone permission denied/i);
     expect(errorMessage).toBeTruthy();
   });
 });
