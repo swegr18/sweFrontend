@@ -98,7 +98,7 @@ describe('<App /> - Recording Page', () => {
     render(<App />);
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
-    const recordingStatus = screen.getByText("Recording");
+    const recordingStatus = await screen.findByText("Recording...");
     expect(recordingStatus).toBeTruthy();
   });
 });
@@ -130,7 +130,7 @@ describe('<App /> - Permissions and Errors', () => {
       expect(errorText).toBeTruthy();
     } else {
       // No Error
-      const stopButton = await screen.getByRole('button', {name: /Stop/i});
+      const stopButton = await screen.findByRole('button', {name: /Stop/i});
       expect(stopButton).toBeTruthy();
     }
     });
@@ -146,8 +146,8 @@ describe('<App /> - Recording Page', () => {
     const stopButton = await screen.findByRole('button', { name: /Stop/i });
     fireEvent.press(stopButton);
 
-    const saveButton = screen.getByRole('button', { name: /Save/i });
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
+    const saveButton = await screen.findByRole('button', { name: /Save/i });
+    const deleteButton = await screen.findByRole('button', { name: /Delete/i });
     expect(saveButton).toBeTruthy();
     expect(deleteButton).toBeTruthy();
   });
