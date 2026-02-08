@@ -60,11 +60,11 @@ export default function App() {
 
 
     // TEST - SAVE TO COMPUTER - Will be deleted later after backend is hooked up
-    if (Platform.OS === 'web') {
-      await saveToComputer(uri);
-    } else {
-      await shareFile(uri);
-    }
+    //if (Platform.OS === 'web') {
+    //  await saveToComputer(uri);
+    //} else {
+    //  await shareFile(uri);
+    //}
 
     const formData = new FormData();
 

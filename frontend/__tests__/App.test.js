@@ -41,12 +41,12 @@ jest.mock('react-native/Libraries/Utilities/Platform', () => ({
 
 // UI (Title)
 describe('<App /> - Recording Page', () => {
-  it('Should display a title for the recording page', () => {
+  it('Should display a title for the recording page', async () => {
     // Render the App component
     render(<App />);
 
     // Look for text
-    const titleElement = screen.getByText('Record Speech');
+    const titleElement = await screen.findByText('Record Speech');
 
     // Confirm the text exists
     expect(titleElement).toBeTruthy();
@@ -55,9 +55,9 @@ describe('<App /> - Recording Page', () => {
 
 // UI (Record Button) 
 describe('<App /> - Recording Page', () => {
-  it('Should display a button to start recording', () => {
+  it('Should display a button to start recording', async () => {
     render(<App />);
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = screen.findByRole('button', { name: /Record/i });
     expect(recordButton).toBeTruthy();
   });
 });
