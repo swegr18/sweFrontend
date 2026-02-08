@@ -1,0 +1,31 @@
+name: Run Jest Tests
+
+# This tells GitHub WHEN to run the script
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Pulls your code into the runner
+      - uses: actions/checkout@v4
+
+      # 2. Sets up the Node.js environment
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # You can change this to your project's version
+          cache: 'npm'
+
+      # 3. Installs dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Runs the test script from your package.json
+      - name: Run tests
+        run: npm test -- --watchAll=false
