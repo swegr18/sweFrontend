@@ -153,4 +153,26 @@ describe('<App /> - Recording Page', () => {
   });
 });
 
+// Check profile button appears on recording page
+describe('<App /> - Recording Page', () => {
+  it('should show Profile button from start', () => {
+    render(<App />);
+    const profileButton = screen.getByRole('button', {name: /Profile/i});
+    expect(profileButton).toBeTruthy();
+  });
+});
+
+
+// Check profile pop-up appears on button press
+describe('<App /> - Profile Pop-up', () => {
+  it('should show Profile pop-up when the Profile button pressed', async () => {
+    render(<App />);
+    const profileButton = screen.getByRole('button', { name: /Profile/i });
+    fireEvent.press(profileButton);
+
+    const profilePopup = await screen.findByText(/Profile/i);
+    expect(profilePopup).toBeTruthy();
+  });
+});
+
 
