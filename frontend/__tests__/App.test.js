@@ -171,7 +171,25 @@ describe('<App /> - Profile Pop-up', () => {
     fireEvent.press(profileButton);
 
     const profilePopup = await screen.findByText(/Profile/i);
+    const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
     expect(profilePopup).toBeTruthy();
+    expect(closeButton).toBeTruthy();
+  });
+});
+
+
+// Check that profile pop-up is closed on button press
+describe('<App /> - Profile Pop-up', () => {
+  it('should close the Profile pop-up when the Close button pressed', async () => {
+    render(<App />);
+    const profileButton = screen.getByRole('button', { name: /Profile/i });
+    fireEvent.press(profileButton);
+
+    const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeButton);
+    
+    const profilePopup = await screen.findByText(/Profile/i);
+    expect(profilePopup).toBeNull();
   });
 });
 
