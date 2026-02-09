@@ -151,16 +151,16 @@ const saveToComputer = async (uri) => {
         
         {profilePopup === true && (
           <View style= {styles.popup}>
+            <Text style={styles.title}>Profile</Text>
             <Pressable onPress={closeProfile} accessibilityRole='button' accessibilityLabel='ClosePopup'>
               <AntDesign name="close" size={24} color="red" />
             </Pressable>
-            <Text style={styles.title}>Profile</Text>
           </View>        
         )}
 
 
         {profilePopup === false && (
-          <Pressable onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
+          <Pressable style= {styles.profileButton} onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
             <FontAwesome6 name="circle-user" size={24} color="black" />
           </Pressable>
         )}
@@ -225,7 +225,10 @@ const styles = StyleSheet.create({
     height: "20%",
     backgroundColor: '#ff0',
     alignItems: 'center',
-    justifyContent: 'center',
+    position: "absolute",
+    top: 20,
+    width: "80%",
+    paddingTop: 20
 
   },
   title: {
@@ -241,5 +244,13 @@ const styles = StyleSheet.create({
   buttonGroup: {
     marginTop: 20,
     width: '80%',
+  },
+  profileButton: {
+    position: 'absolute',
+    top: 20,
+    right: 10,
+    padding: 5,
+    zIndex: 10
+    
   }
 });
