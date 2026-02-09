@@ -146,71 +146,87 @@ const saveToComputer = async (uri) => {
   };
 
   return (
-    <View style={styles.container}>
-      {profilePopup === true && (
-        <View style= {styles.popup}>
-          <Pressable onPress={closeProfile} accessibilityRole='button' accessibilityLabel='ClosePopup'>
-            <AntDesign name="close" size={24} color="red" />
+    <View style={styles.screenWrapper}>
+      <View style={styles.container}>
+        
+        {profilePopup === true && (
+          <View style= {styles.popup}>
+            <Pressable onPress={closeProfile} accessibilityRole='button' accessibilityLabel='ClosePopup'>
+              <AntDesign name="close" size={24} color="red" />
+            </Pressable>
+            <Text style={styles.title}>Profile</Text>
+          </View>        
+        )}
+
+
+        {profilePopup === false && (
+          <Pressable onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
+            <FontAwesome6 name="circle-user" size={24} color="black" />
           </Pressable>
-          <Text style={styles.title}>Profile</Text>
-        </View>        
-      )}
+        )}
+
+        
+
+        <Text style={styles.title}>Record Speech</Text>
 
 
-      {profilePopup === false && (
-        <Pressable onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
-          <FontAwesome6 name="circle-user" size={24} color="black" />
-        </Pressable>
-      )}
+        {status === 'recording' && (
+          <Text style={styles.statusText}>Recording...</Text>
+        )}
 
-      
+        {status === 'idle' && (
+          <Button title="Record" onPress={handleStartRecording} />
+        )}
 
-      <Text style={styles.title}>Record Speech</Text>
+        {status === 'nomicrophone' && (
+          <Button title="Record" onPress={handleStartRecording} />
+        )}
 
+        {status === 'nomicrophone' && (
+          <Text style={styles.statusText}>Microphone permission denied</Text>
+        )}
 
-      {status === 'recording' && (
-        <Text style={styles.statusText}>Recording...</Text>
-      )}
+        {status === 'recording' && (
+          <Button title="Stop" onPress={handleStopRecording} color="red" />
+        )}
 
-      {status === 'idle' && (
-        <Button title="Record" onPress={handleStartRecording} />
-      )}
-
-      {status === 'nomicrophone' && (
-        <Button title="Record" onPress={handleStartRecording} />
-      )}
-
-      {status === 'nomicrophone' && (
-        <Text style={styles.statusText}>Microphone permission denied</Text>
-      )}
-
-      {status === 'recording' && (
-        <Button title="Stop" onPress={handleStopRecording} color="red" />
-      )}
-
-      {status === 'finished' && (
-        <View style={styles.buttonGroup}>
-          <Button title="Save" onPress={handleReset} />
-          <View style={{height: 10}} /> 
-          <Button title="Delete" onPress={handleReset} color="red" />
-        </View>
-      )}
+        {status === 'finished' && (
+          <View style={styles.buttonGroup}>
+            <Button title="Save" onPress={handleReset} />
+            <View style={{height: 10}} /> 
+            <Button title="Delete" onPress={handleReset} color="red" />
+          </View>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+
+  screenWrapper: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#999',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  // Making the app look mobile like
+  container: {
+    width: 360,                
+    height: 640,               
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+
+  },
   popup: {
-    flex: 1,
+    height: "20%",
     backgroundColor: '#ff0',
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   title: {
     fontSize: 24,
