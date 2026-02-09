@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert, Platform, Pressable } from 'react-native';
+import LogonPopup from './src/profile';
+import StatsScreen from './src/stats';
 // Removed useAudioRecorderState from imports
 import {
   useAudioRecorder,
@@ -13,7 +15,6 @@ export default function App() {
   // Status of the recording page - Idle, Recording, Finished
   const [status, setStatus] = useState('idle');
   const [permissionResponse, setPermissionResponse] = useState(null);
-  const [profilePopup, setProfilePopup] = useState(false);
 
   // Audio Recorder Object
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -128,17 +129,6 @@ const saveToComputer = async (uri) => {
     window.URL.revokeObjectURL(url);
   }
 };
-
-  //Open profile pop-up
-  const openProfile = () => {
-    setProfilePopup(true);
-  };
-
-  //Close profile pop-up
-  const closeProfile = () => {
-    setProfilePopup(false);
-  }
-
   
   // Updates status back to idle post recording and save
   const handleReset = () => {
@@ -148,24 +138,8 @@ const saveToComputer = async (uri) => {
   return (
     <View style={styles.screenWrapper}>
       <View style={styles.container}>
-        
-        {profilePopup === true && (
-          <View style= {styles.popup}>
-            <Text style={styles.title}>Profile</Text>
-            <Pressable onPress={closeProfile} accessibilityRole='button' accessibilityLabel='ClosePopup'>
-              <AntDesign name="close" size={24} color="red" />
-            </Pressable>
-          </View>        
-        )}
-
-
-        {profilePopup === false && (
-          <Pressable style= {styles.profileButton} onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
-            <FontAwesome6 name="circle-user" size={24} color="black" />
-          </Pressable>
-        )}
-
-        
+          <StatsScreen/>
+          <LogonPopup/>    
 
         <Text style={styles.title}>Record Speech</Text>
 
