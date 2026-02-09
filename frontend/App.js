@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Platform, Pressable } from 'react-native';
 // Removed useAudioRecorderState from imports
 import {
   useAudioRecorder,
@@ -7,12 +7,13 @@ import {
   RecordingPresets,
 } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
+import {FontAwesome6, AntDesign} from '@expo/vector-icons';
 
 export default function App() {
   // Status of the recording page - Idle, Recording, Finished
   const [status, setStatus] = useState('idle');
   const [permissionResponse, setPermissionResponse] = useState(null);
-
+  const [profilePopup, setProfilePopup] = useState(false);
 
   // Audio Recorder Object
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -128,6 +129,16 @@ const saveToComputer = async (uri) => {
   }
 };
 
+  //Open profile pop-up
+  const openProfile = () => {
+    setProfilePopup(true);
+  };
+
+  //Close profile pop-up
+  const closeProfile = () => {
+    setProfilePopup(false);
+  }
+
   
   // Updates status back to idle post recording and save
   const handleReset = () => {
@@ -136,6 +147,24 @@ const saveToComputer = async (uri) => {
 
   return (
     <View style={styles.container}>
+      {profilePopup === true && (
+        <View style= {styles.popup}>
+          <Pressable onPress={closeProfile} accessibilityRole='button' accessibilityLabel='ClosePopup'>
+            <AntDesign name="close" size={24} color="red" />
+          </Pressable>
+          <Text style={styles.title}>Profile</Text>
+        </View>        
+      )}
+
+
+      {profilePopup === false && (
+        <Pressable onPress={openProfile} accessibilityRole='button' accessibilityLabel='ProfileButton'>
+          <FontAwesome6 name="circle-user" size={24} color="black" />
+        </Pressable>
+      )}
+
+      
+
       <Text style={styles.title}>Record Speech</Text>
 
 
@@ -174,6 +203,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  popup: {
+    flex: 1,
+    backgroundColor: '#ff0',
     alignItems: 'center',
     justifyContent: 'center',
   },

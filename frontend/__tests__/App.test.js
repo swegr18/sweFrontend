@@ -34,6 +34,20 @@ jest.mock('react-native/Libraries/Utilities/Platform', () => ({
   OS: 'android',
   select: () => null,
 }));
+
+//Mock React Icons 
+jest.mock('@expo/vector-icons',() => {
+  const { Text } = require('react-native');
+
+  const Icon = ({ name }) => <Text>{name}</Text>;
+
+  return {
+    FontAwesome6: Icon,
+    AntDesign: Icon,
+  }
+});
+
+
 // -------------------------
 
 
@@ -157,7 +171,7 @@ describe('<App /> - Recording Page', () => {
 describe('<App /> - Recording Page', () => {
   it('should show Profile button from start', () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', {name: /Profile/i});
+    const profileButton = screen.getByRole('button', {name: /ProfileButton/i});
     expect(profileButton).toBeTruthy();
   });
 });
@@ -167,13 +181,14 @@ describe('<App /> - Recording Page', () => {
 describe('<App /> - Profile Pop-up', () => {
   it('should show Profile pop-up when the Profile button pressed', async () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', { name: /Profile/i });
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
 
-    const profilePopup = await screen.findByText(/Profile/i);
-    const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
-    expect(profilePopup).toBeTruthy();
-    expect(closeButton).toBeTruthy();
+    await waitFor(() =>{
+      expect(screen.queryByText('Profile')).toBeTruthy();
+      expect(screen.queryByRole('button', {name: /ClosePopup/i})).toBeTruthy();
+      expect(screen.queryByRole('button', { name: /ProfileButton/i })).toBeNull();
+    });
   });
 });
 
@@ -182,14 +197,17 @@ describe('<App /> - Profile Pop-up', () => {
 describe('<App /> - Profile Pop-up', () => {
   it('should close the Profile pop-up when the Close button pressed', async () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', { name: /Profile/i });
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
 
     const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
     fireEvent.press(closeButton);
-    
-    const profilePopup = await screen.findByText(/Profile/i);
-    expect(profilePopup).toBeNull();
+
+    await waitFor(() => {
+      expect(screen.queryByText('Profile')).toBeNull();
+      expect(screen.queryByRole('button', {name: /ClosePopup/i})).toBeNull();
+      expect(screen.queryByRole('button', { name: /ProfileButton/i })).toBeTruthy();
+    });
   });
 });
 
