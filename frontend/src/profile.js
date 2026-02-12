@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; 
-import { Text, View, StyleSheet, Pressable, Button, TextInput } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { FontAwesome6, AntDesign } from '@expo/vector-icons';
 
 export default function LogonPopup() {
@@ -58,35 +58,49 @@ export default function LogonPopup() {
                     </Pressable>
 
                     {signInStatus==='SignedIn' &&  (
-                        <View>
-                            <Text>Hello, Ben</Text>
-                            <Button title="Sign Out" accessibilityLabel='LogOut' onPress={signOut}/>
+                        <View style={styles.spread} >
+                            <Text style={styles.subtitle}>Hello, Ben</Text>
+                            <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
+                                <Text style={styles.buttonText}>Sign Out</Text>
+                            </Pressable>
                         </View>
                     )}
 
                     {signInStatus==='SignedOut' && (
                         <View>
                             <View accessibilityLabel='LoginForm'>
-                                <TextInput placeholder='Email Address'/>
-                                <TextInput placeholder='Password'/>
-                                <Button title='Submit' accessibilityLabel='LoginSubmit' onPress={signIn}/>
+                                <TextInput style={styles.input} placeholder='Email Address'/>
+                                <TextInput style={styles.input} placeholder='Password'/>
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LoginSubmit' onPress={signIn}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
                             </View>
-                            <Text>Don't have an account?</Text>
-                            <Button title='Create Account' accessibilityLabel='CreateAccountButton' onPress={startCreateAccount} />
+                            <View style={styles.oneline}>
+                                <Text>Don't have an account? </Text>
+                                <Pressable accessibilityRole='button'  accessibilityLabel='CreateAccountButton' onPress={startCreateAccount} >
+                                    <Text style={styles.hyperlink}>Create one</Text>
+                                </Pressable>
+                            </View>
                         </View>
                     )}
 
                     {signInStatus==='CreatingAccount' &&(
                         <View>
                             <View accessibilityLabel='CreateAccountForm'>
-                                <TextInput placeholder='Email Address'/>
-                                <TextInput placeholder='First Name'/>
-                                <TextInput placeholder='Password'/>
-                                <TextInput placeholder='Confirm Password'/>
-                                <Button title='Submit' accessibilityLabel='CreateAccountSubmit' onPress={createAccount}/>
+                                <TextInput style={styles.input} placeholder='Email Address'/>
+                                <TextInput style={styles.input} placeholder='First Name'/>
+                                <TextInput style={styles.input} placeholder='Password'/>
+                                <TextInput style={styles.input} placeholder='Confirm Password'/>
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='CreateAccountSubmit' onPress={createAccount}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
                             </View>
-                            <Text>Already have an account?</Text>
-                            <Button title='Log In' accessibilityLabel='LogInButton' onPress={signOut} />
+                            <View style={styles.oneline}>
+                                <Text>Already have an account? </Text>
+                                <Pressable accessibilityRole='button' accessibilityLabel='LogInButton' onPress={signOut} >
+                                    <Text style={styles.hyperlink}>Log In</Text>
+                                </Pressable>
+                            </View>
                         </View>
                     )}
 
@@ -108,7 +122,7 @@ const styles = StyleSheet.create({
         right: 10,
     },
     popup: {
-        height: "25%",
+        height: "35%",
         backgroundColor: '#ff0',
         alignItems: 'center',
         position: "absolute",
@@ -117,16 +131,48 @@ const styles = StyleSheet.create({
         alignSelf: 'center', 
         paddingTop: 10,
         zIndex: 10,
+        borderRadius: "8px",
     },
     title: {
         fontSize: 24,
-        marginBottom: 20,
+        marginBottom: 10,
         fontWeight: 'bold',
     },
-    signOutButton: {
-        backgroundColor: "#6200ff",
-        width: "10%",
-        height: "5%",
-        fontSize: 10
-    }
+    subtitle: {
+        fontSize: 20,
+        alignSelf: "center",
+    },
+    button: {
+        backgroundColor: "#2600ff",
+        width: "100px",
+        height: "25px",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: "#ffffff",
+        fontSize: "15px",
+    },
+    input: {
+        backgroundColor: "#cfc4c4",
+        lineHeight: 22,
+        padding: 3,
+        marginBottom: 3,
+        borderRadius: 5,
+    },
+    hyperlink: {
+        color: "#006aff",
+        textDecorationLine: "underline",
+    },
+    oneline: {
+        flexDirection: "row",
+    },
+    spread: {
+        flex: 1,
+        justifyContent: "space-between",
+        marginTop: 20,
+        marginBottom: 40,
+    },
 });
