@@ -68,7 +68,7 @@ export default function RecordScreen() {
         
         // Check Blob Exists
         console.log("Web Blob created. Size:", blob.size, "bytes");
-        formData.append('file', blob, 'recording.m4a'); // Create data to send
+        formData.append('audio', blob, 'recording.m4a'); // Create data to send
         } 
         // In Native
         else {
@@ -76,10 +76,10 @@ export default function RecordScreen() {
                         ? `file://${uri}` 
                         : uri;
     
-        formData.append('file', {
+        formData.append('audio', {
             uri: fileUri,
             type: 'audio/m4a',
-            name: 'recording.m4a'
+            name: 'recording.mpeg'
         }); 
         }
         
