@@ -60,7 +60,7 @@ export default function LogonPopup() {
                     {signInStatus==='SignedIn' &&  (
                         <View>
                             <Text>Hello, Ben</Text>
-                            <Button title="LogOut" onPress={signOut}/>
+                            <Button title="Sign Out" accessibilityLabel='LogOut' onPress={signOut}/>
                         </View>
                     )}
 
@@ -69,24 +69,24 @@ export default function LogonPopup() {
                             <View accessibilityLabel='LoginForm'>
                                 <TextInput placeholder='Email Address'/>
                                 <TextInput placeholder='Password'/>
-                                <Button title='LoginSubmit' onPress={signIn}/>
+                                <Button title='Submit' accessibilityLabel='LoginSubmit' onPress={signIn}/>
                             </View>
                             <Text>Don't have an account?</Text>
-                            <Button title='CreateAccountButton' onPress={startCreateAccount} />
+                            <Button title='Create Account' accessibilityLabel='CreateAccountButton' onPress={startCreateAccount} />
                         </View>
                     )}
 
                     {signInStatus==='CreatingAccount' &&(
                         <View>
-                            <View accessibilityLabel='LCreateAccountForm'>
+                            <View accessibilityLabel='CreateAccountForm'>
                                 <TextInput placeholder='Email Address'/>
                                 <TextInput placeholder='First Name'/>
                                 <TextInput placeholder='Password'/>
                                 <TextInput placeholder='Confirm Password'/>
-                                <Button title='CreateAccountSubmit' onPress={createAccount}/>
+                                <Button title='Submit' accessibilityLabel='CreateAccountSubmit' onPress={createAccount}/>
                             </View>
                             <Text>Already have an account?</Text>
-                            <Button title='LogInButton' onPress={signOut} />
+                            <Button title='Log In' accessibilityLabel='LogInButton' onPress={signOut} />
                         </View>
                     )}
 
