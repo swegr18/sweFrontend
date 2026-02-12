@@ -211,4 +211,98 @@ describe('<App /> - Profile Pop-up', () => {
   });
 });
 
+describe('<App /> - Login Management', () => {
+  it('user is logged out by default', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
 
+    expect(await screen.findByLabelText("LoginForm")).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /CreateAccountButton/i })).toBeTruthy();
+  })
+});
+
+describe('<App /> - Login Management', () => {
+  it('user can log in', async () => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Hello, Ben")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
+  it('user can create an account', async () => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
+    fireEvent.press(createAccountButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const nameField = await screen.findByPlaceholderText('First Name');
+    const submitButton = await screen.findByRole('button', { name: /CreateAccountSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(nameField, "Ben");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Hello, Ben")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
+  it('user can log out', async () => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const logoutButton = await screen.findByRole('button', { name: /LogOut/i });
+    fireEvent.press(logoutButton);
+
+    expect(await screen.findByLabelText("LoginForm")).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /CreateAccountButton/i })).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
+  it('user can access log in page from create account page', async () => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
+    fireEvent.press(createAccountButton);
+
+    const loginButton = await screen.findByRole('button', {name: /LogInButton/i })
+    fireEvent.press(loginButton)
+
+    expect(await screen.findByLabelText("LoginForm")).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /CreateAccountButton/i })).toBeTruthy();
+  });
+});
