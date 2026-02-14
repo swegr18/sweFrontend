@@ -6,6 +6,13 @@ export default function LogonPopup() {
     const [profilePopup, setProfilePopup] = useState(false);
     const [signInStatus, setSignInStatus] = useState('SignedOut');
 
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [errorMessage, setErrorMessage] = useState(' ');
+
     // Open profile pop-up
     const openProfile = () => {
         setProfilePopup(true);
@@ -17,19 +24,83 @@ export default function LogonPopup() {
     };
 
     const signOut = () => {
+        setErrorMessage(' ');
         setSignInStatus('SignedOut');
     };
 
     const signIn = () => {
-        setSignInStatus('SignedIn');
+        if(email=="" || password==""){
+            setErrorMessage('Please enter an email address and password');
+        }
+        else{
+            setErrorMessage(' ');
+            setSignInStatus('SignedIn');
+        }
+        setPassword('');
     };
 
     const startCreateAccount = () => {
+        setErrorMessage(' ');
         setSignInStatus('CreatingAccount');
     };
 
     const createAccount = () => {
-        setSignInStatus('SignedIn');
+        if(email=="" || password=="" || name==""){
+            setErrorMessage('Please enter an email address, first name and password');
+        }
+        else if(password != confirmPassword){
+            setErrorMessage('Passwords must match');
+        }
+        else if(passwordStrength(password) != ""){
+            setErrorMessage(passwordStrength(password));
+        }
+        else{
+            setSignInStatus('SignedIn');
+            setPassword('');
+        }
+    }
+
+    const emailIsValid = (emailToCheck) => {
+        return true;
+    }
+
+    const passwordStrength = (passwordToCheck) => {
+        if(passwordToCheck.length < 7){
+            return "Password must be at least 7 characters";
+        }
+
+        if(passwordToCheck == passwordToCheck.toUpperCase()){
+            return "Password must contain at least one lower case character";
+        }
+
+        if(passwordToCheck == passwordToCheck.toLowerCase()){
+            return "Password must contain at least one upper case character";
+        }
+
+        if(!/[ ! \" #$%&'()*+,-./:;<=>?@ \[ \\ \] ^_`{|}~ ]/.test(passwordToCheck)){
+            return "Password must contain at least one special character";
+        }
+        
+        const special = "!\"#$%&'()*+,-./:;<=>?@[ \\ ]^_`{|}~";
+        let foundSpecial = false;
+        let i = 0;
+        while(!foundSpecial){
+            if(i == special.length){
+                return "Password must contain at least one special character";
+            }
+            else{
+                if(passwordToCheck.includes(special[i])){
+                    foundSpecial = true;
+                }
+                i++;
+            }
+        }
+
+        if(! /\d/.test(passwordToCheck)){
+            return "Password must contain at least one number";
+        }
+
+        return "";
     }
 
     return (
@@ -69,8 +140,9 @@ export default function LogonPopup() {
                     {signInStatus==='SignedOut' && (
                         <View>
                             <View accessibilityLabel='LoginForm'>
-                                <TextInput style={styles.input} placeholder='Email Address'/>
-                                <TextInput style={styles.input} placeholder='Password'/>
+                                <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder='Email Address'/>
+                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='Password'/>
+                                <Text style={styles.errorMessage}>{errorMessage}</Text>
                                 <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LoginSubmit' onPress={signIn}>
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
@@ -87,10 +159,11 @@ export default function LogonPopup() {
                     {signInStatus==='CreatingAccount' &&(
                         <View>
                             <View accessibilityLabel='CreateAccountForm'>
-                                <TextInput style={styles.input} placeholder='Email Address'/>
-                                <TextInput style={styles.input} placeholder='First Name'/>
-                                <TextInput style={styles.input} placeholder='Password'/>
-                                <TextInput style={styles.input} placeholder='Confirm Password'/>
+                                <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder='Email Address'/>
+                                <TextInput value={name} onChangeText={setName} style={styles.input} placeholder='First Name'/>
+                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='Password'/>
+                                <TextInput value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm Password'/>
+                                <Text style={styles.errorMessage}>{errorMessage}</Text>
                                 <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='CreateAccountSubmit' onPress={createAccount}>
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
@@ -122,7 +195,7 @@ const styles = StyleSheet.create({
         right: 10,
     },
     popup: {
-        height: "35%",
+        height: "40%",
         backgroundColor: '#ff0',
         alignItems: 'center',
         position: "absolute",
@@ -161,6 +234,13 @@ const styles = StyleSheet.create({
         padding: 3,
         marginBottom: 3,
         borderRadius: 5,
+        width: 200,
+        alignSelf: 'center',
+    },
+    errorMessage:{
+        color: "#ff0000",
+        alignSelf: 'center',
+        fontSize: 13
     },
     hyperlink: {
         color: "#006aff",
@@ -168,6 +248,7 @@ const styles = StyleSheet.create({
     },
     oneline: {
         flexDirection: "row",
+        alignSelf: 'center',
     },
     spread: {
         flex: 1,
