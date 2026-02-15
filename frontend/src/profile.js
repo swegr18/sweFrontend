@@ -162,7 +162,7 @@ export default function LogonPopup() {
                         <View>
                             <View accessibilityLabel='LoginForm'>
                                 <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder='Email Address'/>
-                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='Password'/>
+                                <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
                                 <Text style={styles.errorMessage}>{errorMessage}</Text>
                                 <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LoginSubmit' onPress={signIn}>
                                     <Text style={styles.buttonText}>Submit</Text>
@@ -182,8 +182,8 @@ export default function LogonPopup() {
                             <View accessibilityLabel='CreateAccountForm'>
                                 <TextInput value={email} onChangeText={setEmail} style={styles.input} placeholder='Email Address'/>
                                 <TextInput value={name} onChangeText={setName} style={styles.input} placeholder='First Name'/>
-                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='Password'/>
-                                <TextInput value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm Password'/>
+                                <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
+                                <TextInput value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} placeholder='Confirm Password'/>
                                 <Text style={styles.errorMessage}>{errorMessage}</Text>
                                 <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='CreateAccountSubmit' onPress={createAccount}>
                                     <Text style={styles.buttonText}>Submit</Text>
