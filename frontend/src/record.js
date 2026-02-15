@@ -111,10 +111,6 @@ export default function RecordScreen() {
                 <Text style={styles.title}>Record Speech</Text>
         
         
-                {status === 'recording' && (
-                  <Text style={styles.statusText}>Recording...</Text>
-                )}
-        
                 {status === 'idle' && (
                   <Button title="Record" onPress={startRecording} />
                 )}
@@ -126,14 +122,16 @@ export default function RecordScreen() {
                 {status === 'nomicrophone' && (
                   <Text style={styles.statusText}>Microphone permission denied</Text>
                 )}
+
+                {status === 'recording' && (
+                  <WpmSpedometer/>
+                )}
         
                 {status === 'recording' && (
                   <Button title="Stop" onPress={stopRecording} color="red" />
                 )}
 
-                {status === 'recording' && (
-                  <WpmSpedometer/>
-                )}
+                
                 {status === 'finished' && (
                   <View style={styles.buttonGroup}>
                     <Button title="Save" onPress={handleReset} />

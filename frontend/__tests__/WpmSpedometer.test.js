@@ -12,7 +12,8 @@ global.fetch = jest.fn();
 describe('WPM Spedometer -', () => {
   
   beforeEach(() => {
-    fetch.mockClear();
+    jest.resetAllMocks();
+    global.fetch = jest.fn();
     jest.useFakeTimers(); 
   });
 
