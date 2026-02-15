@@ -9,6 +9,17 @@ import WpmSpedometer from '../src/wpmSpedometer';
 // Mock fetch globally
 global.fetch = jest.fn();
 
+jest.mock('expo-audio', () => ({
+  AudioModule: {
+    // Force the permission request to resolve immediately with 'granted'
+    requestRecordingPermissionsAsync: jest.fn().mockResolvedValue({ 
+      status: 'granted', 
+      granted: true 
+    }),
+  },
+}));
+
+
 describe('WPM Spedometer -', () => {
   
   beforeEach(() => {

@@ -12,8 +12,13 @@ import { Text, View, StyleSheet, Pressable} from 'react-native';
                 try {
                     const response = await fetch('http://127.0.0.1:8000/api/v1/');
                     const data = await response.json();
-                    setWpm(data.wpm);
 
+
+                    if (data && data.wpm != null){
+                        setWpm(data.wpm);
+                    } else {
+                        setWpm(0);
+                    }
                 } catch (err) {
                     console.error("Cannot fetch WPM - deault set to 0");
                     setWpm(0) // error value
@@ -21,7 +26,7 @@ import { Text, View, StyleSheet, Pressable} from 'react-native';
         };
 
 
-            const interval = setInterval(fetchWPM, 3000);
+            const interval = setInterval(fetchWPM, 5000);
             fetchWPM();
 
             return () => clearInterval(interval);
