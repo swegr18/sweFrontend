@@ -431,7 +431,7 @@ describe('<App /> - Login Validation', () => {
     fireEvent.press(submitButton);
 
     expect(await screen.findByLabelText("CreateAccountForm")).toBeTruthy();
-    expect(await screen.findByText("Passwords must match")).toBeTruthy();
+    expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
 
     fireEvent.changeText(emailField, "testemail.gmail.com");
     fireEvent.changeText(nameField, "Ben");
@@ -440,7 +440,7 @@ describe('<App /> - Login Validation', () => {
     fireEvent.press(submitButton);
 
     expect(await screen.findByLabelText("CreateAccountForm")).toBeTruthy();
-    expect(await screen.findByText("Passwords must match")).toBeTruthy();
+    expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
 
     fireEvent.changeText(emailField, "testemail@gmail.com");
     fireEvent.changeText(nameField, "Ben");

@@ -25,6 +25,8 @@ export default function LogonPopup() {
 
     const signOut = () => {
         setErrorMessage(' ');
+        setEmail('');
+        setName('');
         setSignInStatus('SignedOut');
     };
 
@@ -48,6 +50,9 @@ export default function LogonPopup() {
         if(email=="" || password=="" || name==""){
             setErrorMessage('Please enter an email address, first name and password');
         }
+        else if(!emailIsValid(email)){
+            setErrorMessage('Please enter a valid email address');
+        }
         else if(password != confirmPassword){
             setErrorMessage('Passwords must match');
         }
@@ -57,10 +62,41 @@ export default function LogonPopup() {
         else{
             setSignInStatus('SignedIn');
             setPassword('');
+            setConfirmPassword('');
         }
     }
 
     const emailIsValid = (emailToCheck) => {
+        let splitEmail = emailToCheck.split("@");
+        if(splitEmail.length != 2){ //exactly one '@' sign
+            return false;
+        }
+        for(let i = 0; i < splitEmail.length; i++){
+            let section = splitEmail[i]
+            if(/[ "(),:;<>@[ \\ \] ]/.test(section)){ //email can't contain any of these special characters
+                return false;
+            }
+            if(section.includes(" ")){ //email can't contain spaces
+                return false;
+            }
+            if(section[0] == "." || section[section.length-1] == "."){ //email can't start or end with '.'
+                return false;
+            }
+            if(section.includes("..")){ //email can't contain two consecutive '.'s
+                return false;
+            }
+        }
+        //additional checks specifically for the domain (after the @ sign)
+        let splitDomain = splitEmail[1].split(".");
+        if(splitDomain.length < 2){ //domain must contain at least one '.'
+            return false;
+        }
+        if(/[!#$%&'*+/=?^_`{|}~]/.test(splitEmail[1])){ //only special character allowed is dash
+            return false;
+        }
+        if(splitDomain[splitDomain.length - 1].length < 2){ //last portion of domain must be at least 2 characters
+            return false;
+        }
         return true;
     }
 
@@ -79,21 +115,6 @@ export default function LogonPopup() {
 
         if(!/[ ! \" #$%&'()*+,-./:;<=>?@ \[ \\ \] ^_`{|}~ ]/.test(passwordToCheck)){
             return "Password must contain at least one special character";
-        }
-        
-        const special = "!\"#$%&'()*+,-./:;<=>?@[ \\ ]^_`{|}~";
-        let foundSpecial = false;
-        let i = 0;
-        while(!foundSpecial){
-            if(i == special.length){
-                return "Password must contain at least one special character";
-            }
-            else{
-                if(passwordToCheck.includes(special[i])){
-                    foundSpecial = true;
-                }
-                i++;
-            }
         }
 
         if(! /\d/.test(passwordToCheck)){
