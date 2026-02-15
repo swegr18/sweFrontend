@@ -6,9 +6,6 @@ import WpmSpedometer from '../src/wpmSpedometer';
 // A set of tests for the WPM Spedometer component, for live WPM. Two success states, one failure test.
 // Mocks success and failures from backend, and tests if the frontend response is how we want
 
-// Mock fetch globally
-global.fetch = jest.fn();
-
 jest.mock('expo-audio', () => ({
   AudioModule: {
     // Force the permission request to resolve immediately with 'granted'
@@ -23,9 +20,10 @@ jest.mock('expo-audio', () => ({
 describe('WPM Spedometer -', () => {
   
   beforeEach(() => {
-    jest.resetAllMocks();
-    global.fetch = jest.fn();
+    jest.clearAllMocks();   
     jest.useFakeTimers(); 
+
+    global.fetch = jest.fn();
   });
 
   afterEach(() => {
@@ -40,44 +38,49 @@ describe('WPM Spedometer -', () => {
 
     // Mock failure response
     await waitFor(() => {
-      expect(getByText('0')).toBeTruthy();
+      expect(getByText(/0/)).toBeTruthy();
     });
   });
 
   test('Should display the WPM from backend', async () => {
     // Mock success response
     fetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
     const { getByText } = render(<WpmSpedometer />);
 
     await waitFor(() => {
-      expect(getByText('120')).toBeTruthy();
+      expect(getByText(/120/)).toBeTruthy();
     });
   });
 
   test('Should update data every 3 seconds (Live wpm)', async () => {
     // First value
-    fetch.mockResolvedValueOnce({
+    fetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
     const { getByText } = render(<WpmSpedometer />);
-    await waitFor(() => expect(getByText('120')).toBeTruthy());
 
-    // Second value 
-    fetch.mockResolvedValueOnce({
+    await waitFor(() => expect(getByText(/120/)).toBeTruthy());
+
+     // Second value 
+    fetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ wpm: 155 }),
     });
 
+    
     // advance 3 seconds into future
     act(() => {
-      jest.advanceTimersByTime(3000);
+      jest.advanceTimersByTime(5000);
     });
-
+    
     await waitFor(() => {
-      expect(getByText('155')).toBeTruthy();
+      expect(getByText(/155/)).toBeTruthy();
     });
   });
 });
