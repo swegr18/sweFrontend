@@ -6,7 +6,7 @@ import {
   RecordingPresets,
 } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
-
+import WpmSpedometer from './wpmSpedometer';
 
 export default function RecordScreen() {
 
@@ -130,7 +130,10 @@ export default function RecordScreen() {
                 {status === 'recording' && (
                   <Button title="Stop" onPress={stopRecording} color="red" />
                 )}
-        
+
+                {status === 'recording' && (
+                  <WpmSpedometer/>
+                )}
                 {status === 'finished' && (
                   <View style={styles.buttonGroup}>
                     <Button title="Save" onPress={handleReset} />
