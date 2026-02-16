@@ -7,6 +7,7 @@ import {
 } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
 import WpmSpedometer from './wpmSpedometer';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function RecordScreen() {
 
@@ -15,7 +16,10 @@ export default function RecordScreen() {
     const [permissionResponse, setPermissionResponse] = useState(null);
     
     const intervalRef = useRef(null);
-
+    const sessionIdRef = useRef(null);
+    const chunkIndexRef = useRef(0);
+    const [latestChunkIdx, setLatestChunkIdx] = useState(-1);
+  
     // Audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     
@@ -38,7 +42,8 @@ export default function RecordScreen() {
             return;
           }
         }
-  
+        sessionIdRef.current = uuidv4();
+        chunkIndexRef.current = 0;
         await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
         audioRecorder.record();
         
@@ -53,50 +58,74 @@ export default function RecordScreen() {
       console.error("Failed to start recording:", error);
       }
     }
-    
 
-    const uploadChunk = async (uri) => {
+    const fetchLiveWpm = async (idx) => {
+      try {
+        const url = `http://localhost:8000/api/v1/live-wpm?session_id=${sessionIdRef.current}&chunk_index=${idx}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        if (res.ok && typeof json.wpm === 'number') {
+          setLiveWpm(json.wpm);
+        } else {
+          console.log("Live WPM fetch failed:", res.status, json);
+        }
+      } catch (e) {
+        console.log("Cannot fetch live WPM:", e?.message || e);
+      }
+    };
+
+    const uploadChunk = async (uri, isFinal = false) => {
       if (!uri) return;
 
+      //  reserve an index immediately (prevents duplicates if uploads overlap)
+      const idx = chunkIndexRef.current++;
+      setLatestChunkIdx(idx);
       try {
         const formData = new FormData();
-  
+        formData.append("session_id", sessionIdRef.current);
+        formData.append("chunk_index", String(idx));
+        formData.append("is_final", isFinal ? "true" : "false");
+
         // In Web
         if (Platform.OS === 'web') {
           const response = await fetch(uri);
           const blob = await response.blob();
-          
+
           // Check Blob Exists
           console.log("Web Blob created. Size:", blob.size, "bytes");
-          formData.append('audio', blob, 'recording.m4a'); // Create data to send
+          formData.append('audio', blob, `chunk_${idx}.m4a`);
         } 
         // In Native
         else {
           const fileUri = Platform.OS === 'android' && !uri.startsWith('file://') 
                           ? `file://${uri}` 
                           : uri;
-      
+
           formData.append('audio', {
-              uri: fileUri,
-              type: 'audio/m4a',
-              name: 'chunk_${timestamp}.mpeg'
+            uri: fileUri,
+            type: 'audio/m4a',
+            name: `chunk_${idx}.m4a`,
           });
-    
-      }
-      // Check Data Processing is fine
-      console.log("Content (formData):", formData);
-  
-      // Send to Backend API
-      const response = await fetch('http://localhost:8000/api/v1/upload-audio', {
-        method: 'POST',
-        body: formData,
-      });
+        }
 
-      const result = await response.text(); 
-      console.log("Backend Server Response:", result);
+        // Check Data Processing is fine
+        console.log("Uploading chunk:", idx, "final:", isFinal);
 
-      } catch {
-        console.log("Cannot Upload Chunck")
+        // Send to Backend API
+        const response = await fetch('http://localhost:8000/api/v1/upload-audio', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await response.text();
+        console.log("Backend Server Response:", response.status, result);
+
+        if (!response.ok) {
+          throw new Error(`Upload failed: ${response.status} ${result}`);
+        }
+
+      } catch (err) {
+        console.log("Cannot Upload Chunk:", err?.message || err, err);
       }
     };
   
@@ -112,7 +141,7 @@ export default function RecordScreen() {
 
         // send last 5 seconds to backend
         if (uri) {
-            uploadChunk(uri);
+            await uploadChunk(uri, false);
         }
 
       }  catch (error) {
@@ -136,7 +165,7 @@ export default function RecordScreen() {
         if (audioRecorder.isRecording) {
           await audioRecorder.stop();
           const uri = audioRecorder.uri;
-          await uploadChunk(uri); // Upload the last piece
+          await uploadChunk(uri, true); // Upload the last piece
         }
 
         setStatus('finished');
@@ -169,7 +198,7 @@ export default function RecordScreen() {
                 )}
 
                 {status === 'recording' && (
-                  <WpmSpedometer/>
+                   <WpmSpedometer sessionId={sessionIdRef.current} chunkIndex={latestChunkIdx} />
                 )}
         
                 {status === 'recording' && (
