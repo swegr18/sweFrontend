@@ -11,7 +11,7 @@ export default function StatsScreen({ onBack }) {
     fetch("http://localhost:8000/api/v1/metrics/latest")
       .then(async (res) => {
         const data = await res.json();
-        console.log("metrics response:", data);   // <-- LOOK AT THIS IN CONSOLE
+        console.log("metrics response:", data);  
         if (!res.ok) {
           throw new Error(data?.detail || data?.error || "Request failed");
         }
