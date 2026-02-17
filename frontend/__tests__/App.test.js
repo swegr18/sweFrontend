@@ -46,7 +46,6 @@ jest.mock('@expo/vector-icons',() => {
 
 
 
-
 // UI (Title)
 describe('<App /> - Recording Page', () => {
   it('Should display a title for the recording page', async () => {
@@ -61,6 +60,8 @@ describe('<App /> - Recording Page', () => {
   }); 
 });
 
+
+
 // UI (Record Button) 
 describe('<App /> - Recording Page', () => {
   it('Should display a button to start recording', async () => {
@@ -71,21 +72,24 @@ describe('<App /> - Recording Page', () => {
 });
 
 
-// Record button press -> Display stop button
+// Record button press -> Display stop button  
 describe('<App /> - Recording Controls', () => {
   it('should display Stop button when recording starts', async () => {
     render(<App />);
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
 
     const stopButton = await screen.findByRole('button', { name: /Stop/i });
 
     expect(stopButton).toBeTruthy();
+        
+    fireEvent.press(stopButton);
+
   });
 });
 
 
-// Remove Record button once it is pressed
+// Remove Record button once it is pressed   
 describe('<App /> - Recording Controls', () => {
    it('Should hide Record button when recording is active', async () => {
     render(<App />);
@@ -96,38 +100,53 @@ describe('<App /> - Recording Controls', () => {
       expect(screen.queryByRole('button', { name: /Record/i })).toBeNull();
     });
 
+    // Need this at the end of every test!!!
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
+    fireEvent.press(stopButton);
 
   });
 });
 
-// Recording Status Visual
+
+
+
+// Recording Status Visual   
 describe('<App /> - Recording Page', () => {
   it('Should display "Recording" text when recording starts', async () => {
     render(<App />);
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const recordingStatus = await screen.findByText("Recording...");
     expect(recordingStatus).toBeTruthy();
+
+    // Need this at the end of every test!!!
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
+    fireEvent.press(stopButton);
+
   });
 });
 
-// Microphone Permission Tests
+
+
+
+// Microphone Permission Tests 
 describe('<App /> - Permissions and Errors', () => {
   it.skip('should show permission error message if microphone not allowed', async () => {
     render(<App />);
     // Mock permission denied state
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const errorMessage = await screen.findByText(/Microphone permission denied/i);
     expect(errorMessage).toBeTruthy();
   });
 });
 
-// Recording failed test
+
+// Recording failed test 
 describe('<App /> - Permissions and Errors', () => {
   it('should display error when recording fails', async () => {
     render(<App />);
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     
     
@@ -140,16 +159,21 @@ describe('<App /> - Permissions and Errors', () => {
       // No Error
       const stopButton = await screen.findByRole('button', {name: /Stop/i});
       expect(stopButton).toBeTruthy();
+      // Need this at the end of every test!!!
+      fireEvent.press(stopButton);
     }
     });
+
+    
+    
 });
 
 
-// Check save and delete buttons appear after stop button pressed
+// Check save and delete buttons appear after stop button pressed 
 describe('<App /> - Recording Page', () => {
   it('should show Save/Delete buttons after recording', async () => {
     render(<App />);
-    const recordButton = screen.getByRole('button', { name: /Record/i });
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const stopButton = await screen.findByRole('button', { name: /Stop/i });
     fireEvent.press(stopButton);
@@ -158,14 +182,19 @@ describe('<App /> - Recording Page', () => {
     const deleteButton = await screen.findByRole('button', { name: /Delete/i });
     expect(saveButton).toBeTruthy();
     expect(deleteButton).toBeTruthy();
+
+    // Need this at the end of every test!!!
+      fireEvent.press(stopButton);
+
   });
 });
 
-// Check profile button appears on recording page
+
+// Check profile button appears on recording page 
 describe('<App /> - Recording Page', () => {
-  it('should show Profile button from start', () => {
+  it('should show Profile button from start', async () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', {name: /ProfileButton/i});
+    const profileButton = await screen.findByRole('button', {name: /ProfileButton/i});
     expect(profileButton).toBeTruthy();
   });
 });
@@ -175,7 +204,7 @@ describe('<App /> - Recording Page', () => {
 describe('<App /> - Profile Pop-up', () => {
   it('should show Profile pop-up when the Profile button pressed', async () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    const profileButton = await screen.findByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
 
     await waitFor(() =>{
@@ -191,7 +220,7 @@ describe('<App /> - Profile Pop-up', () => {
 describe('<App /> - Profile Pop-up', () => {
   it('should close the Profile pop-up when the Close button pressed', async () => {
     render(<App />);
-    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    const profileButton = await screen.findByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
 
     const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
@@ -204,5 +233,4 @@ describe('<App /> - Profile Pop-up', () => {
     });
   });
 });
-
 

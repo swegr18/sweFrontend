@@ -26,9 +26,11 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
             } catch (err) {
 
                 if (isActive) {
-                console.error("Cannot fetch WPM - deault set to 0");
+                //console.error("Cannot fetch WPM - deault set to 0");
                 setWpm(0)
                 }
+
+
             }
         };
 
@@ -42,7 +44,6 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
     }, [sessionId, chunkIndex]);
 
     return (
-
         <View style={styles.spedometerContainer}>
             <Text style={styles.wpmText}>{wpm} WPM</Text>
             <Text style={styles.labelText}>Recording...</Text>

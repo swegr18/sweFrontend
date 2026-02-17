@@ -25,10 +25,14 @@ export default function RecordScreen() {
     
     // Persmissions
     useEffect(() => {
+        let isMounted = true;
         (async () => {
         const response = await AudioModule.requestRecordingPermissionsAsync();
-        setPermissionResponse(response);
+        if (isMounted) {
+            setPermissionResponse(response);
+        }
         })();
+      return () => { isMounted = false; }; // Cleanup
     }, []);
     
     // ----Start Recording-----
@@ -52,7 +56,7 @@ export default function RecordScreen() {
         // Set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
-        }, 5000);
+        }, 2000);
       
       } catch (error) {
       console.error("Failed to start recording:", error);

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import WpmSpedometer from '../src/wpmSpedometer'; 
@@ -5,15 +6,53 @@ import WpmSpedometer from '../src/wpmSpedometer';
 // A set of tests for the WPM Spedometer component, for live WPM. Two success states, one failure test.
 // Mocks success and failures from backend, and tests if the frontend response is how we want
 
+// --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
   AudioModule: {
-    // Force the permission request to resolve immediately with 'granted'
-    requestRecordingPermissionsAsync: jest.fn().mockResolvedValue({ 
-      status: 'granted', 
-      granted: true 
-    }),
+    requestRecordingPermissionsAsync: jest.fn(() => 
+      Promise.resolve({ status: 'granted' })
+    ),
+  },
+  useAudioRecorder: jest.fn(() => ({
+    // Make these resolve immediately
+    prepareToRecordAsync: jest.fn(() => Promise.resolve()),
+    record: jest.fn(),
+    stop: jest.fn(() => Promise.resolve()),
+    uri: 'file://test-audio.m4a',
+  })),
+  RecordingPresets: {
+    HIGH_QUALITY: 'high-quality-preset',
   },
 }));
+
+// Mock FileSystem to avoid crashes in handleStopRecording
+jest.mock('expo-file-system/legacy', () => ({
+  readAsStringAsync: jest.fn(() => Promise.resolve('base64-string-mock')),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, size: 100 })),
+  EncodingType: { Base64: 'base64' },
+}));
+
+// Mock Platform to avoid "blob" errors in tests if your code checks Platform.OS
+jest.mock('react-native/Libraries/Utilities/Platform', () => ({
+  OS: 'android',
+  select: () => null,
+}));
+
+//Mock React Icons 
+jest.mock('@expo/vector-icons',() => {
+  const { Text } = require('react-native');
+
+  const Icon = ({ name }) => <Text>{name}</Text>;
+
+  return {
+    FontAwesome6: Icon,
+    AntDesign: Icon,
+  }
+});
+
+
+// -------------------------
+
 
 
 describe('WPM Spedometer -', () => {
@@ -34,11 +73,19 @@ describe('WPM Spedometer -', () => {
     jest.useRealTimers();  // NOW switch back 
   });
 
+
+  const defaultProps = {
+      sessionId: 'test-session-123',
+      chunkIndex: 1
+  };
+
+
+
   test('Should displays 0 on failure', async () => {
     // Mock a network error
     fetch.mockRejectedValue(new Error('API Down'));
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
 
     // Mock failure response
     await waitFor(() => {
@@ -46,6 +93,7 @@ describe('WPM Spedometer -', () => {
     });
   });
 
+ 
   test('Should display the WPM from backend', async () => {
     // Mock success response
     fetch.mockResolvedValue({
@@ -53,13 +101,14 @@ describe('WPM Spedometer -', () => {
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
 
     await waitFor(() => {
       expect(getByText(/120/)).toBeTruthy();
     });
   });
 
+ 
   test('Should update data every 3 seconds (Live wpm)', async () => {
     // First value
     fetch.mockResolvedValue({
@@ -67,7 +116,7 @@ describe('WPM Spedometer -', () => {
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps} />);
 
     await waitFor(() => expect(getByText(/120/)).toBeTruthy());
 
@@ -80,11 +129,15 @@ describe('WPM Spedometer -', () => {
     
     // advance 3 seconds into future
     act(() => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(2000);
     });
     
     await waitFor(() => {
       expect(getByText(/155/)).toBeTruthy();
     });
+
+    
   });
+  
 });
+
