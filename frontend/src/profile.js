@@ -73,7 +73,7 @@ export default function LogonPopup() {
         }
         for(let i = 0; i < splitEmail.length; i++){
             let section = splitEmail[i]
-            if(/[ "(),:;<>@[ \\ \] ]/.test(section)){ //email can't contain any of these special characters
+            if(/["(),:;<>@[\\\]]/.test(section)){ //email can't contain any of these special characters
                 return false;
             }
             if(section.includes(" ")){ //email can't contain spaces
@@ -113,7 +113,7 @@ export default function LogonPopup() {
             return "Password must contain at least one upper case character";
         }
 
-        if(!/[ ! \" #$%&'()*+,-./:;<=>?@ \[ \\ \] ^_`{|}~ ]/.test(passwordToCheck)){
+        if(!/[!\"#$%&'()*+,-./:;<=>?@\[\\\]^_`{|}~]/.test(passwordToCheck)){
             return "Password must contain at least one special character";
         }
 

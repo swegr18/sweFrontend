@@ -303,23 +303,17 @@ describe('<App /> - Login Validation', () => {
     const confirmPasswordField = await screen.findByPlaceholderText('Confirm Password');
     const submitButton = await screen.findByRole('button', { name: /CreateAccountSubmit/i });
 
-    fireEvent.changeText(emailField, "testemail@gmail");
-    fireEvent.changeText(nameField, "Ben");
-    fireEvent.changeText(passwordField, "Password12!");
-    fireEvent.changeText(confirmPasswordField, "Password12!");
-    fireEvent.press(submitButton);
+    let invalidEmails = ["testemail@gmail","testemail.gmail.com","test:email@gmail.com","test email@gmail.com","testemail@gmail.com.","testemail@gmail..com","testemail@g_mail.com","testemail@gmail.co.u"];
+    for(let i = 0; i < invalidEmails.length; i++){
+      fireEvent.changeText(emailField, invalidEmails[i]);
+      fireEvent.changeText(nameField, "Ben");
+      fireEvent.changeText(passwordField, "Password12!");
+      fireEvent.changeText(confirmPasswordField, "Password12!");
+      fireEvent.press(submitButton);
 
-    expect(await screen.findByLabelText("CreateAccountForm")).toBeTruthy();
-    expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
-
-    fireEvent.changeText(emailField, "testemail.gmail.com");
-    fireEvent.changeText(nameField, "Ben");
-    fireEvent.changeText(passwordField, "Password12!");
-    fireEvent.changeText(confirmPasswordField, "Password12!");
-    fireEvent.press(submitButton);
-
-    expect(await screen.findByLabelText("CreateAccountForm")).toBeTruthy();
-    expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
+      expect(await screen.findByLabelText("CreateAccountForm")).toBeTruthy();
+      expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
+    }
 
     fireEvent.changeText(emailField, "testemail@gmail.com");
     fireEvent.changeText(nameField, "Ben");
