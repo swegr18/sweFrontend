@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function StatsScreen({ onBack }) {
 
@@ -24,7 +25,7 @@ export default function StatsScreen({ onBack }) {
   }, []);
     
   return (
-    <View>
+    <View style={styles.statsScreen}>
       <Text style={styles.title}>Stats</Text>
 
       {error ? <Text>{error}</Text> : null}
@@ -44,9 +45,9 @@ export default function StatsScreen({ onBack }) {
         style={styles.backButton}
         onPress={onBack}
         accessibilityRole='button' 
-        accessibilityLabel='statsButton'
+        accessibilityLabel='statsBackButton'
       >
-        <Text>Go Back</Text>
+        <AntDesign name="close" size={24} color="red" />
       </Pressable>
     </View>
   );
@@ -54,9 +55,19 @@ export default function StatsScreen({ onBack }) {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 24,
+    fontSize: 30,
     marginBottom: 20,
     fontWeight: 'bold',
+    alignSelf: 'center'
   },
-  backButton: {}
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
+  statsScreen: {
+    width: "100%",
+    height: "100%",
+    padding: "15px"
+  }
 });
