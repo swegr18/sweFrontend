@@ -7,6 +7,8 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
     const [wpm, setWpm] = useState(0);
 
     useEffect(() => {
+        let isActive = true;
+
         const fetchWPM = async () => {
             try {
                 // Don't fetch until we have a session and at least one chunk index
@@ -18,20 +20,25 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
                 const response = await fetch(url);
                 const data = await response.json();
 
-                if (response.ok && data && data.wpm != null) {
+                if (isActive && response.ok && data && data.wpm != null) {
                     setWpm(data.wpm);
                 }
             } catch (err) {
+
+                if (isActive) {
                 console.error("Cannot fetch WPM - deault set to 0");
                 setWpm(0)
-
+                }
             }
         };
 
         const interval = setInterval(fetchWPM, 2000);
         fetchWPM();
 
-        return () => clearInterval(interval);
+        return () => {
+            isActive = false;
+            clearInterval(interval);
+        }
     }, [sessionId, chunkIndex]);
 
     return (

@@ -1,12 +1,6 @@
-jest.mock("react-native/Libraries/Utilities/Platform", () => ({
-  OS: "android", // or 'ios'
-  select: () => null,
-}));
-
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
-import { Platform } from 'react-native';
 
 // --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
@@ -32,10 +26,6 @@ jest.mock('expo-file-system/legacy', () => ({
   readAsStringAsync: jest.fn(() => Promise.resolve('base64-string-mock')),
   getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, size: 100 })),
   EncodingType: { Base64: 'base64' },
-}));
-
-jest.mock('uuid', () => ({
-  v4: () => '00000000-0000-0000-0000-000000000000'
 }));
 
 

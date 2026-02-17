@@ -1,8 +1,3 @@
-jest.mock("react-native/Libraries/Utilities/Platform", () => ({
-  OS: "android", // or 'ios'
-  select: () => null,
-}));
-
 import React from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import WpmSpedometer from '../src/wpmSpedometer'; 
@@ -20,9 +15,6 @@ jest.mock('expo-audio', () => ({
   },
 }));
 
-jest.mock('uuid', () => ({
-  v4: () => '00000000-0000-0000-0000-000000000000'
-}));
 
 describe('WPM Spedometer -', () => {
   
@@ -30,11 +22,16 @@ describe('WPM Spedometer -', () => {
     jest.clearAllMocks();   
     jest.useFakeTimers(); 
 
-    global.fetch = jest.fn();
+    global.fetch = jest.fn(() => Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({}),
+    }));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    jest.clearAllMocks();
+    jest.clearAllTimers(); // Kill any pending setIntervals
+    jest.useRealTimers();  // NOW switch back 
   });
 
   // Define default props to use in tests
