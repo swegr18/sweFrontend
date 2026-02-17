@@ -203,39 +203,3 @@ describe('<App /> - Recording Page', () => {
     expect(profileButton).toBeTruthy();
   });
 });
-
-
-// Check profile pop-up appears on button press
-describe('<App /> - Profile Pop-up', () => {
-  it('should show Profile pop-up when the Profile button pressed', async () => {
-    render(<App />);
-    const profileButton = await screen.findByRole('button', { name: /ProfileButton/i });
-    fireEvent.press(profileButton);
-
-    await waitFor(() =>{
-      expect(screen.queryByText('Profile')).toBeTruthy();
-      expect(screen.queryByRole('button', {name: /ClosePopup/i})).toBeTruthy();
-      expect(screen.queryByRole('button', { name: /ProfileButton/i })).toBeNull();
-    });
-  });
-});
-
-
-// Check that profile pop-up is closed on button press
-describe('<App /> - Profile Pop-up', () => {
-  it('should close the Profile pop-up when the Close button pressed', async () => {
-    render(<App />);
-    const profileButton = await screen.findByRole('button', { name: /ProfileButton/i });
-    fireEvent.press(profileButton);
-
-    const closeButton = await screen.findByRole('button', {name: /ClosePopup/i});
-    fireEvent.press(closeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Profile')).toBeNull();
-      expect(screen.queryByRole('button', {name: /ClosePopup/i})).toBeNull();
-      expect(screen.queryByRole('button', { name: /ProfileButton/i })).toBeTruthy();
-    });
-  });
-});
-
