@@ -20,12 +20,6 @@ jest.mock('uuid', () => ({
   v4: () => 'test-uuid-1234'
 }));
 
-// Mock Platform to avoid "blob" errors in tests if your code checks Platform.OS
-jest.mock('react-native/Libraries/Utilities/Platform', () => ({
-  OS: 'android',
-  select: () => null,
-}));
-
 describe('WPM Spedometer -', () => {
   
   beforeEach(() => {

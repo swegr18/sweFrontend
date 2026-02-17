@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
-
+import { Platform } from 'react-native';
 
 // --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
@@ -34,12 +34,15 @@ jest.mock('uuid', () => ({
 }));
 
 
+Object.defineProperty(Platform, 'OS', {
+  get: () => 'android',
+  configurable: true, // Allows it to be reset if needed
+});
 
-// Mock Platform to avoid "blob" errors in tests if your code checks Platform.OS
-jest.mock('react-native/Libraries/Utilities/Platform', () => ({
-  OS: 'android',
-  select: () => null,
-}));
+Object.defineProperty(Platform, 'select', {
+  value: (objs) => objs.android || objs.default,
+  configurable: true,
+});
 
 //Mock React Icons 
 jest.mock('@expo/vector-icons',() => {

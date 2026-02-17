@@ -67,9 +67,11 @@ export default function RecordScreen() {
         if (res.ok && typeof json.wpm === 'number') {
           setLiveWpm(json.wpm);
         } else {
+          setLiveWpm(0);
           console.log("Live WPM fetch failed:", res.status, json);
         }
       } catch (e) {
+        setLiveWpm(0);
         console.log("Cannot fetch live WPM:", e?.message || e);
       }
     };
