@@ -16,6 +16,11 @@ jest.mock('expo-audio', () => ({
   },
 }));
 
+jest.mock('uuid', () => ({
+  v4: () => 'test-uuid-1234'
+}));
+
+
 
 describe('WPM Spedometer -', () => {
   

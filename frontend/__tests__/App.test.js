@@ -47,6 +47,9 @@ jest.mock('@expo/vector-icons',() => {
   }
 });
 
+jest.mock('uuid', () => ({
+  v4: () => 'test-uuid-1234'
+}));
 
 // UI (Title)
 describe('<App /> - Recording Page', () => {
