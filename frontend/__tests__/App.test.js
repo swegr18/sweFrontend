@@ -29,6 +29,12 @@ jest.mock('expo-file-system/legacy', () => ({
   EncodingType: { Base64: 'base64' },
 }));
 
+jest.mock('uuid', () => ({
+  v4: () => 'test-uuid-1234'
+}));
+
+
+
 // Mock Platform to avoid "blob" errors in tests if your code checks Platform.OS
 jest.mock('react-native/Libraries/Utilities/Platform', () => ({
   OS: 'android',
@@ -47,9 +53,6 @@ jest.mock('@expo/vector-icons',() => {
   }
 });
 
-jest.mock('uuid', () => ({
-  v4: () => 'test-uuid-1234'
-}));
 
 // UI (Title)
 describe('<App /> - Recording Page', () => {
