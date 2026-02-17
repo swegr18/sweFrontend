@@ -48,11 +48,6 @@ jest.mock('@expo/vector-icons',() => {
 });
 
 
-// -------------------------
-
-
-
-
 // UI (Title)
 describe('<App /> - Recording Page', () => {
   it('Should display a title for the recording page', async () => {

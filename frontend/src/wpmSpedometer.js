@@ -23,17 +23,19 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
                 }
             } catch (err) {
                 console.error("Cannot fetch WPM - deault set to 0");
+                setWpm(0)
 
             }
         };
 
-        const interval = setInterval(fetchWPM, 5000);
+        const interval = setInterval(fetchWPM, 2000);
         fetchWPM();
 
         return () => clearInterval(interval);
     }, [sessionId, chunkIndex]);
 
     return (
+
         <View style={styles.spedometerContainer}>
             <Text style={styles.wpmText}>{wpm} WPM</Text>
             <Text style={styles.labelText}>Recording...</Text>

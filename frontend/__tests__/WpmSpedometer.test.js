@@ -30,11 +30,17 @@ describe('WPM Spedometer -', () => {
     jest.useRealTimers();
   });
 
+  // Define default props to use in tests
+  const defaultProps = {
+      sessionId: 'test-session-123',
+      chunkIndex: 1
+  };
+
   test('Should displays 0 on failure', async () => {
     // Mock a network error
     fetch.mockRejectedValue(new Error('API Down'));
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
 
     // Mock failure response
     await waitFor(() => {
@@ -49,7 +55,7 @@ describe('WPM Spedometer -', () => {
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
 
     await waitFor(() => {
       expect(getByText(/120/)).toBeTruthy();
@@ -63,7 +69,7 @@ describe('WPM Spedometer -', () => {
       json: () => Promise.resolve({ wpm: 120 }),
     });
 
-    const { getByText } = render(<WpmSpedometer />);
+    const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
 
     await waitFor(() => expect(getByText(/120/)).toBeTruthy());
 
@@ -76,7 +82,7 @@ describe('WPM Spedometer -', () => {
     
     // advance 3 seconds into future
     act(() => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(2000);
     });
     
     await waitFor(() => {
