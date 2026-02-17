@@ -47,6 +47,10 @@ jest.mock('@expo/vector-icons',() => {
   }
 });
 
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'mock-uuid-1234-abcd-efgh-5678ijklmnop'),
+}));
+
 
 // -------------------------
 
