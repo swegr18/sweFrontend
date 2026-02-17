@@ -1,3 +1,8 @@
+jest.mock("react-native/Libraries/Utilities/Platform", () => ({
+  OS: "android", // or 'ios'
+  select: () => null,
+}));
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
@@ -30,19 +35,9 @@ jest.mock('expo-file-system/legacy', () => ({
 }));
 
 jest.mock('uuid', () => ({
-  v4: () => 'test-uuid-1234'
+  v4: () => '00000000-0000-0000-0000-000000000000'
 }));
 
-
-Object.defineProperty(Platform, 'OS', {
-  get: () => 'android',
-  configurable: true, // Allows it to be reset if needed
-});
-
-Object.defineProperty(Platform, 'select', {
-  value: (objs) => objs.android || objs.default,
-  configurable: true,
-});
 
 //Mock React Icons 
 jest.mock('@expo/vector-icons',() => {

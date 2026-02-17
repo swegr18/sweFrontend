@@ -1,7 +1,11 @@
+jest.mock("react-native/Libraries/Utilities/Platform", () => ({
+  OS: "android", // or 'ios'
+  select: () => null,
+}));
+
 import React from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import WpmSpedometer from '../src/wpmSpedometer'; 
-
 
 // A set of tests for the WPM Spedometer component, for live WPM. Two success states, one failure test.
 // Mocks success and failures from backend, and tests if the frontend response is how we want
@@ -17,7 +21,7 @@ jest.mock('expo-audio', () => ({
 }));
 
 jest.mock('uuid', () => ({
-  v4: () => 'test-uuid-1234'
+  v4: () => '00000000-0000-0000-0000-000000000000'
 }));
 
 describe('WPM Spedometer -', () => {
