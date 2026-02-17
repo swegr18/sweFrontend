@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
+import { AudioModule } from 'expo-audio';
 
 // --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
   AudioModule: {
-    requestRecordingPermissionsAsync: jest.fn(() => 
-      Promise.resolve({ status: 'granted' })
-    ),
+    requestRecordingPermissionsAsync: jest.fn()
+    ,
   },
   useAudioRecorder: jest.fn(() => ({
     // Make these resolve immediately
@@ -81,6 +81,7 @@ describe('<App /> - Recording Page', () => {
 describe('<App /> - Recording Controls', () => {
   it('should display Stop button when recording starts', async () => {
     render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted',});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
 
@@ -98,6 +99,7 @@ describe('<App /> - Recording Controls', () => {
 describe('<App /> - Recording Controls', () => {
    it('Should hide Record button when recording is active', async () => {
     render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted',});
     const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
 
@@ -119,6 +121,7 @@ describe('<App /> - Recording Controls', () => {
 describe('<App /> - Recording Page', () => {
   it('Should display "Recording" text when recording starts', async () => {
     render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted',});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const recordingStatus = await screen.findByText("Recording...");
@@ -136,9 +139,10 @@ describe('<App /> - Recording Page', () => {
 
 // Microphone Permission Tests 
 describe('<App /> - Permissions and Errors', () => {
-  it.skip('should show permission error message if microphone not allowed', async () => {
+  it('should show permission error message if microphone not allowed', async () => {
     render(<App />);
     // Mock permission denied state
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'denied',});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const errorMessage = await screen.findByText(/Microphone permission denied/i);
@@ -151,6 +155,7 @@ describe('<App /> - Permissions and Errors', () => {
 describe('<App /> - Permissions and Errors', () => {
   it('should display error when recording fails', async () => {
     render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted',});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     
@@ -178,6 +183,7 @@ describe('<App /> - Permissions and Errors', () => {
 describe('<App /> - Recording Page', () => {
   it('should show Save/Delete buttons after recording', async () => {
     render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted',});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
     const stopButton = await screen.findByRole('button', { name: /Stop/i });
