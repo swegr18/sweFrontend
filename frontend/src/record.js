@@ -52,7 +52,7 @@ export default function RecordScreen() {
         // Set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
-        }, 2000);
+        }, 5000);
       
       } catch (error) {
       console.error("Failed to start recording:", error);
@@ -141,7 +141,7 @@ export default function RecordScreen() {
         await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
         audioRecorder.record();
 
-        // send last 2 seconds to backend
+        // send last 5 seconds to backend
         if (uri) {
             await uploadChunk(uri, false);
         }
@@ -152,11 +152,12 @@ export default function RecordScreen() {
     };
 
 
+    
 
 
     const stopRecording = async () => {
       try {
-        // end the timer so no more intervals (2s) happen
+        // end the timer so no more intervals (5s) happen
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
