@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from 'react'; 
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react'; 
+import { Text, View, StyleSheet, Button, Animated } from 'react-native';
+import AnimatedWave from './wpmWave'
 
-export default function WpmSpedometer({ sessionId, chunkIndex }) {
-        
+
+export default function WpmSpedometer({ sessionId, chunkIndex, onStop }) {
+    // UI animations
+    const slideAnim = useRef(new Animated.Value(700)).current; // start off-screen below
+
+    useEffect(() => {
+        Animated.spring(slideAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: false,
+        }).start();
+    }, []);
+
+
     // Currently a mock function until the backend is setup
     const [wpm, setWpm] = useState(0);
 
@@ -44,29 +57,47 @@ export default function WpmSpedometer({ sessionId, chunkIndex }) {
     }, [sessionId, chunkIndex]);
 
     return (
-        <View style={styles.spedometerContainer}>
-            <Text style={styles.wpmText}>{wpm} WPM</Text>
-            <Text style={styles.labelText}>Recording...</Text>
-        </View>
+
+        <Animated.View style={[styles.speechContainer, {transform: [{translateY: slideAnim}]}]}>        
+            <AnimatedWave />
+            <View style={styles.spedometerContainer}>
+                <Text style={styles.wpmText}>{wpm} WPM</Text>
+                <Text style={styles.labelText}>Recording...</Text>
+            </View>
+            <Button title="Stop" onPress={onStop} color="red" />
+        </Animated.View>
+
     );
 } 
 
 const styles = StyleSheet.create({
 
 
-     title: {
-        fontSize: 24,
-        marginBottom: 20,
-        fontWeight: 'bold',
-    },
     spedometerContainer: {
         width: 150,
         height: 150,
         borderRadius: 75,
         borderWidth: 10,
-        borderColor: 'green', // Simple color logic
+        borderColor: 'green', 
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#88e788', 
         marginBottom: 20,
-    }
+    },
+    speechContainer: {
+        position: 'absolute', 
+        bottom: 0,           
+        left: 0,
+        right: 0,             
+        
+        height: '70%',       
+        width: '100%',        
+        
+        backgroundColor: '#88e788', 
+        
+        // Center the circle inside the green box
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1, 
+    },
 });

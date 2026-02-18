@@ -204,13 +204,9 @@ export default function RecordScreen() {
                 )}
 
                 {status === 'recording' && (
-                   <WpmSpedometer sessionId={sessionIdRef.current} chunkIndex={latestChunkIdx} />
+                   <WpmSpedometer sessionId={sessionIdRef.current} chunkIndex={latestChunkIdx} onStop={stopRecording} />
                 )}
         
-                {status === 'recording' && (
-                  <Button title="Stop" onPress={stopRecording} color="red" />
-                )}
-
                 
                 {status === 'finished' && (
                   <View style={styles.buttonGroup}>
