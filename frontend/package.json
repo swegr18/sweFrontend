@@ -11,7 +11,10 @@
     "test:watch": "jest --watch"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+    "./jest.setup.js" 
+  ]
   },
   "dependencies": {
     "expo": "~54.0.25",
