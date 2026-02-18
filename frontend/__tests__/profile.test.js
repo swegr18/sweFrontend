@@ -52,7 +52,20 @@ jest.mock('uuid', () => ({
 }));
 
 
+jest.mock('react-native-svg', () => {
+  const React = require('react');
+  const { View } = require('react-native');
 
+  return {
+    __esModule: true,
+    default: (props) => <View {...props} testID="svg-root" />,
+    Svg: (props) => <View {...props} testID="svg-root" />,
+    Path: (props) => <View {...props} testID="svg-path" />,
+    Circle: (props) => <View {...props} />,
+    Rect: (props) => <View {...props} />,
+    G: (props) => <View {...props} />,
+  };
+});
 // -------------------------
 
 
