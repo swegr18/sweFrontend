@@ -3,17 +3,25 @@ import { Text, View, StyleSheet, Button, Animated } from 'react-native';
 import AnimatedWave from './wpmWave'
 
 
-export default function WpmSpedometer({ sessionId, chunkIndex, onStop }) {
+export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible, onHidden }) {
     // UI animations
     const slideAnim = useRef(new Animated.Value(700)).current; // start off-screen below
 
     useEffect(() => {
-        Animated.spring(slideAnim, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: false,
-        }).start();
-    }, []);
+        if (isVisible) {
+            Animated.spring(slideAnim, {
+                toValue: 0,
+                duration: 1000,
+                useNativeDriver: false,
+            }).start();
+        } else {
+            Animated.spring(slideAnim, {
+                toValue: 700,
+                duration: 1000,
+                useNativeDriver: false,
+            }).start(() => onHidden());;
+        }
+    }, [isVisible]);
 
 
     // Currently a mock function until the backend is setup
