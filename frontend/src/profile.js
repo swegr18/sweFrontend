@@ -134,7 +134,7 @@ export default function LogonPopup() {
                     accessibilityRole='button' 
                     accessibilityLabel='ProfileButton'
                 >
-                    <FontAwesome6 name="circle-user" size={24} color="black" />
+                    <FontAwesome6 name="circle-user" size={24} color="white" />
                 </Pressable>
             )}
 

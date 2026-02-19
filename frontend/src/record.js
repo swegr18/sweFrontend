@@ -85,7 +85,7 @@ export default function RecordScreen() {
 
       //  reserve an index immediately (prevents duplicates if uploads overlap)
       const idx = chunkIndexRef.current++;
-      setLatestChunkIdx(idx);
+
       try {
         const formData = new FormData();
         formData.append("session_id", sessionIdRef.current);
@@ -129,7 +129,7 @@ export default function RecordScreen() {
         if (!response.ok) {
           throw new Error(`Upload failed: ${response.status} ${result}`);
         }
-
+        setLatestChunkIdx(idx);
       } catch (err) {
         console.log("Cannot Upload Chunk:", err?.message || err, err);
       }
@@ -161,22 +161,22 @@ export default function RecordScreen() {
 
     const stopRecording = async () => {
       try {
-        // end the timer so no more intervals (5s) happen
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
+          if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+          }
 
-        // end the last recording segment
-        if (audioRecorder.isRecording) {
-          await audioRecorder.stop();
-          const uri = audioRecorder.uri;
-          await uploadChunk(uri, true); // Upload the last piece
-        }
+          setStatus('finishing'); 
 
-        setStatus('finished');
+
+          if (audioRecorder.isRecording) {
+              await audioRecorder.stop();
+              const uri = audioRecorder.uri;
+              uploadChunk(uri, true); 
+          }
+
       } catch (error) {
-        console.error("Stop failed:", error);
+          console.error("Stop failed:", error);
       }
     };
 
@@ -203,12 +203,21 @@ export default function RecordScreen() {
                   <Text style={styles.statusText}>Microphone permission denied</Text>
                 )}
 
-                {status === 'recording' && (
-                   <WpmSpedometer sessionId={sessionIdRef.current} chunkIndex={latestChunkIdx} onStop={stopRecording} />
+                {(status === 'recording' || status === 'finishing') && (
+                    <WpmSpedometer
+                        sessionId={sessionIdRef.current}
+                        chunkIndex={latestChunkIdx}
+                        onStop={stopRecording}
+                        isVisible={status === 'recording'}
+                        onHidden={() => setStatus('finished')}
+                    />
                 )}
         
                 
-                {status === 'finished' && (
+                {(status === 'finished' || status === 'finishing') && (
+
+                  
+
                   <View style={styles.buttonGroup}>
                     <Button title="Save" onPress={handleReset} />
                     <View style={{height: 10}} /> 

@@ -14,7 +14,7 @@ export default function StatsButton({ onShowNewScreen }) {
             accessibilityRole='button' 
             accessibilityLabel='statsButton'
             >
-            <FontAwesome6 name="bar-chart" size={24} color="black" />
+            <FontAwesome6 name="bar-chart" size={24} color="white" />
         </Pressable>
      
        </>          

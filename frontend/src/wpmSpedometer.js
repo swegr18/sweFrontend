@@ -3,17 +3,25 @@ import { Text, View, StyleSheet, Button, Animated } from 'react-native';
 import AnimatedWave from './wpmWave'
 
 
-export default function WpmSpedometer({ sessionId, chunkIndex, onStop }) {
+export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible, onHidden }) {
     // UI animations
     const slideAnim = useRef(new Animated.Value(700)).current; // start off-screen below
 
     useEffect(() => {
-        Animated.spring(slideAnim, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: false,
-        }).start();
-    }, []);
+        if (isVisible) {
+            Animated.spring(slideAnim, {
+                toValue: 0,
+                duration: 1000,
+                useNativeDriver: false,
+            }).start();
+        } else {
+            Animated.spring(slideAnim, {
+                toValue: 700,
+                duration: 1000,
+                useNativeDriver: false,
+            }).start(() => onHidden?.());
+        }
+    }, [isVisible]);
 
 
     // Currently a mock function until the backend is setup
@@ -47,7 +55,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop }) {
             }
         };
 
-        const interval = setInterval(fetchWPM, 2000);
+        const interval = setInterval(fetchWPM, 2500);
         fetchWPM();
 
         return () => {
@@ -64,7 +72,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop }) {
                 <Text style={styles.wpmText}>{wpm} WPM</Text>
                 <Text style={styles.labelText}>Recording...</Text>
             </View>
-            <Button title="Stop" onPress={onStop} color="red" />
+            <Button  style={styles.stopButton} title="Stop" onPress={onStop} />
         </Animated.View>
 
     );
@@ -78,10 +86,10 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 75,
         borderWidth: 10,
-        borderColor: 'green', 
+        borderColor: 'white', 
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#88e788', 
+        backgroundColor: '#2e6f40', 
         marginBottom: 20,
     },
     speechContainer: {
@@ -93,11 +101,22 @@ const styles = StyleSheet.create({
         height: '70%',       
         width: '100%',        
         
-        backgroundColor: '#88e788', 
+        backgroundColor: '#2e6f40', 
         
         // Center the circle inside the green box
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1, 
     },
+    wpmText: {
+        color: 'white',
+        fontFamily: 'Trebuchet MS'
+    },
+    labelText: {
+        color: 'white',
+        fontFamily: 'Trebuchet MS'
+    },
+    stopButton: {
+        color: 'white'
+    }
 });

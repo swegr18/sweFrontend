@@ -7,7 +7,7 @@ const ITEM_WIDTH = screenWidth + 1;
 const WAVE_HEIGHT = 50;
 const WAVE_WIDTH = screenWidth * 2; // Make it wider than screen to allow scrolling
 
-export default function AnimatedWave({ color = '#88e788' }){
+export default function AnimatedWave({ color = '#2e6f40' }){
     const translateX = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
