@@ -1,9 +1,7 @@
 // --- ROBUST MOCK SETUP ---
 jest.mock('expo-audio', () => ({
   AudioModule: {
-    requestRecordingPermissionsAsync: jest.fn(() => 
-      Promise.resolve({ status: 'granted' })
-    ),
+    requestRecordingPermissionsAsync: jest.fn(),
   },
   useAudioRecorder: jest.fn(() => ({
     // Make these resolve immediately
