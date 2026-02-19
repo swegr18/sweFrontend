@@ -72,7 +72,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 <Text style={styles.wpmText}>{wpm} WPM</Text>
                 <Text style={styles.labelText}>Recording...</Text>
             </View>
-            <Button  style={styles.stopButton} title="Stop" onPress={onStop} />
+            <Button  style={styles.stopButton} title="Stop" onPress={onStop} color='black'/>
         </Animated.View>
 
     );

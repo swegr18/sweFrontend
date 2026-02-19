@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     },
     popup: {
         height: "40%",
-        backgroundColor: '#ff0',
+        backgroundColor: 'green',
         alignItems: 'center',
         position: "absolute",
         top: 10,

@@ -8,6 +8,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import WpmSpedometer from './wpmSpedometer';
 import { v4 as uuidv4 } from 'uuid';
+import PostRecordScreen from './postRecordScreen';
 
 export default function RecordScreen() {
 
@@ -192,11 +193,11 @@ export default function RecordScreen() {
         
         
                 {status === 'idle' && (
-                  <Button title="Record" onPress={startRecording} />
+                  <Button title="Record" onPress={startRecording} color='green' style={styles.homeButton} />
                 )}
         
                 {status === 'nomicrophone' && (
-                  <Button title="Record" onPress={stopRecording} />
+                  <Button title="Record" onPress={stopRecording} color='green' style={styles.homeButton} />
                 )}
         
                 {status === 'nomicrophone' && (
@@ -212,16 +213,20 @@ export default function RecordScreen() {
                         onHidden={() => setStatus('finished')}
                     />
                 )}
-        
+
+                {(status === 'finished' || status === 'finishing') && (
+
+                  <PostRecordScreen/>
+                )}
                 
                 {(status === 'finished' || status === 'finishing') && (
 
                   
 
                   <View style={styles.buttonGroup}>
-                    <Button title="Save" onPress={handleReset} />
+                    <Button title="Save" onPress={handleReset} color='green'/>
                     <View style={{height: 10}} /> 
-                    <Button title="Delete" onPress={handleReset} color="red" />
+                    <Button title="Delete" onPress={handleReset} color="black" />
                   </View>
                 )}
             </> 
@@ -234,6 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
+    color: 'white'
   },
   statusText: {
     fontSize: 18,
@@ -243,6 +249,9 @@ const styles = StyleSheet.create({
   buttonGroup: {
     marginTop: 20,
     width: '80%',
+  },
+  homeButton: {
+    borderRadius: 20,
   }
 
 });
