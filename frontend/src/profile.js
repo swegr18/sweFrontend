@@ -61,9 +61,24 @@ export default function LogonPopup() {
         }
         else{
             setSignInStatus('SignedIn');
+            sendNewAccount(email, password, name);
             setPassword('');
             setConfirmPassword('');
         }
+    }
+
+    const sendNewAccount = async (pEmail, pPassword, pName) => {
+        const formData = new FormData();
+        formData.append("email_address", pEmail);
+        formData.append("first_name", pName);
+        formData.append("password", pPassword);
+    
+        const response = await fetch('http://localhost:8000/api/v1/create-account', {
+            method: 'POST',
+            body: formData,
+        });
+
+        console.log("Response to account creation: ",await response.text());
     }
 
     const emailIsValid = (emailToCheck) => {
