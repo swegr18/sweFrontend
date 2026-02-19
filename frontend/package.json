@@ -11,8 +11,10 @@
     "test:watch": "jest --watch"
   },
   "jest": {
-    "preset": "jest-expo"
-
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+    "./jest.setup.js" 
+  ]
   },
   "dependencies": {
     "expo": "~54.0.25",
@@ -24,6 +26,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-svg": "15.12.1",
     "react-native-web": "^0.21.0",
     "uuid": "^13.0.0"
   },
