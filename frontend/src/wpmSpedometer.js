@@ -19,7 +19,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 toValue: 700,
                 duration: 1000,
                 useNativeDriver: false,
-            }).start(() => onHidden());;
+            }).start(() => onHidden?.());
         }
     }, [isVisible]);
 
