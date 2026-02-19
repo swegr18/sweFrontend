@@ -56,4 +56,37 @@ jest.mock('react-native-svg', () => {
   };
 });
 
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+
+  // Override Animated.timing
+  RN.Animated.timing = (value, config) => ({
+    start: (callback) => {
+      value.setValue(config.toValue); // Instantly jump to the final value
+      if (callback) {
+        callback({ finished: true }); // Trigger the completion callback
+      }
+    },
+  });
+
+  // Override Animated.spring
+  RN.Animated.spring = (value, config) => ({
+    start: (callback) => {
+      value.setValue(config.toValue); 
+      if (callback) {
+        callback({ finished: true }); 
+      }
+    },
+  });
+
+  RN.Animated.loop = () => ({
+    start: () => {},
+    stop: () => {},
+  });
+
+  return RN;
+});
+
+
+
 // -------------------------
