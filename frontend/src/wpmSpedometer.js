@@ -55,7 +55,11 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
             }
         };
 
+<<<<<<< Updated upstream
         const interval = setInterval(fetchWPM, 2000);
+=======
+        const interval = setInterval(fetchWPM, 2500);
+>>>>>>> Stashed changes
         fetchWPM();
 
         return () => {

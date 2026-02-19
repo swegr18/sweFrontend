@@ -85,7 +85,7 @@ export default function RecordScreen() {
 
       //  reserve an index immediately (prevents duplicates if uploads overlap)
       const idx = chunkIndexRef.current++;
-      setLatestChunkIdx(idx);
+
       try {
         const formData = new FormData();
         formData.append("session_id", sessionIdRef.current);
@@ -129,7 +129,7 @@ export default function RecordScreen() {
         if (!response.ok) {
           throw new Error(`Upload failed: ${response.status} ${result}`);
         }
-
+        setLatestChunkIdx(idx);
       } catch (err) {
         console.log("Cannot Upload Chunk:", err?.message || err, err);
       }
