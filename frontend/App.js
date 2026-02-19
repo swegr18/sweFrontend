@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   container: {
     width: 360,                
     height: 640,               
-    backgroundColor: '#fff',
+    backgroundColor: '#313639',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

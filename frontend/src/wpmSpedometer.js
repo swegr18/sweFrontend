@@ -55,11 +55,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
             }
         };
 
-<<<<<<< Updated upstream
-        const interval = setInterval(fetchWPM, 2000);
-=======
         const interval = setInterval(fetchWPM, 2500);
->>>>>>> Stashed changes
         fetchWPM();
 
         return () => {
@@ -76,7 +72,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 <Text style={styles.wpmText}>{wpm} WPM</Text>
                 <Text style={styles.labelText}>Recording...</Text>
             </View>
-            <Button title="Stop" onPress={onStop} color="red" />
+            <Button  style={styles.stopButton} title="Stop" onPress={onStop} />
         </Animated.View>
 
     );
@@ -90,10 +86,10 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 75,
         borderWidth: 10,
-        borderColor: 'green', 
+        borderColor: 'white', 
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#88e788', 
+        backgroundColor: '#2e6f40', 
         marginBottom: 20,
     },
     speechContainer: {
@@ -105,11 +101,22 @@ const styles = StyleSheet.create({
         height: '70%',       
         width: '100%',        
         
-        backgroundColor: '#88e788', 
+        backgroundColor: '#2e6f40', 
         
         // Center the circle inside the green box
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1, 
     },
+    wpmText: {
+        color: 'white',
+        fontFamily: 'Trebuchet MS'
+    },
+    labelText: {
+        color: 'white',
+        fontFamily: 'Trebuchet MS'
+    },
+    stopButton: {
+        color: 'white'
+    }
 });

@@ -215,6 +215,9 @@ export default function RecordScreen() {
         
                 
                 {(status === 'finished' || status === 'finishing') && (
+
+                  
+
                   <View style={styles.buttonGroup}>
                     <Button title="Save" onPress={handleReset} />
                     <View style={{height: 10}} /> 
