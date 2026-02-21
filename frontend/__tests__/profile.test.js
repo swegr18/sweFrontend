@@ -341,3 +341,193 @@ describe('<App /> - Login Validation', () => {
     expect(await screen.findByText("Hello, Ben")).toBeTruthy();
   });
 });
+
+describe('<App /> - User Settings', () => {
+  it('settings button shows only when logged in', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeTruthy();
+
+    const logoutButton = await screen.findByRole('button', { name: /LogOut/i });
+    fireEvent.press(logoutButton);
+
+    const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
+    fireEvent.press(createAccountButton);
+
+    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
+  });
+});
+
+describe('<App /> - User Settings', () => {
+  it('settings page opens when settings button pressed', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    expect(screen.findByText("User Settings")).toBeTruthy();
+  })
+});
+
+describe('<App /> - User Settings', () => {
+  it('back button allows user to return to logged in page from settings page', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    const backButton = await screen.findByRole('button', {name: /ExitSettingsButton/i });
+    fireEvent.press(backButton);
+
+    expect(await screen.findByText("Hello, Ben")).toBeTruthy();
+  });
+})
+
+describe('<App /> - User Settings', () => {
+  it('user can change their email address to a different, valid email address', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    const newEmailField = await screen.findByPlaceholderText('New Email Address');
+    const submitButton = await screen.findByRole('button', {name: /ChangeEmailSubmit/i})
+
+    fireEvent.press(submitButton);
+    expect(await screen.findByText("Please enter an email address")).toBeTruthy();
+
+    let invalidEmails = ["testemail@gmail","testemail.gmail.com","test:email@gmail.com","test email@gmail.com","testemail@gmail.com.","testemail@gmail..com","testemail@g_mail.com","testemail@gmail.co.u"];
+    for(let i = 0; i < invalidEmails.length; i++){
+      fireEvent.changeText(newEmailField, invalidEmails[i]);
+      fireEvent.press(submitButton);
+
+      expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
+    }
+
+    fireEvent.changeText(newEmailField, "testemail@gmail.com");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("New email address cannot be the same as current")).toBeTruthy();
+
+    fireEvent.changeText(newEmailField, "testemail1@gmail.com");
+    fireEvent.press(submitButton);
+    expect(await screen.findByText("Email successfully changed")).toBeTruthy();
+  });
+});
+
+describe('<App /> - User Settings', () => {
+  it('user can change their password to a sufficiently strong one', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    const newPasswordField = await screen.findByPlaceholderText('New Password');
+    const confirmPasswordField = await screen.findByPlaceholderText('Confirm New Password');
+    const submitButton = await screen.findByRole('button', {name: /ChangePasswordSubmit/i });
+
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Please enter a password")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "Password!");
+    fireEvent.changeText(confirmPasswordField, "Password!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password must contain at least one number")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "Password12!");
+    fireEvent.changeText(confirmPasswordField, "Password12");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Passwords must match")).toBeTruthy();
+
+
+    fireEvent.changeText(newPasswordField, "password12!");
+    fireEvent.changeText(confirmPasswordField, "password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password must contain at least one upper case character")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "Password12");
+    fireEvent.changeText(confirmPasswordField, "Password12");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password must contain at least one special character")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "PASSWORD12!");
+    fireEvent.changeText(confirmPasswordField, "PASSWORD12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password must contain at least one lower case character")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "Pa2!");
+    fireEvent.changeText(confirmPasswordField, "Pa2!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password must be at least 7 characters")).toBeTruthy();
+
+    fireEvent.changeText(newPasswordField, "Password12!");
+    fireEvent.changeText(confirmPasswordField, "Password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Password successfully changed")).toBeTruthy();
+  });
+});
