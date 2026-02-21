@@ -341,3 +341,51 @@ describe('<App /> - Login Validation', () => {
     expect(await screen.findByText("Hello, Ben")).toBeTruthy();
   });
 });
+
+describe('<App /> - User Settings', () => {
+  it('settings button shows only when logged in', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeTruthy();
+
+    const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
+    fireEvent.press(createAccountButton);
+
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
+  });
+});
+
+describe('<App /> - User Settings', () => {
+  it('settings page opens when settings button pressed', async() => {
+        render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    expect(screen.findByText("User Settings")).toBeTruthy();
+  })
+});
