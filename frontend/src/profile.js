@@ -1,6 +1,7 @@
 import React, { useState } from 'react'; 
 import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { FontAwesome6, AntDesign } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function LogonPopup() {
     const [profilePopup, setProfilePopup] = useState(false);
@@ -40,6 +41,10 @@ export default function LogonPopup() {
         }
         setPassword('');
     };
+
+    const openSettings = () => {
+        setSignInStatus('Settings');
+    }
 
     const startCreateAccount = () => {
         setErrorMessage(' ');
@@ -140,7 +145,14 @@ export default function LogonPopup() {
 
             {profilePopup && (
                 <View style={styles.popup}>
-                    <Text style={styles.title}>Profile</Text>
+                    {signInStatus!=='Settings' && (
+                        <Text style={styles.title}>Profile</Text>
+                    )}
+
+                    {signInStatus==='Settings' && (
+                        <Text style={styles.title}>User Settings</Text>
+                    )}
+
                     <Pressable style={styles.closeButton}
                         onPress={closeProfile} 
                         accessibilityRole='button' 
@@ -150,12 +162,22 @@ export default function LogonPopup() {
                     </Pressable>
 
                     {signInStatus==='SignedIn' &&  (
-                        <View style={styles.spread} >
-                            <Text style={styles.subtitle}>Hello, Ben</Text>
-                            <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
-                                <Text style={styles.buttonText}>Sign Out</Text>
+                        <>
+                            <Pressable 
+                                style={styles.settingsButton}
+                                accessibilityRole='button'
+                                accessibilityLabel='SettingsButton'
+                                onPress={openSettings}
+                            >
+                                <Feather name="settings" size={24} color="white" />
                             </Pressable>
-                        </View>
+                            <View style={styles.spread} >
+                                <Text style={styles.subtitle}>Hello, Ben</Text>
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
+                                    <Text style={styles.buttonText}>Sign Out</Text>
+                                </Pressable>
+                            </View>
+                        </>
                     )}
 
                     {signInStatus==='SignedOut' && (
@@ -209,6 +231,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20,
         right: 20,
+    },
+    settingsButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10
     },
     closeButton: {
         position: 'absolute',
