@@ -373,7 +373,7 @@ describe('<App /> - User Settings', () => {
 
 describe('<App /> - User Settings', () => {
   it('settings page opens when settings button pressed', async() => {
-        render(<App />);
+    render(<App />);
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -392,3 +392,28 @@ describe('<App /> - User Settings', () => {
     expect(screen.findByText("User Settings")).toBeTruthy();
   })
 });
+
+describe('<App /> - User Settings', () => {
+  it('back button allows user to return to logged in page from settings page', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    const backButton = await screen.findByRole('button', {name: /ExitSettingsButton/i });
+    fireEvent.press(backButton);
+
+    expect(await screen.findByText("Hello, Ben")).toBeTruthy();
+  });
+})

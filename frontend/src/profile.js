@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { FontAwesome6, AntDesign } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function LogonPopup() {
     const [profilePopup, setProfilePopup] = useState(false);
@@ -44,6 +45,10 @@ export default function LogonPopup() {
 
     const openSettings = () => {
         setSignInStatus('Settings');
+    }
+    
+    const closeSettings = () => {
+        setSignInStatus('SignedIn');
     }
 
     const startCreateAccount = () => {
@@ -150,7 +155,17 @@ export default function LogonPopup() {
                     )}
 
                     {signInStatus==='Settings' && (
-                        <Text style={styles.title}>User Settings</Text>
+                        <>
+                            <Text style={styles.title}>User Settings</Text>
+                            <Pressable
+                                style={styles.backButton}
+                                accessibilityRole = 'button'
+                                accessibilityLabel = 'ExitSettingsButton'  
+                                onPress={closeSettings}  
+                            >
+                                <Ionicons name="arrow-back-sharp" size={30} color="white" />
+                            </Pressable>
+                        </>
                     )}
 
                     <Pressable style={styles.closeButton}
@@ -241,6 +256,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 10,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 8,
+        left: 8,
     },
     popup: {
         height: "40%",
