@@ -13,7 +13,10 @@ export default function LogonPopup() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const [newEmail, setNewEmail] = useState('');
+
     const [errorMessage, setErrorMessage] = useState(' ');
+    const [successMessage, setSuccessMessage] = useState('');
 
     // Open profile pop-up
     const openProfile = () => {
@@ -73,6 +76,23 @@ export default function LogonPopup() {
             setSignInStatus('SignedIn');
             setPassword('');
             setConfirmPassword('');
+        }
+    }
+
+    const changeEmail = () => {
+        if(newEmail==""){
+            setErrorMessage('Please enter an email address');
+        }
+        else if(newEmail == email){
+            setErrorMessage('New email address cannot be the same as current');
+        }
+        else if(!emailIsValid(newEmail)){
+            setErrorMessage('Please enter a valid email address');
+        }
+        else{
+            setErrorMessage('Email successfully changed');
+            setEmail(newEmail);
+            setNewEmail('');
         }
     }
 
@@ -165,6 +185,14 @@ export default function LogonPopup() {
                             >
                                 <Ionicons name="arrow-back-sharp" size={30} color="white" />
                             </Pressable>
+                            <View accessibilityLabel='ChangeEmailForm'>
+                                <Text style={styles.subtitle}>Change Email Address</Text>
+                                <TextInput value={newEmail} onChangeText={setNewEmail} style={styles.input} placeholder='New Email Address'></TextInput>
+                                <Text style={styles.errorMessage}>{errorMessage}</Text>
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='ChangeEmailSubmit' onPress={changeEmail}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
+                            </View>
                         </>
                     )}
 
@@ -280,7 +308,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 18,
         alignSelf: "center",
     },
     button: {

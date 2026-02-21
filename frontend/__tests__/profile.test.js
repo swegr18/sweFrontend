@@ -417,3 +417,47 @@ describe('<App /> - User Settings', () => {
     expect(await screen.findByText("Hello, Ben")).toBeTruthy();
   });
 })
+
+describe('<App /> - User Settings', () => {
+  it('user can change their email address to a different, valid email address', async() => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    const newEmailField = await screen.findByPlaceholderText('New Email Address');
+    const submitButton = await screen.findByRole('button', {name: /ChangeEmailSubmit/i})
+
+    fireEvent.press(submitButton);
+    expect(await screen.findByText("Please enter an email address")).toBeTruthy();
+
+    let invalidEmails = ["testemail@gmail","testemail.gmail.com","test:email@gmail.com","test email@gmail.com","testemail@gmail.com.","testemail@gmail..com","testemail@g_mail.com","testemail@gmail.co.u"];
+    for(let i = 0; i < invalidEmails.length; i++){
+      fireEvent.changeText(newEmailField, invalidEmails[i]);
+      fireEvent.press(submitButton);
+
+      expect(await screen.findByText("Please enter a valid email address")).toBeTruthy();
+    }
+
+    fireEvent.changeText(newEmailField, "testemail@gmail.com");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByLabelText("ChangeEmailForm")).toBeTruthy();
+    expect(await screen.findByText("New email address cannot be the same as current")).toBeTruthy();
+
+    fireEvent.changeText(newEmailField, "testemail1@gmail.com");
+    fireEvent.press(submitButton);
+    expect(await screen.findByText("Email successfully changed")).toBeTruthy();
+  });
+});
