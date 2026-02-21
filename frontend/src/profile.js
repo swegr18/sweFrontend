@@ -16,7 +16,8 @@ export default function LogonPopup() {
     const [newEmail, setNewEmail] = useState('');
 
     const [errorMessage, setErrorMessage] = useState(' ');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [isError, setIsError] = useState(true);
+    const [errorNumber, setErrorNumber] = useState(0);
 
     // Open profile pop-up
     const openProfile = () => {
@@ -36,6 +37,7 @@ export default function LogonPopup() {
     };
 
     const signIn = () => {
+        setIsError(true);
         if(email=="" || password==""){
             setErrorMessage('Please enter an email address and password');
         }
@@ -55,6 +57,7 @@ export default function LogonPopup() {
     }
 
     const startCreateAccount = () => {
+        setIsError(true);
         setErrorMessage(' ');
         setSignInStatus('CreatingAccount');
     };
@@ -77,9 +80,11 @@ export default function LogonPopup() {
             setPassword('');
             setConfirmPassword('');
         }
-    }
+    };
 
     const changeEmail = () => {
+        setErrorNumber(0);
+        setIsError(true);
         if(newEmail==""){
             setErrorMessage('Please enter an email address');
         }
@@ -90,11 +95,35 @@ export default function LogonPopup() {
             setErrorMessage('Please enter a valid email address');
         }
         else{
+            setIsError(false);
             setErrorMessage('Email successfully changed');
             setEmail(newEmail);
             setNewEmail('');
         }
-    }
+    };
+
+    const changePassword = () => {
+        setErrorNumber(1);
+        setIsError(true);
+        if(password == ""){
+            setErrorMessage('Please enter a password');
+        }
+        else if(password != confirmPassword){
+            setErrorMessage('Passwords must match');
+        }
+        else{
+            let msg = passwordStrength(password);
+            if(msg != ""){
+                setErrorMessage(msg);
+            }
+            else{
+                setIsError(false);
+                setErrorMessage('Password successfully changed')
+            }
+        }
+        setPassword('');
+        setConfirmPassword('');
+    };
 
     const emailIsValid = (emailToCheck) => {
         let splitEmail = emailToCheck.split("@");
@@ -128,7 +157,7 @@ export default function LogonPopup() {
             return false;
         }
         return true;
-    }
+    };
 
     const passwordStrength = (passwordToCheck) => {
         if(passwordToCheck.length < 7){
@@ -152,7 +181,7 @@ export default function LogonPopup() {
         }
 
         return "";
-    }
+    };
 
     return (
 
@@ -185,11 +214,30 @@ export default function LogonPopup() {
                             >
                                 <Ionicons name="arrow-back-sharp" size={30} color="white" />
                             </Pressable>
-                            <View accessibilityLabel='ChangeEmailForm'>
+                            <View>
                                 <Text style={styles.subtitle}>Change Email Address</Text>
                                 <TextInput value={newEmail} onChangeText={setNewEmail} style={styles.input} placeholder='New Email Address'></TextInput>
-                                <Text style={styles.errorMessage}>{errorMessage}</Text>
+                                {errorNumber === 0 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
+                                )}
+                                {errorNumber !== 0 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}> </Text>
+                                )}
                                 <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='ChangeEmailSubmit' onPress={changeEmail}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
+                            </View>
+                                <View>
+                                <Text style={styles.subtitle}>Change Password</Text>
+                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='New Password'></TextInput>
+                                <TextInput value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
+                                {errorNumber === 1 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
+                                )}
+                                {errorNumber !== 1 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}> </Text>
+                                )}
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='ChangePasswordSubmit' onPress={changePassword}>
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
                             </View>
@@ -335,6 +383,11 @@ const styles = StyleSheet.create({
     },
     errorMessage:{
         color: "#ff0000",
+        alignSelf: 'center',
+        fontSize: 13
+    },
+    successMessage:{
+        color: "#6fff79",
         alignSelf: 'center',
         fontSize: 13
     },
