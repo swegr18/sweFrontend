@@ -189,8 +189,9 @@ export default function RecordScreen() {
    return (
             <> 
         
-                <Text style={styles.title}>Record Speech</Text>
-        
+                {(status === 'idle' || status === 'recording' || status === 'nomicrophone') && (
+                  <Text style={styles.title}>Record Speech</Text>                
+                )}
         
                 {status === 'idle' && (
                   <Button title="Record" onPress={startRecording} color='green' style={styles.homeButton} />
@@ -216,19 +217,9 @@ export default function RecordScreen() {
 
                 {(status === 'finished' || status === 'finishing') && (
 
-                  <PostRecordScreen/>
+                  <PostRecordScreen handleReset={handleReset}/>
                 )}
                 
-                {(status === 'finished' || status === 'finishing') && (
-
-                  
-
-                  <View style={styles.buttonGroup}>
-                    <Button title="Save" onPress={handleReset} color='green'/>
-                    <View style={{height: 10}} /> 
-                    <Button title="Delete" onPress={handleReset} color="black" />
-                  </View>
-                )}
             </> 
    );
 }
@@ -239,7 +230,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
+    fontFamily: 'Trebuchet MS'
   },
   statusText: {
     fontSize: 18,
