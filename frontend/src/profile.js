@@ -229,8 +229,8 @@ export default function LogonPopup() {
                             </View>
                                 <View>
                                 <Text style={styles.subtitle}>Change Password</Text>
-                                <TextInput value={password} onChangeText={setPassword} style={styles.input} placeholder='New Password'></TextInput>
-                                <TextInput value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
+                                <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='New Password'></TextInput>
+                                <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
                                 {errorNumber === 1 && (
                                     <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
                                 )}
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
         left: 8,
     },
     popup: {
-        height: "40%",
+        height: "43%",
         backgroundColor: 'green',
         alignItems: 'center',
         position: "absolute",
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        marginBottom: 10,
+        marginBottom: 2,
         fontWeight: 'bold',
     },
     subtitle: {
