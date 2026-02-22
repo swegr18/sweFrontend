@@ -31,22 +31,33 @@ export default function PostRecordScreen({handleReset}){
                   {error ? 
                   <>
                     <Text style={styles.infoText}>{error}</Text>
-                    <StatCard title="Duration" value={"0"}/>
-                    <StatCard title="Average Volume" value={"0"}/>
-                    <StatCard title="Average Pitch" value={"0"}/>
-                    <StatCard title="WPM" value={"0"}/>
+                    <View style={styles.cardContainer}>
+                      <StatCard title="Duration" value={"0"}/>
+                      <StatCard title="Volume" value={"0"}/>
+                      <StatCard title="Pitch" value={"0"}/>
+                      <StatCard title="WPM" value={"0"}/>
+                    </View>
                   </>
                   : null}
             
                   {!metrics ? (
-                   <Text style={styles.infoText}>Loading...</Text>
+                    <>
+                   <Text style={styles.loadingText}>Loading...</Text>
+                   <View style={styles.cardContainer}>
+                      <StatCard title="Duration" value={"0"}/>
+                      <StatCard title="Volume" value={"0"}/>
+                      <StatCard title="Pitch" value={"0"}/>
+                      <StatCard title="WPM" value={"0"}/>
+                    </View>
+
+                   </>
                   ) : (
                     <View>
 
-                    <StatCard title="Duration" value={String(metrics.duration)}/>
-                    <StatCard title="Average Volume" value={String(metrics.avg_volume_dbfs)}/>
-                    <StatCard title="Average Pitch" value={String(metrics.avg_pitch_hz)}/>
-                    <StatCard title="WPM" value={String(metrics.wpm)}/>
+                      <StatCard title="Duration" value={String(metrics.duration)}/>
+                      <StatCard title="Volume" value={String(metrics.avg_volume_dbfs)}/>
+                      <StatCard title="Pitch" value={String(metrics.avg_pitch_hz)}/>
+                      <StatCard title="WPM" value={String(metrics.wpm)}/>
 
                     </View>
                   )}
@@ -63,23 +74,49 @@ export default function PostRecordScreen({handleReset}){
 
 const styles = StyleSheet.create({
     container: {
-        height: '50%',
+        height: '70%',
         width: '70%',
         backgroundColor: '#313639',
         alignItems: 'center',
         justifyContent: 'center',
+        borderColor: '#2e6f40',
+        borderWidth: 3,
+        borderRadius: 12,
     },
     buttonGroup: {
-    marginTop: 20,
-    width: '80%',
-  },
-  title: {
-    color: 'white',
-    fontFamily: 'Trebuchet MS'
-  },
-  infoText: {
-    color: 'white',
-    fontFamily: 'Trebuchet MS'
-  }
+      position: 'absolute',
+      bottom: 30,
+      marginTop: 20,
+      width: '80%',
+    },
+    title: {
+      position: 'absolute',
+      top: 10,
+      color: 'white',
+      fontFamily: 'Trebuchet MS'
+    },
+    infoText: {
+      position: 'absolute',
+      top: 30,
+      color: 'white',
+      fontFamily: 'Trebuchet MS',
+      color: 'red'
+    },
+    loadingText: {
+      color: 'white',
+      fontFamily: 'Trebuchet MS',
+      position: 'absolute',
+      top: 50,
+    },
+    cardContainer: {
+      position: 'absolute',
+      top: 80,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      width: '100%', 
+      padding: 20, 
+      gap: 5, 
+    },
 
 });
