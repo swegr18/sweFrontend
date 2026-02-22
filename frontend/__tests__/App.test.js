@@ -130,9 +130,15 @@ describe('<App /> - Permissions and Errors', () => {
 });
 
 
+
 // Check save and delete buttons appear after stop button pressed 
 describe('<App /> - Recording Page', () => {
   it('should show Save/Delete buttons after recording', async () => {
+
+    // fetching statistics from backend post speech
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn(() => new Promise(() => {}));
+
     render(<App />);
     AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted'});
     const recordButton = await screen.findByRole('button', { name: /Record/i });
@@ -146,9 +152,11 @@ describe('<App /> - Recording Page', () => {
     expect(deleteButton).toBeTruthy();
 
     // Need this at the end of every test!!!
-      fireEvent.press(stopButton);
-
+    fireEvent.press(stopButton);
+    
+    global.fetch = originalFetch;
   });
+  
 });
 
 

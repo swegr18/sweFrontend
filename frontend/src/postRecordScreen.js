@@ -19,7 +19,6 @@ export default function PostRecordScreen({handleReset}){
           })
           .then(data => setMetrics(data))
           .catch(err => {
-            console.log("metrics fetch error:", err);
             setError(String(err.message || err));
           });
       }, []);
@@ -29,18 +28,21 @@ export default function PostRecordScreen({handleReset}){
         <View style={styles.container}>
             <Text style={styles.title}>Speech Statistics</Text>
             
-                  {error ? <Text style={styles.infoText}>{error}</Text> : null}
+                  {error ? 
+                  <>
+                    <Text style={styles.infoText}>{error}</Text>
+                    <StatCard title="Duration" value={"0"}/>
+                    <StatCard title="Average Volume" value={"0"}/>
+                    <StatCard title="Average Pitch" value={"0"}/>
+                    <StatCard title="WPM" value={"0"}/>
+                  </>
+                  : null}
             
                   {!metrics ? (
                    <Text style={styles.infoText}>Loading...</Text>
                   ) : (
                     <View>
 
-                      <Text style={styles.infoText}>Duration: {String(metrics.duration)} s</Text>
-                      <Text style={styles.infoText}>Average Volume: {String(metrics.avg_volume_dbfs)} dBFS</Text>
-                      <Text style={styles.infoText}>Average Pitch: {String(metrics.avg_pitch_hz)} Hz</Text>
-                      <Text style={styles.infoText}>WPM: {String(metrics.wpm)}</Text>
-                    
                     <StatCard title="Duration" value={String(metrics.duration)}/>
                     <StatCard title="Average Volume" value={String(metrics.avg_volume_dbfs)}/>
                     <StatCard title="Average Pitch" value={String(metrics.avg_pitch_hz)}/>
