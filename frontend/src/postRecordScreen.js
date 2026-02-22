@@ -52,7 +52,7 @@ export default function PostRecordScreen({handleReset}){
 
                    </>
                   ) : (
-                    <View>
+                    <View style={styles.cardContainer}>
 
                       <StatCard title="Duration" value={String(metrics.duration)}/>
                       <StatCard title="Volume" value={String(metrics.avg_volume_dbfs)}/>
