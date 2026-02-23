@@ -20,7 +20,7 @@ export default function RecordScreen() {
     const sessionIdRef = useRef(null);
     const chunkIndexRef = useRef(0);
     const [latestChunkIdx, setLatestChunkIdx] = useState(-1);
-  
+    const [sessionId, setSessionId] = useState(null);
     // Audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     
@@ -47,7 +47,9 @@ export default function RecordScreen() {
             return;
           }
         }
-        sessionIdRef.current = uuidv4();
+        const sid = uuidv4();
+        sessionIdRef.current = sid;
+        setSessionId(sid);
         chunkIndexRef.current = 0;
         await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
         audioRecorder.record();
@@ -57,30 +59,14 @@ export default function RecordScreen() {
         // Set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
-        }, 2000);
+        }, 5000);
       
       } catch (error) {
       console.error("Failed to start recording:", error);
       }
     }
 
-    const fetchLiveWpm = async (idx) => {
-      try {
-        const url = `http://localhost:8000/api/v1/live-wpm?session_id=${sessionIdRef.current}&chunk_index=${idx}`;
-        const res = await fetch(url);
-        const json = await res.json();
-        if (res.ok && typeof json.wpm === 'number') {
-          setLiveWpm(json.wpm);
-        } else {
-          setLiveWpm(0);
-          console.log("Live WPM fetch failed:", res.status, json);
-        }
-      } catch (e) {
-        setLiveWpm(0);
-        console.log("Cannot fetch live WPM:", e?.message || e);
-      }
-    };
-
+    
     const uploadChunk = async (uri, isFinal = false) => {
       if (!uri) return;
 
@@ -207,8 +193,7 @@ export default function RecordScreen() {
 
                 {(status === 'recording' || status === 'finishing') && (
                     <WpmSpedometer
-                        sessionId={sessionIdRef.current}
-                        chunkIndex={latestChunkIdx}
+                        sessionId={sessionId}
                         onStop={stopRecording}
                         isVisible={status === 'recording'}
                         onHidden={() => setStatus('finished')}
