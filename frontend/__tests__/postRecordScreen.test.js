@@ -65,4 +65,23 @@ describe('Post Recording Screen Statistics', () => {
 
 
   })
+
+    test('Should display Naming input', async () => {
+      const mockMetrics = {
+      duration: 15.5,
+      avg_volume_dbfs: -42.1,
+      avg_pitch_hz: 210,
+      wpm: 135,
+      };
+
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockMetrics),
+      });
+      const { findByTestId } = render(<PostRecordScreen handleReset={mockHandleReset} />);
+
+      const nameButton = await findByTestId('nameButton');
+      expect(nameButton).toBeTruthy();
+    }); 
+
 });

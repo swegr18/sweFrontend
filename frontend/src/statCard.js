@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function StatCard({ title, value}) {
+export default function StatCard({ title, value, style}) {
   
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <Text style={styles.title}>{title}</Text>
       
       <View style={styles.valueContainer}>
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     borderColor: '#2e6f40',
     borderWidth: 3,
     width: 100,
+    height:70,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -38,9 +39,12 @@ const styles = StyleSheet.create({
 
 },
   valueContainer: {
-    marginTop: 5,
+    marginTop: 0,
     flexDirection: 'row',
     alignItems: 'baseline',
+    width: '100%',
+    justifyContent: 'flex-end'
+
   },
   value: {
     fontSize: 36,
