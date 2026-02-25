@@ -68,14 +68,14 @@ export default function LogonPopup() {
     }
 
     const sendNewAccount = async (pEmail, pPassword, pName) => {
-        const formData = new FormData();
-        formData.append("email_address", pEmail);
-        formData.append("first_name", pName);
-        formData.append("password", pPassword);
-    
-        const response = await fetch('http://localhost:8000/api/v1/create-account', {
-            method: 'POST',
-            body: formData,
+        const response = await fetch("http://localhost:8000/api/v1/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: pEmail,
+                username: pName,
+                password: pPassword,
+            }),
         });
 
         console.log("Response to account creation: ",await response.text());
