@@ -394,7 +394,7 @@ describe('<App /> - User Settings', () => {
     const passwordField = await screen.findByPlaceholderText('Password');
     const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
 
-    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
+    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
 
     fireEvent.changeText(emailField, "testemail@gmail.com");
     fireEvent.changeText(passwordField, "password12!");
@@ -408,7 +408,7 @@ describe('<App /> - User Settings', () => {
     const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
     fireEvent.press(createAccountButton);
 
-    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
+    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
   });
 });
 
