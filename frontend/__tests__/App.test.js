@@ -168,3 +168,31 @@ describe('<App /> - Recording Page', () => {
     expect(profileButton).toBeTruthy();
   });
 });
+
+describe('<App /> - Recording Page', () => {
+  it('user cannot open stats page while recording', async () => {
+    render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted'});
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
+    fireEvent.press(recordButton);
+
+    const statsButton = await screen.findByRole('button', {name: /statsButton/i});
+    fireEvent.press(statsButton);
+
+    expect(screen.queryByText('Stats')).toBeNull();
+  });
+});
+
+describe('<App /> - Recording Page', () => {
+  it('user cannot open profile page while recording', async () => {
+    render(<App />);
+    AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted'});
+    const recordButton = await screen.findByRole('button', { name: /Record/i });
+    fireEvent.press(recordButton);
+
+    const profileButton = await screen.findByRole('button', {name: /ProfileButton/i});
+    fireEvent.press(profileButton);
+
+    expect(screen.queryByText('Profile')).toBeNull();
+  });
+});
