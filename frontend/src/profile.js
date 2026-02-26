@@ -376,6 +376,7 @@ export default function LogonPopup() {
                             </View>
                         </View>
                     )}
+                </View>
             )}
         </>
     );
