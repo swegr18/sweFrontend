@@ -23,9 +23,7 @@ export default function LogonPopup({ isRecording }) {
 
     // Open profile pop-up
     const openProfile = () => {
-        if(!isRecording){
-            setProfilePopup(true);
-        }
+        setProfilePopup(true);
     };
 
     // Close profile pop-up
@@ -258,11 +256,11 @@ export default function LogonPopup({ isRecording }) {
             {!profilePopup && (
                 <Pressable 
                     style={styles.profileButton} 
-                    onPress={openProfile} 
+                    onPress={isRecording ? null : openProfile} 
                     accessibilityRole='button' 
                     accessibilityLabel='ProfileButton'
                 >
-                    <FontAwesome6 name="circle-user" size={24} color="white" />
+                    <FontAwesome6 name="circle-user" size={24} color={isRecording ? "grey" : "white"} />
                 </Pressable>
             )}
 

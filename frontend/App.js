@@ -11,11 +11,7 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState('main');
 
   // funtions to give to other pages
-  const goToDetail = () => {
-    if(status != "recording"){
-      setActiveScreen('stats');
-    }
-  }
+  const goToDetail = () => setActiveScreen('stats');
   const goBack = () => setActiveScreen('main');
 
 
@@ -25,7 +21,7 @@ export default function App() {
 
         {activeScreen === 'main' ? (
           <>
-            <StatsButton onShowNewScreen={goToDetail} />
+            <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} />
             <LogonPopup isRecording={status=="recording"}/>
             <RecordScreen status={status} setStatus={setStatus}/>
           </>
