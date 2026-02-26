@@ -63,7 +63,7 @@ export default function LogonPopup() {
         });
         let resp = await response.json();
         return resp.username;
-    }
+    };
 
     const initialNameSet = async (at) => {
         const response = await fetch("http://localhost:8000/api/v1/auth/me", {
@@ -74,14 +74,15 @@ export default function LogonPopup() {
         });
         let resp = await response.json();
         setName(resp.username);
+    };
         
     const openSettings = () => {
         setSignInStatus('Settings');
-    }
+    };
     
     const closeSettings = () => {
         setSignInStatus('SignedIn');
-    }
+    };
 
     const startCreateAccount = () => {
         setIsError(true);
