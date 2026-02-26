@@ -180,6 +180,9 @@ describe('<App /> - Recording Page', () => {
     fireEvent.press(statsButton);
 
     expect(screen.queryByText('Stats')).toBeNull();
+
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
+    fireEvent.press(stopButton);
   });
 });
 
@@ -194,5 +197,8 @@ describe('<App /> - Recording Page', () => {
     fireEvent.press(profileButton);
 
     expect(screen.queryByText('Profile')).toBeNull();
+
+    const stopButton = await screen.findByRole('button', { name: /Stop/i });
+    fireEvent.press(stopButton);
   });
 });
