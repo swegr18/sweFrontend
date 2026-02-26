@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput } from 'react-native';
 import StatCard from './statCard.js'
 export default function PostRecordScreen({handleReset}){
     
 
-    const [metrics, setMetrics] = useState(null);
+      const [metrics, setMetrics] = useState(null);
       const [error, setError] = useState("");
+      const [speechName, setSpeechName] = useState(null);
     
       useEffect(() => {
         fetch("http://localhost:8000/api/v1/metrics/latest")
@@ -22,6 +23,25 @@ export default function PostRecordScreen({handleReset}){
             setError(String(err.message || err));
           });
       }, []);
+      
+
+      const submitPostToBackend = async () => {
+        /// some code here
+        console.log("send name to backend")
+      }
+      const handleSave = async () => {
+        try {
+          await submitPostToBackend(); 
+
+          handleReset(); 
+
+        } catch (error) { 
+          // failed to send details
+          console.error("Error submitting post: ", error);
+          alert("There was an issue saving to the server.");
+          handleReset();
+        }
+      };
 
 
     return (
@@ -32,10 +52,11 @@ export default function PostRecordScreen({handleReset}){
                   <>
                     <Text style={styles.infoText}>{error}</Text>
                     <View style={styles.cardContainer}>
-                      <StatCard title="Duration" value={"0"}/>
-                      <StatCard title="Volume" value={"0"}/>
-                      <StatCard title="Pitch" value={"0"}/>
-                      <StatCard title="WPM" value={"0"}/>
+                      <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '200'}}/>
+                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="Pitch" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
+
                     </View>
                   </>
                   : null}
@@ -44,26 +65,30 @@ export default function PostRecordScreen({handleReset}){
                     <>
                    <Text style={styles.loadingText}>Loading...</Text>
                    <View style={styles.cardContainer}>
-                      <StatCard title="Duration" value={"0"}/>
-                      <StatCard title="Volume" value={"0"}/>
-                      <StatCard title="Pitch" value={"0"}/>
-                      <StatCard title="WPM" value={"0"}/>
+                      <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="Pitch" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
+
                     </View>
 
                    </>
                   ) : (
                     <View style={styles.cardContainer}>
 
-                      <StatCard title="Duration" value={String(metrics.duration)}/>
-                      <StatCard title="Volume" value={String(metrics.avg_volume_dbfs)}/>
-                      <StatCard title="Pitch" value={String(metrics.avg_pitch_hz)}/>
-                      <StatCard title="WPM" value={String(metrics.wpm)}/>
+                      <StatCard title="Duration" value={Number(metrics.duration).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Volume" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{}}/>
+                      <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{}}/>
+                      <StatCard title="Pitch" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%'}}/>
+
 
                     </View>
                   )}
-
+                  
             <View style={styles.buttonGroup}>
-              <Button title="Save" onPress={handleReset} color='green'/>
+              <TextInput testID="nameButton" style={styles.speechInput}value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
+              <View style={{height: 10}} /> 
+              <Button title="Save" onPress={handleSave} color='green'/>
               <View style={{height: 10}} /> 
               <Button title="Delete" onPress={handleReset} color="black" />
             </View>
@@ -74,7 +99,7 @@ export default function PostRecordScreen({handleReset}){
 
 const styles = StyleSheet.create({
     container: {
-        height: '70%',
+        height: '75%',
         width: '70%',
         backgroundColor: '#313639',
         alignItems: 'center',
@@ -86,7 +111,7 @@ const styles = StyleSheet.create({
     buttonGroup: {
       position: 'absolute',
       bottom: 30,
-      marginTop: 20,
+      marginTop: 30,
       width: '80%',
     },
     title: {
@@ -110,7 +135,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
       position: 'absolute',
-      top: 80,
+      top: 70,
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'space-between',
@@ -118,5 +143,12 @@ const styles = StyleSheet.create({
       padding: 20, 
       gap: 5, 
     },
+    speechInput: {
+      borderColor: 'green',
+      borderWidth: 2,
+      backgroundColor: 'white',
+      height: 34,
+      fontFamily: 'Trebuchet MS',
+    }
 
 });
