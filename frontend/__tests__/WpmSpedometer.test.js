@@ -27,9 +27,14 @@ describe('WPM Spedometer -', () => {
   });
 
 
+
+
   const defaultProps = {
-      sessionId: 'test-session-123',
-      chunkIndex: 1
+  sessionId: 'test-session-123', // MUST be included so it doesn't return early
+  chunkIndex: 0,
+  isVisible: true,
+  onStop: jest.fn(),
+  onHidden: jest.fn(),
   };
 
 
@@ -51,11 +56,11 @@ describe('WPM Spedometer -', () => {
     // Mock success response
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ wpm: 120 }),
+      json: () => Promise.resolve({ ready: true, running_wpm: 120 }),
     });
 
     const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
-
+    
     await waitFor(() => {
       expect(getByText(/120/)).toBeTruthy();
     });
@@ -66,7 +71,7 @@ describe('WPM Spedometer -', () => {
     // First value
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ wpm: 120 }),
+      json: () => Promise.resolve({ ready: true, running_wpm: 120 }),
     });
 
     const { getByText } = render(<WpmSpedometer {...defaultProps} />);
@@ -74,15 +79,15 @@ describe('WPM Spedometer -', () => {
     await waitFor(() => expect(getByText(/120/)).toBeTruthy());
 
      // Second value 
-    fetch.mockResolvedValue({
+    fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ wpm: 155 }),
+      json: () => Promise.resolve({ ready: true, running_wpm: 155 }),
     });
 
     
     // advance 3 seconds into future
     act(() => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(5000);
     });
     
     await waitFor(() => {

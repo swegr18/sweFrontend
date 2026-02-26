@@ -1,6 +1,8 @@
 import React, { useState } from 'react'; 
 import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { FontAwesome6, AntDesign } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function LogonPopup() {
     const [profilePopup, setProfilePopup] = useState(false);
@@ -11,7 +13,11 @@ export default function LogonPopup() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const [newEmail, setNewEmail] = useState('');
+
     const [errorMessage, setErrorMessage] = useState(' ');
+    const [isError, setIsError] = useState(true);
+    const [errorNumber, setErrorNumber] = useState(0);
 
     const [accessToken, setAccessToken] = useState(null);
 
@@ -33,7 +39,8 @@ export default function LogonPopup() {
         setSignInStatus('SignedOut');
     };
 
-    const signIn = async () => {
+    const signIn = () => {
+        setIsError(true);
         if(email=="" || password==""){
             setErrorMessage('Please enter an email address and password');
         }
@@ -67,9 +74,16 @@ export default function LogonPopup() {
         });
         let resp = await response.json();
         setName(resp.username);
+    const openSettings = () => {
+        setSignInStatus('Settings');
+    }
+    
+    const closeSettings = () => {
+        setSignInStatus('SignedIn');
     }
 
     const startCreateAccount = () => {
+        setIsError(true);
         setErrorMessage(' ');
         setSignInStatus('CreatingAccount');
     };
@@ -95,7 +109,50 @@ export default function LogonPopup() {
             setPassword('');
             setConfirmPassword('');
         }
-    }
+    };
+
+    const changeEmail = () => {
+        setErrorNumber(0);
+        setIsError(true);
+        if(newEmail==""){
+            setErrorMessage('Please enter an email address');
+        }
+        else if(newEmail == email){
+            setErrorMessage('New email address cannot be the same as current');
+        }
+        else if(!emailIsValid(newEmail)){
+            setErrorMessage('Please enter a valid email address');
+        }
+        else{
+            setIsError(false);
+            setErrorMessage('Email successfully changed');
+            setEmail(newEmail);
+            setNewEmail('');
+        }
+    };
+
+    const changePassword = () => {
+        setErrorNumber(1);
+        setIsError(true);
+        if(password == ""){
+            setErrorMessage('Please enter a password');
+        }
+        else if(password != confirmPassword){
+            setErrorMessage('Passwords must match');
+        }
+        else{
+            let msg = passwordStrength(password);
+            if(msg != ""){
+                setErrorMessage(msg);
+            }
+            else{
+                setIsError(false);
+                setErrorMessage('Password successfully changed')
+            }
+        }
+        setPassword('');
+        setConfirmPassword('');
+    };
 
     const sendNewAccount = async (pEmail, pPassword, pName) => {
         const response = await fetch("http://localhost:8000/api/v1/auth/register", {
@@ -165,7 +222,7 @@ export default function LogonPopup() {
             return false;
         }
         return true;
-    }
+    };
 
     const passwordStrength = (passwordToCheck) => {
         if(passwordToCheck.length < 7){
@@ -189,7 +246,7 @@ export default function LogonPopup() {
         }
 
         return "";
-    }
+    };
 
     return (
 
@@ -207,7 +264,51 @@ export default function LogonPopup() {
 
             {profilePopup && (
                 <View style={styles.popup}>
-                    <Text style={styles.title}>Profile</Text>
+                    {signInStatus!=='Settings' && (
+                        <Text style={styles.title}>Profile</Text>
+                    )}
+
+                    {signInStatus==='Settings' && (
+                        <>
+                            <Text style={styles.title}>User Settings</Text>
+                            <Pressable
+                                style={styles.backButton}
+                                accessibilityRole = 'button'
+                                accessibilityLabel = 'ExitSettingsButton'  
+                                onPress={closeSettings}  
+                            >
+                                <Ionicons name="arrow-back-sharp" size={30} color="white" />
+                            </Pressable>
+                            <View>
+                                <Text style={styles.subtitle}>Change Email Address</Text>
+                                <TextInput value={newEmail} onChangeText={setNewEmail} style={styles.input} placeholder='New Email Address'></TextInput>
+                                {errorNumber === 0 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
+                                )}
+                                {errorNumber !== 0 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}> </Text>
+                                )}
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='ChangeEmailSubmit' onPress={changeEmail}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
+                            </View>
+                                <View>
+                                <Text style={styles.subtitle}>Change Password</Text>
+                                <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='New Password'></TextInput>
+                                <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
+                                {errorNumber === 1 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
+                                )}
+                                {errorNumber !== 1 && (
+                                    <Text style={isError ? styles.errorMessage : styles.successMessage}> </Text>
+                                )}
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='ChangePasswordSubmit' onPress={changePassword}>
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
+                            </View>
+                        </>
+                    )}
+
                     <Pressable style={styles.closeButton}
                         onPress={closeProfile} 
                         accessibilityRole='button' 
@@ -221,8 +322,16 @@ export default function LogonPopup() {
                             <Text style={styles.subtitle}>Hello, {name}</Text>
                             <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
                                 <Text style={styles.buttonText}>Sign Out</Text>
+                        <>
+                            <Pressable 
+                                style={styles.settingsButton}
+                                accessibilityRole='button'
+                                accessibilityLabel='SettingsButton'
+                                onPress={openSettings}
+                            >
+                                <Feather name="settings" size={24} color="white" />
                             </Pressable>
-                        </View>
+                        </>
                     )}
 
                     {signInStatus==='SignedOut' && (
@@ -277,14 +386,24 @@ const styles = StyleSheet.create({
         top: 20,
         right: 20,
     },
+    settingsButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10
+    },
     closeButton: {
         position: 'absolute',
         top: 10,
         right: 10,
     },
+    backButton: {
+        position: 'absolute',
+        top: 8,
+        left: 8,
+    },
     popup: {
-        height: "40%",
-        backgroundColor: '#ff0',
+        height: "43%",
+        backgroundColor: 'green',
         alignItems: 'center',
         position: "absolute",
         top: 10,
@@ -296,11 +415,11 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        marginBottom: 10,
+        marginBottom: 2,
         fontWeight: 'bold',
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 18,
         alignSelf: "center",
     },
     button: {
@@ -327,6 +446,11 @@ const styles = StyleSheet.create({
     },
     errorMessage:{
         color: "#ff0000",
+        alignSelf: 'center',
+        fontSize: 13
+    },
+    successMessage:{
+        color: "#6fff79",
         alignSelf: 'center',
         fontSize: 13
     },

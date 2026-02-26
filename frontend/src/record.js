@@ -8,6 +8,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import WpmSpedometer from './wpmSpedometer';
 import { v4 as uuidv4 } from 'uuid';
+import PostRecordScreen from './postRecordScreen';
 
 export default function RecordScreen() {
 
@@ -19,7 +20,7 @@ export default function RecordScreen() {
     const sessionIdRef = useRef(null);
     const chunkIndexRef = useRef(0);
     const [latestChunkIdx, setLatestChunkIdx] = useState(-1);
-  
+    const [sessionId, setSessionId] = useState(null);
     // Audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     
@@ -46,7 +47,9 @@ export default function RecordScreen() {
             return;
           }
         }
-        sessionIdRef.current = uuidv4();
+        const sid = uuidv4();
+        sessionIdRef.current = sid;
+        setSessionId(sid);
         chunkIndexRef.current = 0;
         await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
         audioRecorder.record();
@@ -56,30 +59,14 @@ export default function RecordScreen() {
         // Set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
-        }, 2000);
+        }, 5000);
       
       } catch (error) {
       console.error("Failed to start recording:", error);
       }
     }
 
-    const fetchLiveWpm = async (idx) => {
-      try {
-        const url = `http://localhost:8000/api/v1/live-wpm?session_id=${sessionIdRef.current}&chunk_index=${idx}`;
-        const res = await fetch(url);
-        const json = await res.json();
-        if (res.ok && typeof json.wpm === 'number') {
-          setLiveWpm(json.wpm);
-        } else {
-          setLiveWpm(0);
-          console.log("Live WPM fetch failed:", res.status, json);
-        }
-      } catch (e) {
-        setLiveWpm(0);
-        console.log("Cannot fetch live WPM:", e?.message || e);
-      }
-    };
-
+    
     const uploadChunk = async (uri, isFinal = false) => {
       if (!uri) return;
 
@@ -188,15 +175,16 @@ export default function RecordScreen() {
    return (
             <> 
         
-                <Text style={styles.title}>Record Speech</Text>
-        
+                {(status === 'idle' || status === 'recording' || status === 'nomicrophone') && (
+                  <Text style={styles.title}>Record Speech</Text>                
+                )}
         
                 {status === 'idle' && (
-                  <Button title="Record" onPress={startRecording} />
+                  <Button title="Record" onPress={startRecording} color='green' style={styles.homeButton} />
                 )}
         
                 {status === 'nomicrophone' && (
-                  <Button title="Record" onPress={stopRecording} />
+                  <Button title="Record" onPress={stopRecording} color='green' style={styles.homeButton} />
                 )}
         
                 {status === 'nomicrophone' && (
@@ -205,25 +193,18 @@ export default function RecordScreen() {
 
                 {(status === 'recording' || status === 'finishing') && (
                     <WpmSpedometer
-                        sessionId={sessionIdRef.current}
-                        chunkIndex={latestChunkIdx}
+                        sessionId={sessionId}
                         onStop={stopRecording}
                         isVisible={status === 'recording'}
                         onHidden={() => setStatus('finished')}
                     />
                 )}
-        
-                
+
                 {(status === 'finished' || status === 'finishing') && (
 
-                  
-
-                  <View style={styles.buttonGroup}>
-                    <Button title="Save" onPress={handleReset} />
-                    <View style={{height: 10}} /> 
-                    <Button title="Delete" onPress={handleReset} color="red" />
-                  </View>
+                  <PostRecordScreen handleReset={handleReset}/>
                 )}
+                
             </> 
    );
 }
@@ -234,6 +215,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
+    color: 'white',
+    fontFamily: 'Trebuchet MS'
   },
   statusText: {
     fontSize: 18,
@@ -243,6 +226,9 @@ const styles = StyleSheet.create({
   buttonGroup: {
     marginTop: 20,
     width: '80%',
+  },
+  homeButton: {
+    borderRadius: 20,
   }
 
 });

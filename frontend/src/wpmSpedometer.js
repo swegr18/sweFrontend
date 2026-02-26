@@ -33,31 +33,30 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
         const fetchWPM = async () => {
             try {
                 // Don't fetch until we have a session and at least one chunk index
-                if (!sessionId || chunkIndex == null || chunkIndex < 0) {
+                if (!sessionId) {
                     return;
                 }
 
-                const url = `http://127.0.0.1:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}&chunk_index=${encodeURIComponent(String(chunkIndex))}`;
+                const url = `http://127.0.0.1:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}`;
                 const response = await fetch(url);
                 const data = await response.json();
-
-                if (isActive && response.ok && data && data.wpm != null) {
-                    setWpm(data.wpm);
-                }
-            } catch (err) {
-
+                if (!isActive) return;
+                if (response.ok && data?.ready && data?.running_wpm != null) {
+                    console.log("running_wpm");
+                    setWpm(data.running_wpm);
+                 }
+            }   
+            catch (err) {
                 if (isActive) {
-                //console.error("Cannot fetch WPM - deault set to 0");
-                setWpm(0)
+                //console.error("Cannot fetch WPM ",err);
+                setWpm(0);
                 }
-
-
             }
         };
 
-        const interval = setInterval(fetchWPM, 2500);
+        const interval = setInterval(fetchWPM, 5000);
         fetchWPM();
-
+        
         return () => {
             isActive = false;
             clearInterval(interval);
@@ -72,7 +71,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 <Text style={styles.wpmText}>{wpm} WPM</Text>
                 <Text style={styles.labelText}>Recording...</Text>
             </View>
-            <Button  style={styles.stopButton} title="Stop" onPress={onStop} />
+            <Button  style={styles.stopButton} title="Stop" onPress={onStop} color='black'/>
         </Animated.View>
 
     );
