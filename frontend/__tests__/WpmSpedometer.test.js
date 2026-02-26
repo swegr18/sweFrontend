@@ -55,7 +55,12 @@ describe('WPM Spedometer -', () => {
     });
 
     const { getByText } = render(<WpmSpedometer {...defaultProps}/>);
+    
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
 
+    
     await waitFor(() => {
       expect(getByText(/120/)).toBeTruthy();
     });
@@ -71,6 +76,11 @@ describe('WPM Spedometer -', () => {
 
     const { getByText } = render(<WpmSpedometer {...defaultProps} />);
 
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+
+    
     await waitFor(() => expect(getByText(/120/)).toBeTruthy());
 
      // Second value 
