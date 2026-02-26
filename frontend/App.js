@@ -7,10 +7,15 @@ import StatsScreen from './src/statsScreen';
 export default function App() {
 
   // main = recording screen, stats = stats screen
+  const [status, setStatus] = useState('idle');
   const [activeScreen, setActiveScreen] = useState('main');
 
   // funtions to give to other pages
-  const goToDetail = () => setActiveScreen('stats');
+  const goToDetail = () => {
+    if(status != "recording"){
+      setActiveScreen('stats');
+    }
+  }
   const goBack = () => setActiveScreen('main');
 
 
@@ -21,8 +26,8 @@ export default function App() {
         {activeScreen === 'main' ? (
           <>
             <StatsButton onShowNewScreen={goToDetail} />
-            <LogonPopup />
-            <RecordScreen />
+            <LogonPopup isRecording={status=="recording"}/>
+            <RecordScreen status={status} setStatus={setStatus}/>
           </>
         ) : (
           // else:

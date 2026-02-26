@@ -10,10 +10,9 @@ import WpmSpedometer from './wpmSpedometer';
 import { v4 as uuidv4 } from 'uuid';
 import PostRecordScreen from './postRecordScreen';
 
-export default function RecordScreen() {
+export default function RecordScreen({status, setStatus}) {
 
     // Page and Microphone States
-    const [status, setStatus] = useState('idle');
     const [permissionResponse, setPermissionResponse] = useState(null);
     
     const intervalRef = useRef(null);
@@ -171,6 +170,10 @@ export default function RecordScreen() {
     const handleReset = () => {
       setStatus('idle');
     };  
+
+    const isRecording = () => { //tells other files whether currently recording
+      return status=='recording';
+    }
     
    return (
             <> 
