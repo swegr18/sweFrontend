@@ -394,13 +394,13 @@ describe('<App /> - User Settings', () => {
     const passwordField = await screen.findByPlaceholderText('Password');
     const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
 
-    expect(await screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
 
     fireEvent.changeText(emailField, "testemail@gmail.com");
     fireEvent.changeText(passwordField, "password12!");
     fireEvent.press(submitButton);
 
-    expect(await screen.queryByRole('button', {name: /SettingsButton/i })).toBeTruthy();
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeTruthy();
 
     const logoutButton = await screen.findByRole('button', { name: /LogOut/i });
     fireEvent.press(logoutButton);
@@ -408,7 +408,7 @@ describe('<App /> - User Settings', () => {
     const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
     fireEvent.press(createAccountButton);
 
-    expect(await screen.queryByRole('button', {name: /SettingsButton/i })).toBeNull();
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeNull();
   });
 });
 
@@ -430,7 +430,7 @@ describe('<App /> - User Settings', () => {
     const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
     fireEvent.press(settingsButton);
     
-    expect(screen.findByText("User Settings")).toBeTruthy();
+    expect(await screen.findByText("User Settings")).toBeTruthy();
   })
 });
 
