@@ -2,6 +2,47 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
 
+beforeEach(() => {
+  global.fetch = jest.fn((url) => {
+
+    jest.clearAllMocks();   
+
+    if (url.includes('/login')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            access_token: 'fake-token',
+          }),
+      });
+    }
+
+    if (url.includes('/register')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            access_token: 'fake-token',
+          }),
+      });
+    }
+
+    if (url.includes('/me')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            username: 'Ben',
+          }),
+      });
+    }
+  });
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 // Check profile pop-up appears on button press
 describe('<App /> - Profile Pop-up', () => {
   it('should show Profile pop-up when the Profile button pressed', async () => {
@@ -359,7 +400,7 @@ describe('<App /> - User Settings', () => {
     fireEvent.changeText(passwordField, "password12!");
     fireEvent.press(submitButton);
 
-    expect(screen.queryByRole('button', {name: /SettingsButton/i })).toBeTruthy();
+    expect(await screen.findByRole('button', {name: /SettingsButton/i })).toBeTruthy();
 
     const logoutButton = await screen.findByRole('button', { name: /LogOut/i });
     fireEvent.press(logoutButton);
@@ -389,7 +430,7 @@ describe('<App /> - User Settings', () => {
     const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
     fireEvent.press(settingsButton);
     
-    expect(screen.findByText("User Settings")).toBeTruthy();
+    expect(await screen.findByText("User Settings")).toBeTruthy();
   })
 });
 
