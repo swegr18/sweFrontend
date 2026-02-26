@@ -4,7 +4,7 @@ import { FontAwesome6, AntDesign } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function LogonPopup() {
+export default function LogonPopup({ isRecording }) {
     const [profilePopup, setProfilePopup] = useState(false);
     const [signInStatus, setSignInStatus] = useState('SignedOut');
 
@@ -256,11 +256,11 @@ export default function LogonPopup() {
             {!profilePopup && (
                 <Pressable 
                     style={styles.profileButton} 
-                    onPress={openProfile} 
+                    onPress={isRecording ? null : openProfile} 
                     accessibilityRole='button' 
                     accessibilityLabel='ProfileButton'
                 >
-                    <FontAwesome6 name="circle-user" size={24} color="white" />
+                    <FontAwesome6 name="circle-user" size={24} color={isRecording ? "grey" : "white"} />
                 </Pressable>
             )}
 
