@@ -48,7 +48,8 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
             }   
             catch (err) {
                 if (isActive) {
-                console.error("Cannot fetch WPM ",err);
+                //console.error("Cannot fetch WPM ",err);
+                setWpm(0);
                 }
             }
         };
