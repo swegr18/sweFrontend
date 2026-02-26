@@ -92,7 +92,6 @@ export default function LogonPopup() {
         }
         else{
             setSignInStatus('SignedIn');
-            sendNewAccount(email, password, name);
             setPassword('');
             setConfirmPassword('');
         }

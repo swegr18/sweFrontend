@@ -2,6 +2,47 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
 
+beforeEach(() => {
+  global.fetch = jest.fn((url) => {
+
+    jest.clearAllMocks();   
+
+    if (url.includes('/login')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            access_token: 'fake-token',
+          }),
+      });
+    }
+
+    if (url.includes('/register')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            access_token: 'fake-token',
+          }),
+      });
+    }
+
+    if (url.includes('/me')) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            username: 'Ben',
+          }),
+      });
+    }
+  });
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 // Check profile pop-up appears on button press
 describe('<App /> - Profile Pop-up', () => {
   it('should show Profile pop-up when the Profile button pressed', async () => {
