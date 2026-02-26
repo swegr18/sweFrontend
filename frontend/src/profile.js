@@ -322,6 +322,7 @@ export default function LogonPopup() {
                             <Text style={styles.subtitle}>Hello, {name}</Text>
                             <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
                                 <Text style={styles.buttonText}>Sign Out</Text>
+                            </Pressable>
                         <>
                             <Pressable 
                                 style={styles.settingsButton}
