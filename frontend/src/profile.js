@@ -318,12 +318,13 @@ export default function LogonPopup() {
                     </Pressable>
 
                     {signInStatus==='SignedIn' &&  (
-                        <View style={styles.spread} >
-                            <Text style={styles.subtitle}>Hello, {name}</Text>
-                            <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
-                                <Text style={styles.buttonText}>Sign Out</Text>
-                            </Pressable>
                         <>
+                            <View style={styles.spread} >
+                                <Text style={styles.subtitle}>Hello, {name}</Text>
+                                <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
+                                    <Text style={styles.buttonText}>Sign Out</Text>
+                                </Pressable>
+                            </View>   
                             <Pressable 
                                 style={styles.settingsButton}
                                 accessibilityRole='button'
@@ -374,8 +375,6 @@ export default function LogonPopup() {
                             </View>
                         </View>
                     )}
-
-                </View>
             )}
         </>
     );
