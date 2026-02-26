@@ -53,11 +53,9 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
             }
         };
 
-
-        
-        fetchWPM();
         const interval = setInterval(fetchWPM, 5000);
-
+        fetchWPM();
+        
         return () => {
             isActive = false;
             clearInterval(interval);
