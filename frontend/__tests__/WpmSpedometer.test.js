@@ -82,7 +82,7 @@ describe('WPM Spedometer -', () => {
     
     // advance 3 seconds into future
     act(() => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(5000);
     });
     
     await waitFor(() => {
