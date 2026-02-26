@@ -13,6 +13,8 @@ export default function LogonPopup() {
 
     const [errorMessage, setErrorMessage] = useState(' ');
 
+    const [accessToken, setAccessToken] = useState(null);
+
     // Open profile pop-up
     const openProfile = () => {
         setProfilePopup(true);
@@ -25,14 +27,18 @@ export default function LogonPopup() {
 
     const signOut = () => {
         setErrorMessage(' ');
+        setAccessToken(null);
         setEmail('');
         setName('');
         setSignInStatus('SignedOut');
     };
 
-    const signIn = () => {
+    const signIn = async () => {
         if(email=="" || password==""){
             setErrorMessage('Please enter an email address and password');
+        }
+        else if(! await verifySignIn(email,password)){
+            setErrorMessage('Email or password is incorrect');
         }
         else{
             setErrorMessage(' ');
@@ -41,16 +47,38 @@ export default function LogonPopup() {
         setPassword('');
     };
 
+    const getName = async () => {
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
+            method: "GET",
+            headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            },
+        });
+        let resp = await response.json();
+        return resp.username;
+    }
+
+    const initialNameSet = async (at) => {
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
+            method: "GET",
+            headers: {
+            "Authorization": `Bearer ${at}`,
+            },
+        });
+        let resp = await response.json();
+        setName(resp.username);
+    }
+
     const startCreateAccount = () => {
         setErrorMessage(' ');
         setSignInStatus('CreatingAccount');
     };
 
-    const createAccount = () => {
+    const createAccount = async () => {
         if(email=="" || password=="" || name==""){
             setErrorMessage('Please enter an email address, first name and password');
         }
-        else if(!emailIsValid(email)){
+        else if(! emailIsValid(email)){
             setErrorMessage('Please enter a valid email address');
         }
         else if(password != confirmPassword){
@@ -58,6 +86,9 @@ export default function LogonPopup() {
         }
         else if(passwordStrength(password) != ""){
             setErrorMessage(passwordStrength(password));
+        }
+        else if(! await sendNewAccount(email,password,name)){
+            setErrorMessage("An account already exists for this email address");
         }
         else{
             setSignInStatus('SignedIn');
@@ -77,8 +108,30 @@ export default function LogonPopup() {
                 password: pPassword,
             }),
         });
+        let resp = await response.json()
+        if(response.ok){ //only true if login successful
+            setAccessToken(resp.access_token);
+            return true;
+        }
+        return false; 
+    }
 
-        console.log("Response to account creation: ",await response.text());
+    const verifySignIn = async (pEmail, pPassword) => {
+        const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: pEmail,
+                password: pPassword,
+            }),
+        });
+        let resp = await response.json()
+        if(response.ok){ //only true if login successful
+            setAccessToken(resp.access_token);
+            initialNameSet(resp.access_token);
+            return true;
+        }
+        return false; 
     }
 
     const emailIsValid = (emailToCheck) => {
@@ -166,7 +219,7 @@ export default function LogonPopup() {
 
                     {signInStatus==='SignedIn' &&  (
                         <View style={styles.spread} >
-                            <Text style={styles.subtitle}>Hello, Ben</Text>
+                            <Text style={styles.subtitle}>Hello, {name}</Text>
                             <Pressable accessibilityRole='button' style={styles.button} accessibilityLabel='LogOut' onPress={signOut}>
                                 <Text style={styles.buttonText}>Sign Out</Text>
                             </Pressable>
