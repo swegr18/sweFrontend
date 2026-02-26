@@ -39,7 +39,7 @@ export default function LogonPopup() {
         setSignInStatus('SignedOut');
     };
 
-    const signIn = () => {
+    const signIn = async () => {
         setIsError(true);
         if(email=="" || password==""){
             setErrorMessage('Please enter an email address and password');
@@ -74,6 +74,7 @@ export default function LogonPopup() {
         });
         let resp = await response.json();
         setName(resp.username);
+        
     const openSettings = () => {
         setSignInStatus('Settings');
     }
