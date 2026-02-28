@@ -10,6 +10,8 @@ export default function App() {
   const [status, setStatus] = useState('idle');
   const [activeScreen, setActiveScreen] = useState('main');
 
+  const [accessToken, setAccessToken] = useState(null); //tells the system which account is currently logged in to
+
   // funtions to give to other pages
   const goToDetail = () => setActiveScreen('stats');
   const goBack = () => setActiveScreen('main');
@@ -21,8 +23,8 @@ export default function App() {
 
         {activeScreen === 'main' ? (
           <>
-            <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} />
-            <LogonPopup isRecording={status=="recording"}/>
+            <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} accessToken={accessToken} />
+            <LogonPopup isRecording={status=="recording"} accessToken={accessToken} setAccessToken={setAccessToken}/>
             <RecordScreen status={status} setStatus={setStatus}/>
           </>
         ) : (
