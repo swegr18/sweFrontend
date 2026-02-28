@@ -45,7 +45,7 @@ export default function StatsScreen({ onBack, accessToken }) {
         </>
       )}
       {!accessToken && (
-        <Text>Sign in or create an account to view full stats</Text>
+        <Text style={styles.bigText}>Sign in or create an account to view full stats</Text>
       )}
       <Pressable 
         style={styles.backButton}
@@ -75,5 +75,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     padding: "15px"
+  },
+  bigText: {
+    fontSize: 20,
+    alignSelf: 'center'
   }
 });
