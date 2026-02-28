@@ -4,7 +4,7 @@ import { FontAwesome6, AntDesign } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function LogonPopup({ isRecording }) {
+export default function LogonPopup({ isRecording, accessToken, setAccessToken }) {
     const [profilePopup, setProfilePopup] = useState(false);
     const [signInStatus, setSignInStatus] = useState('SignedOut');
 
@@ -19,11 +19,13 @@ export default function LogonPopup({ isRecording }) {
     const [isError, setIsError] = useState(true);
     const [errorNumber, setErrorNumber] = useState(0);
 
-    const [accessToken, setAccessToken] = useState(null);
-
     // Open profile pop-up
     const openProfile = () => {
         setProfilePopup(true);
+        if(accessToken){
+            setSignInStatus('SignedIn');
+            setName(getName());
+        }
     };
 
     // Close profile pop-up
