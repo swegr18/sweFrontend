@@ -23,7 +23,7 @@ export default function App() {
 
         {activeScreen === 'main' ? (
           <>
-            <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} />
+            <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} accessToken={accessToken} />
             <LogonPopup isRecording={status=="recording"} accessToken={accessToken} setAccessToken={setAccessToken}/>
             <RecordScreen status={status} setStatus={setStatus}/>
           </>

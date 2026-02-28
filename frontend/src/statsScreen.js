@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-export default function StatsScreen({ onBack }) {
+export default function StatsScreen({ onBack, accessToken }) {
 
   const [metrics, setMetrics] = useState(null);
   const [error, setError] = useState("");
@@ -28,19 +28,25 @@ export default function StatsScreen({ onBack }) {
     <View style={styles.statsScreen}>
       <Text style={styles.title}>Stats</Text>
 
-      {error ? <Text>{error}</Text> : null}
+      {accessToken && (
+        <>
+          {error ? <Text>{error}</Text> : null}
 
-      {!metrics ? (
-        <Text>Loading...</Text>
-      ) : (
-        <View>
-          <Text>Duration: {String(metrics.duration)} s</Text>
-          <Text>Average Volume: {String(metrics.avg_volume_dbfs)} dBFS</Text>
-          <Text>Average Pitch: {String(metrics.avg_pitch_hz)} Hz</Text>
-          <Text>WPM: {String(metrics.wpm)}</Text>
-        </View>
+          {!metrics ? (
+            <Text>Loading...</Text>
+          ) : (
+            <View>
+              <Text>Duration: {String(metrics.duration)} s</Text>
+              <Text>Average Volume: {String(metrics.avg_volume_dbfs)} dBFS</Text>
+              <Text>Average Pitch: {String(metrics.avg_pitch_hz)} Hz</Text>
+              <Text>WPM: {String(metrics.wpm)}</Text>
+            </View>
+          )}
+        </>
       )}
-
+      {!accessToken && (
+        <Text>Sign in or create an account to view full stats</Text>
+      )}
       <Pressable 
         style={styles.backButton}
         onPress={onBack}
