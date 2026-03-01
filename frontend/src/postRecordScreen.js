@@ -4,12 +4,12 @@ import StatCard from './statCard.js'
 export default function PostRecordScreen({handleReset}){
     
 
-      const [metrics, setMetrics] = useState(null);
+      const [metrics, setMetrics] = useState(null); ``
       const [error, setError] = useState("");
-      const [speechName, setSpeechName] = useState(null);
+      const [speechName, setSpeechName] = useState("");
     
       useEffect(() => {
-        fetch("http://localhost:8000/api/v1/metrics/latest")
+        fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
           .then(async (res) => {
             const data = await res.json();
             console.log("metrics response:", data);  
@@ -25,10 +25,13 @@ export default function PostRecordScreen({handleReset}){
       }, []);
       
 
+      // TODO: name to backend
       const submitPostToBackend = async () => {
         /// some code here
         console.log("send name to backend")
       }
+
+
       const handleSave = async () => {
         try {
           await submitPostToBackend(); 
@@ -86,7 +89,7 @@ export default function PostRecordScreen({handleReset}){
                   )}
                   
             <View style={styles.buttonGroup}>
-              <TextInput testID="nameButton" style={styles.speechInput}value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
+              <TextInput testID="nameButton" style={styles.speechInput} value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
               <View style={{height: 10}} /> 
               <Button title="Save" onPress={handleSave} color='green'/>
               <View style={{height: 10}} /> 
