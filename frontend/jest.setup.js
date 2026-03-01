@@ -15,6 +15,7 @@ jest.mock('expo-audio', () => ({
   },
 }));
 
+
 // Mock FileSystem to avoid crashes in handleStopRecording
 jest.mock('expo-file-system/legacy', () => ({
   readAsStringAsync: jest.fn(() => Promise.resolve('base64-string-mock')),
@@ -85,6 +86,17 @@ jest.mock('react-native', () => {
   return RN;
 });
 
-
+jest.mock('react-native-svg', () => {
+  return {
+    __esModule: true,
+    default: 'Svg',
+    Path: 'Path',
+    Circle: 'Circle',
+    Defs: 'Defs',
+    RadialGradient: 'RadialGradient',
+    Stop: 'Stop',
+    Text: 'Text', 
+  };
+});
 
 // -------------------------

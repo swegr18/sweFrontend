@@ -4,6 +4,8 @@ import StatsButton from './src/statsButton';
 import LogonPopup from './src/profile';
 import RecordScreen from './src/record';
 import StatsScreen from './src/statsScreen';
+import { useFonts, Exo_700Bold } from '@expo-google-fonts/exo';
+
 export default function App() {
 
   // main = recording screen, stats = stats screen
@@ -16,6 +18,9 @@ export default function App() {
   const goToDetail = () => setActiveScreen('stats');
   const goBack = () => setActiveScreen('main');
 
+  let [fontsLoaded] = useFonts({
+    Exo_700Bold,
+  });
 
   return (
     <View style={styles.screenWrapper}>

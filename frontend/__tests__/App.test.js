@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
-import { AudioModule } from 'expo-audio';
+import { AudioModule, useAudioRecorder } from 'expo-audio'; 
+import RecordScreen from '../src/record';
 
 // UI (Title)
 describe('<App /> - Recording Page', () => {
@@ -158,7 +159,6 @@ describe('<App /> - Recording Page', () => {
   });
   
 });
-
 
 // Check profile button appears on recording page 
 describe('<App /> - Recording Page', () => {

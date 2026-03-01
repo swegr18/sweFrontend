@@ -37,7 +37,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                     return;
                 }
 
-                const url = `http://127.0.0.1:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}`;
+                const url = `http://143.110.169.239:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}`;
                 const response = await fetch(url);
                 const data = await response.json();
                 if (!isActive) return;
@@ -71,7 +71,7 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 <Text style={styles.wpmText}>{wpm} WPM</Text>
                 <Text style={styles.labelText}>Recording...</Text>
             </View>
-            <Button  style={styles.stopButton} title="Stop" onPress={onStop} color='black'/>
+            <Button  style={styles.stopButton} title="Stop" onPress={onStop} color='#E00043'/>
         </Animated.View>
 
     );
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         borderColor: 'white', 
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#2e6f40', 
+        backgroundColor: 'black', 
         marginBottom: 20,
     },
     speechContainer: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         height: '70%',       
         width: '100%',        
         
-        backgroundColor: '#2e6f40', 
+        backgroundColor: 'black', 
         
         // Center the circle inside the green box
         alignItems: 'center',

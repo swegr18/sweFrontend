@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef} from 'react';
-import { StyleSheet, Text, View, Button, Alert, Platform, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Platform, Pressable, TouchableOpacity } from 'react-native';
 import {
   useAudioRecorder,
   AudioModule,
   RecordingPresets,
 } from 'expo-audio';
+import RecordButton from './components/recordButton'; 
 import * as FileSystem from 'expo-file-system/legacy';
 import WpmSpedometer from './wpmSpedometer';
 import { v4 as uuidv4 } from 'uuid';
 import PostRecordScreen from './postRecordScreen';
-
+import ContextModeSwitch from './components/contextModeSwitch';
+import LiveWPMSwitch from './components/liveWPMSwitch';
 export default function RecordScreen({status, setStatus}) {
 
     // Page and Microphone States
@@ -71,12 +73,13 @@ export default function RecordScreen({status, setStatus}) {
 
       //  reserve an index immediately (prevents duplicates if uploads overlap)
       const idx = chunkIndexRef.current++;
-
+      const context_mode = "Online"
       try {
         const formData = new FormData();
         formData.append("session_id", sessionIdRef.current);
         formData.append("chunk_index", String(idx));
         formData.append("is_final", isFinal ? "true" : "false");
+        formData.append("context_mode", String(context_mode));
 
         // In Web
         if (Platform.OS === 'web') {
@@ -104,7 +107,7 @@ export default function RecordScreen({status, setStatus}) {
         console.log("Uploading chunk:", idx, "final:", isFinal);
 
         // Send to Backend API
-        const response = await fetch('http://localhost:8000/api/v1/upload-audio', {
+        const response = await fetch('http://143.110.169.239:8000/api/v1/upload-audio', {
           method: 'POST',
           body: formData,
         });
@@ -140,9 +143,6 @@ export default function RecordScreen({status, setStatus}) {
         console.error("Error cycling recording:", error);
       }
     };
-
-
-    
 
 
     const stopRecording = async () => {
@@ -183,9 +183,25 @@ export default function RecordScreen({status, setStatus}) {
                 )}
         
                 {status === 'idle' && (
-                  <Button title="Record" onPress={startRecording} color='green' style={styles.homeButton} />
+                  <TouchableOpacity onPress={startRecording} style={styles.homeButton} accessibilityRole="button"  accessibilityLabel="Record">
+                    <RecordButton width={60} height={60} />
+                  </TouchableOpacity>
                 )}
-        
+
+                {status === 'idle' && (
+                  <View style={styles.switchGroup}>
+                    <View style={styles.switchContainer}>
+                      <Text style={styles.switchTitle}>Context Mode</Text>
+                      <ContextModeSwitch/>
+                    </View>
+                    
+                    <View style={styles.switchContainer}>
+                      <Text style={styles.switchTitle}>Live WPM</Text>
+                      <LiveWPMSwitch/>
+                    </View>
+                  </View>
+                )}
+
                 {status === 'nomicrophone' && (
                   <Button title="Record" onPress={stopRecording} color='green' style={styles.homeButton} />
                 )}
@@ -232,6 +248,20 @@ const styles = StyleSheet.create({
   },
   homeButton: {
     borderRadius: 20,
+  },
+  switchGroup:{
+    flexDirection: 'row', 
+    alignItems: 'center',
+    gap: 20, 
+    marginTop: 50,
+
+  },
+  switchContainer:{
+    alignItems:'center',
+  },
+  switchTitle: {
+    color: 'white',
+    fontFamily: "Exo_700Bold"
   }
 
 });
