@@ -13,7 +13,7 @@ export default function AnimatedWave({ color = 'black' }){
     useEffect(() => {
         Animated.loop(
             Animated.timing(translateX, {
-                toValue: -ITEM_WIDTH, // Move left by exactly one screen width
+                toValue: -screenWidth, // Move left by exactly one screen width
                 duration: 2000, // Adjust speed (lower = faster)
                 easing: Easing.linear,
                 useNativeDriver: false,
@@ -24,9 +24,9 @@ export default function AnimatedWave({ color = 'black' }){
     return (
         <View style={{ 
             height: WAVE_HEIGHT, 
-            width: screenWidth, 
+            width: -screenWidth*2, 
             position: 'absolute', 
-            top: -WAVE_HEIGHT + 1, // +1 fixes potential pixel gap line
+            top: -50, // +1 fixes potential pixel gap line
             left: 0,
             overflow: 'hidden' // Ensure we don't see the wave sliding off-screen
         }}>

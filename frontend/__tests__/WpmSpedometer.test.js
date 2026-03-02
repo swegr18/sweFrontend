@@ -47,7 +47,7 @@ describe('WPM Spedometer -', () => {
 
     // Mock failure response
     await waitFor(() => {
-      expect(getByText(/0/)).toBeTruthy();
+      expect(getByText(/0 WPM/)).toBeTruthy();
     });
   });
 
