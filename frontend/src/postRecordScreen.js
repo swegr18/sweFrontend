@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
 import StatCard from './statCard.js'
-export default function PostRecordScreen({handleReset}){
+export default function PostRecordScreen({handleReset, accessToken}){
     
 
       const [metrics, setMetrics] = useState(null); ``
@@ -91,9 +91,19 @@ export default function PostRecordScreen({handleReset}){
             <View style={styles.buttonGroup}>
               <TextInput testID="nameButton" style={styles.speechInput} value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
               <View style={{height: 10}} /> 
-              <Button title="Save" onPress={handleSave} color='green'/>
+              {accessToken !== null ? ( //user is signed in
+                <Pressable accessibilityRole="button" accessibilityLabel="Save" onPress={handleSave} style={styles.saveButton}>
+                  <Text style={styles.buttonText}>SAVE</Text>
+                </Pressable>
+              ) : (
+                  <Pressable accessibilityRole="button" accessibilityLabel="Save" style={styles.cantSaveButton}>
+                  <Text style={styles.buttonText}>LOG IN TO SAVE STATS</Text>
+                </Pressable>
+              )}
               <View style={{height: 10}} /> 
-              <Button title="Delete" onPress={handleReset} color="black" />
+              <Pressable accessibilityRole="button" accessibilityLabel="Delete" onPress={handleReset} style={styles.deleteButton}>
+                <Text style={styles.buttonText}>DELETE</Text>
+              </Pressable>
             </View>
         </View>
     );
@@ -116,6 +126,26 @@ const styles = StyleSheet.create({
       bottom: 30,
       marginTop: 30,
       width: '80%',
+    },
+    saveButton: {
+      backgroundColor: 'green',
+      justifyContent: 'center',
+      height: '34px'
+    },
+    cantSaveButton: {
+      backgroundColor: 'grey',
+      justifyContent: 'center',
+      height: '34px'
+    },
+    deleteButton: {
+      backgroundColor: 'black',
+      justifyContent: 'center',
+      height: '34px'
+    },
+    buttonText:{
+      alignSelf: 'center',
+      color: 'white',
+      fontFamily: 'Trebuchet MS'
     },
     title: {
       position: 'absolute',

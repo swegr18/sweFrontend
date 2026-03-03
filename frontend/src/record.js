@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import PostRecordScreen from './postRecordScreen';
 import ContextModeSwitch from './components/contextModeSwitch';
 import LiveWPMSwitch from './components/liveWPMSwitch';
-export default function RecordScreen({status, setStatus}) {
+export default function RecordScreen({status, setStatus, accessToken}) {
 
     // Page and Microphone States
     const [permissionResponse, setPermissionResponse] = useState(null);
@@ -221,7 +221,7 @@ export default function RecordScreen({status, setStatus}) {
 
                 {(status === 'finished' || status === 'finishing') && (
 
-                  <PostRecordScreen handleReset={handleReset}/>
+                  <PostRecordScreen handleReset={handleReset} accessToken={accessToken}/>
                 )}
                 
             </> 
