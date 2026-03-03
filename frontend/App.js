@@ -30,11 +30,11 @@ export default function App() {
           <>
             <StatsButton isRecording={status=="recording"} onShowNewScreen={goToDetail} accessToken={accessToken} />
             <LogonPopup isRecording={status=="recording"} accessToken={accessToken} setAccessToken={setAccessToken}/>
-            <RecordScreen status={status} setStatus={setStatus}/>
+            <RecordScreen status={status} setStatus={setStatus} accessToken={accessToken}/>
           </>
         ) : (
           // else:
-          <StatsScreen onBack={goBack} />
+          <StatsScreen onBack={goBack} accessToken={accessToken} />
         )}
       
       </View>

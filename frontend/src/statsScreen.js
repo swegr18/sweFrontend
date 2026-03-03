@@ -28,7 +28,7 @@ export default function StatsScreen({ onBack, accessToken }) {
     <View style={styles.statsScreen}>
       <Text style={styles.title}>Stats</Text>
 
-      {accessToken && (
+      {accessToken !== null ? (
         <>
           {error ? <Text>{error}</Text> : null}
 
@@ -43,8 +43,7 @@ export default function StatsScreen({ onBack, accessToken }) {
             </View>
           )}
         </>
-      )}
-      {!accessToken && (
+      ) : (
         <Text style={styles.bigText}>Sign in or create an account to view full stats</Text>
       )}
       <Pressable 
