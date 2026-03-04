@@ -36,6 +36,20 @@ beforeEach(() => {
           }),
       });
     }
+
+    if (url.includes('/email')) {
+      return Promise.resolve({
+        ok: true,
+        json: () => 
+          Promise.resolve(),
+      });
+    }
+
+    if (url.includes('/password')) {
+      return Promise.resolve({
+        ok: true,
+      });
+    }
   });
 });
 
