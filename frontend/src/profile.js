@@ -170,7 +170,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             setErrorMessage('Passwords must match');
         }
         else{
-            let msg = passwordStrength(password);
+            let msg = passwordStrength(newPassword);
             if(msg != ""){
                 setErrorMessage(msg);
             }
@@ -185,8 +185,8 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                         new_password: newPassword
                     }),
                 })
-                let resp = await response.json()
                 if(!response.ok){
+                    let resp = await response.json()
                     setErrorMessage(resp.detail);
                 }
                 else{
@@ -195,6 +195,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                 }
             }
             setPassword('');
+            setNewPassword('');
             setConfirmPassword('');
         };
     }
