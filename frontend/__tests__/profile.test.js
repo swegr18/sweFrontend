@@ -5,8 +5,6 @@ import App from '../App';
 beforeEach(() => {
   global.fetch = jest.fn((url) => {
 
-    jest.clearAllMocks();   
-
     if (url.includes('/login')) {
       return Promise.resolve({
         ok: true,
@@ -41,13 +39,15 @@ beforeEach(() => {
       return Promise.resolve({
         ok: true,
         json: () => 
-          Promise.resolve(),
+          Promise.resolve({}),
       });
     }
 
     if (url.includes('/password')) {
       return Promise.resolve({
         ok: true,
+        json: () => 
+          Promise.resolve({}),
       });
     }
   });
@@ -117,6 +117,31 @@ describe('<App /> - Login Management', () => {
     fireEvent.changeText(emailField, "testemail@gmail.com");
     fireEvent.changeText(passwordField, "password12!");
     fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Hello, Ben")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
+  it('user is still logged in after closing the profile popup', async () => {
+    render(<App />);
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeButton = await screen.findByRole('button', { name: /ClosePopup/i });
+    fireEvent.press(closeButton);
+
+    const profileButton2 = await screen.findByRole('button', { name: /ProfileButton/i })
+    fireEvent.press(profileButton2);
 
     expect(await screen.findByText("Hello, Ben")).toBeTruthy();
   });
@@ -534,6 +559,7 @@ describe('<App /> - User Settings', () => {
     const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
     fireEvent.press(settingsButton);
 
+    const currentPasswordField = await screen.findByPlaceholderText('Current Password')
     const newPasswordField = await screen.findByPlaceholderText('New Password');
     const confirmPasswordField = await screen.findByPlaceholderText('Confirm New Password');
     const submitButton = await screen.findByRole('button', {name: /ChangePasswordSubmit/i });
@@ -542,45 +568,58 @@ describe('<App /> - User Settings', () => {
 
     expect(await screen.findByText("Please enter a password")).toBeTruthy();
 
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Password12!");
+    fireEvent.changeText(confirmPasswordField, "Password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("New password cannot be the same as current one")).toBeTruthy();
+
+    fireEvent.changeText(currentPasswordField, "Password12!");
     fireEvent.changeText(newPasswordField, "Password!");
     fireEvent.changeText(confirmPasswordField, "Password!");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password must contain at least one number")).toBeTruthy();
 
-    fireEvent.changeText(newPasswordField, "Password12!");
-    fireEvent.changeText(confirmPasswordField, "Password12");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Password13!");
+    fireEvent.changeText(confirmPasswordField, "Password13");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Passwords must match")).toBeTruthy();
 
-
-    fireEvent.changeText(newPasswordField, "password12!");
-    fireEvent.changeText(confirmPasswordField, "password12!");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "password13!");
+    fireEvent.changeText(confirmPasswordField, "password13!");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password must contain at least one upper case character")).toBeTruthy();
 
-    fireEvent.changeText(newPasswordField, "Password12");
-    fireEvent.changeText(confirmPasswordField, "Password12");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Password13");
+    fireEvent.changeText(confirmPasswordField, "Password13");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password must contain at least one special character")).toBeTruthy();
 
-    fireEvent.changeText(newPasswordField, "PASSWORD12!");
-    fireEvent.changeText(confirmPasswordField, "PASSWORD12!");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "PASSWORD13!");
+    fireEvent.changeText(confirmPasswordField, "PASSWORD13!");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password must contain at least one lower case character")).toBeTruthy();
 
-    fireEvent.changeText(newPasswordField, "Pa2!");
-    fireEvent.changeText(confirmPasswordField, "Pa2!");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Pa3!");
+    fireEvent.changeText(confirmPasswordField, "Pa3!");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password must be at least 7 characters")).toBeTruthy();
 
-    fireEvent.changeText(newPasswordField, "Password12!");
-    fireEvent.changeText(confirmPasswordField, "Password12!");
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Password13!");
+    fireEvent.changeText(confirmPasswordField, "Password13!");
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password successfully changed")).toBeTruthy();

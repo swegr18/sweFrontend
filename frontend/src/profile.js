@@ -21,11 +21,11 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     const [errorNumber, setErrorNumber] = useState(0);
 
     // Open profile pop-up
-    const openProfile = () => {
+    const openProfile = async () => {
         setProfilePopup(true);
         if(accessToken){
             setSignInStatus('SignedIn');
-            setName(getName());
+            setName(await getName());
         }
     };
 
