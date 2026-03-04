@@ -14,6 +14,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const [newEmail, setNewEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
 
     const [errorMessage, setErrorMessage] = useState(' ');
     const [isError, setIsError] = useState(true);
@@ -46,13 +47,16 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
         if(email=="" || password==""){
             setErrorMessage('Please enter an email address and password');
         }
-        else if(! await verifySignIn(email,password)){
-            setErrorMessage('Email or password is incorrect');
-        }
         else{
-            setErrorMessage(' ');
-            setSignInStatus('SignedIn');
-        }
+            let err = await verifySignIn(email,password);
+            if(err != null){
+                setErrorMessage(err);
+            }
+            else{
+                setErrorMessage(' ');
+                setSignInStatus('SignedIn');
+            }
+        } 
         setPassword('');
     };
 
@@ -105,17 +109,20 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
         else if(passwordStrength(password) != ""){
             setErrorMessage(passwordStrength(password));
         }
-        else if(! await sendNewAccount(email,password,name)){
-            setErrorMessage("An account already exists for this email address");
+        else {
+            let err = await sendNewAccount(email,password,name)
+            if(err != null){
+                setErrorMessage(err);
+            }
+            else{
+                setSignInStatus('SignedIn');
+            }
         }
-        else{
-            setSignInStatus('SignedIn');
-            setPassword('');
-            setConfirmPassword('');
-        }
+        setPassword('');
+        setConfirmPassword('');
     };
 
-    const changeEmail = () => {
+    const changeEmail = async () => {
         setErrorNumber(0);
         setIsError(true);
         if(newEmail==""){
@@ -128,20 +135,38 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             setErrorMessage('Please enter a valid email address');
         }
         else{
-            setIsError(false);
-            setErrorMessage('Email successfully changed');
-            setEmail(newEmail);
-            setNewEmail('');
+            const response = await fetch("http://localhost:8000/api/v1/auth/email", {
+            method: "PATCH",
+            headers: { 
+                "Content-Type": "application/json", 
+                "Authorization": `Bearer ${accessToken}`},
+            body: JSON.stringify({
+                new_email: newEmail
+                }),
+            })
+            let resp = await response.json()
+            if(!response.ok){
+                setErrorMessage(resp.detail);
+            }
+            else{
+                setIsError(false);
+                setErrorMessage('Email successfully changed');
+                setEmail(newEmail);
+                setNewEmail('');
+            }
         }
     };
 
-    const changePassword = () => {
+    const changePassword = async () => {
         setErrorNumber(1);
         setIsError(true);
-        if(password == ""){
+        if(newPassword == ""){
             setErrorMessage('Please enter a password');
         }
-        else if(password != confirmPassword){
+        else if(newPassword == password){
+            setErrorMessage('New password cannot be the same as current one')
+        }
+        else if(newPassword != confirmPassword){
             setErrorMessage('Passwords must match');
         }
         else{
@@ -150,13 +175,29 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                 setErrorMessage(msg);
             }
             else{
-                setIsError(false);
-                setErrorMessage('Password successfully changed')
+                const response = await fetch("http://localhost:8000/api/v1/auth/password", {
+                    method: "PATCH",
+                    headers: { 
+                        "Content-Type": "application/json", 
+                        "Authorization": `Bearer ${accessToken}`},
+                    body: JSON.stringify({
+                        current_password: password,
+                        new_password: newPassword
+                    }),
+                })
+                let resp = await response.json()
+                if(!response.ok){
+                    setErrorMessage(resp.detail);
+                }
+                else{
+                    setIsError(false);
+                    setErrorMessage('Password successfully changed')
+                }
             }
-        }
-        setPassword('');
-        setConfirmPassword('');
-    };
+            setPassword('');
+            setConfirmPassword('');
+        };
+    }
 
     const sendNewAccount = async (pEmail, pPassword, pName) => {
         const response = await fetch("http://localhost:8000/api/v1/auth/register", {
@@ -169,11 +210,12 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             }),
         });
         let resp = await response.json()
+        console.log(resp)
         if(response.ok){ //only true if login successful
             setAccessToken(resp.access_token);
-            return true;
+            return null;
         }
-        return false; 
+        return resp.detail; 
     }
 
     const verifySignIn = async (pEmail, pPassword) => {
@@ -189,9 +231,9 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
         if(response.ok){ //only true if login successful
             setAccessToken(resp.access_token);
             initialNameSet(resp.access_token);
-            return true;
+            return null;
         }
-        return false; 
+        return resp.detail; 
     }
 
     const emailIsValid = (emailToCheck) => {
@@ -298,8 +340,11 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                             </View>
                                 <View>
                                 <Text style={styles.subtitle}>Change Password</Text>
-                                <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='New Password'></TextInput>
-                                <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
+                                <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='Current Password'></TextInput>
+                                <View style={styles.oneline}>
+                                    <TextInput value={newPassword} secureTextEntry={true} onChangeText={setNewPassword} style={styles.smallInput} placeholder='New Password'></TextInput>
+                                    <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.smallInput} placeholder='Confirm New Password'></TextInput>
+                                </View>
                                 {errorNumber === 1 && (
                                     <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
                                 )}
@@ -439,6 +484,15 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#ffffff",
         fontSize: "15px",
+    },
+    smallInput: {
+        backgroundColor: "#cfc4c4",
+        lineHeight: 22,
+        padding: 3,
+        marginBottom: 3,
+        borderRadius: 5,
+        width: 100,
+        alignSelf: 'center',
     },
     input: {
         backgroundColor: "#cfc4c4",
