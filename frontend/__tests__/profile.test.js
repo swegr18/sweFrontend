@@ -2,27 +2,51 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, act} from '@testing-library/react-native';
 import App from '../App';
 
+let fetchSuccess;
+
 beforeEach(() => {
   global.fetch = jest.fn((url) => {
 
     if (url.includes('/login')) {
-      return Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            access_token: 'fake-token',
-          }),
-      });
+      if(fetchSuccess){
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              access_token: 'fake-token',
+            }),
+        });
+      }
+      else{
+        return Promise.resolve({
+          ok: false,
+          json: () =>
+            Promise.resolve({
+              detail: 'Invalid email or password',
+            }),
+          });
+      }
     }
 
     if (url.includes('/register')) {
-      return Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            access_token: 'fake-token',
-          }),
-      });
+      if(fetchSuccess){
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              access_token: 'fake-token',
+            }),
+        });
+      }
+      else{
+        return Promise.resolve({
+          ok: false,
+          json: () =>
+            Promise.resolve({
+              detail: 'A user with this email already exists',
+            }),
+        });
+      }
     }
 
     if (url.includes('/me')) {
@@ -36,19 +60,41 @@ beforeEach(() => {
     }
 
     if (url.includes('/email')) {
-      return Promise.resolve({
-        ok: true,
-        json: () => 
-          Promise.resolve({}),
-      });
+      if(fetchSuccess){
+        return Promise.resolve({
+          ok: true,
+          json: () => 
+            Promise.resolve({}),
+        });
+      }
+      else{
+        return Promise.resolve({
+          ok: false,
+          json: () => 
+            Promise.resolve({
+              detail: 'A user with this email already exists',
+            }),
+        });
+      }
     }
 
     if (url.includes('/password')) {
-      return Promise.resolve({
-        ok: true,
-        json: () => 
-          Promise.resolve({}),
-      });
+      if(fetchSuccess){
+        return Promise.resolve({
+          ok: true,
+          json: () => 
+            Promise.resolve({}),
+        });
+      }
+      else{
+        return Promise.resolve({
+          ok: false,
+          json: () => 
+            Promise.resolve({
+              detail: 'Current password is incorrect',
+            }),
+        });
+      }
     }
   });
 });
@@ -106,6 +152,7 @@ describe('<App /> - Login Management', () => {
 describe('<App /> - Login Management', () => {
   it('user can log in', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -123,8 +170,29 @@ describe('<App /> - Login Management', () => {
 });
 
 describe('<App /> - Login Management', () => {
+  it('incorrect login gives appropriate error', async () => {
+    render(<App />);
+    fetchSuccess = false;
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password13!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Invalid email or password")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
   it('user is still logged in after closing the profile popup', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -150,6 +218,7 @@ describe('<App /> - Login Management', () => {
 describe('<App /> - Login Management', () => {
   it('user can create an account', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -174,8 +243,36 @@ describe('<App /> - Login Management', () => {
 });
 
 describe('<App /> - Login Management', () => {
+  it('account creation failure gives appropriate message', async () => {
+    render(<App />);
+    fetchSuccess = false;
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const createAccountButton = await screen.findByRole('button', { name: /CreateAccountButton/i });
+    fireEvent.press(createAccountButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const nameField = await screen.findByPlaceholderText('First Name');
+    const confirmPasswordField = await screen.findByPlaceholderText('Confirm Password');
+    const submitButton = await screen.findByRole('button', { name: /CreateAccountSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(nameField, "Ben");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.changeText(confirmPasswordField, "Password12!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("A user with this email already exists")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Login Management', () => {
   it('user can log out', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -316,6 +413,7 @@ describe('<App /> - Login Validation', () => {
 describe('<App /> - Login Validation', () => {
   it('accounts can only be created with a valid email address', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -354,6 +452,7 @@ describe('<App /> - Login Validation', () => {
 describe('<App /> - Login Validation', () => {
   it('password must be of sufficient strength', async () => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -425,6 +524,7 @@ describe('<App /> - Login Validation', () => {
 describe('<App /> - User Settings', () => {
   it('settings button shows only when logged in', async() => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -454,6 +554,7 @@ describe('<App /> - User Settings', () => {
 describe('<App /> - User Settings', () => {
   it('settings page opens when settings button pressed', async() => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -476,6 +577,7 @@ describe('<App /> - User Settings', () => {
 describe('<App /> - User Settings', () => {
   it('back button allows user to return to logged in page from settings page', async() => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -501,6 +603,7 @@ describe('<App /> - User Settings', () => {
 describe('<App /> - User Settings', () => {
   it('user can change their email address to a different, valid email address', async() => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -542,8 +645,39 @@ describe('<App /> - User Settings', () => {
 });
 
 describe('<App /> - User Settings', () => {
+  it('unsuccessful email change gives appropriate error message', async() => {
+    render(<App />);
+    fetchSuccess = true;
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    fetchSuccess = false;
+
+    const newEmailField = await screen.findByPlaceholderText('New Email Address');
+    const submitButton = await screen.findByRole('button', {name: /ChangeEmailSubmit/i})
+
+    fireEvent.changeText(newEmailField, "testemail1@gmail.com");
+    fireEvent.press(submitButton);
+    expect(await screen.findByText("A user with this email already exists")).toBeTruthy();
+  });
+});
+
+describe('<App /> - User Settings', () => {
   it('user can change their password to a sufficiently strong one', async() => {
     render(<App />);
+    fetchSuccess = true;
     
     const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
     fireEvent.press(profileButton);
@@ -623,5 +757,40 @@ describe('<App /> - User Settings', () => {
     fireEvent.press(submitButton);
 
     expect(await screen.findByText("Password successfully changed")).toBeTruthy();
+  });
+});
+
+describe('<App /> - User Settings', () => {
+  it('unsuccessful password change gives appropriate error', async() => {
+    render(<App />);
+    fetchSuccess = true;
+    
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+
+    fetchSuccess = false;
+
+    const currentPasswordField = await screen.findByPlaceholderText('Current Password')
+    const newPasswordField = await screen.findByPlaceholderText('New Password');
+    const confirmPasswordField = await screen.findByPlaceholderText('Confirm New Password');
+    const submitButton = await screen.findByRole('button', {name: /ChangePasswordSubmit/i });
+
+    fireEvent.changeText(currentPasswordField, "Password12!");
+    fireEvent.changeText(newPasswordField, "Password13!");
+    fireEvent.changeText(confirmPasswordField, "Password13!");
+    fireEvent.press(submitButton);
+
+    expect(await screen.findByText("Current password is incorrect")).toBeTruthy();
   });
 });
