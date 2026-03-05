@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
 import StatCard from './statCard.js'
+import { v4 as uuidv4 } from 'uuid';
 export default function PostRecordScreen({handleReset, accessToken}){
     
 
       const [metrics, setMetrics] = useState(null); ``
       const [error, setError] = useState("");
       const [speechName, setSpeechName] = useState("");
+
+      const [errorMessage, setErrorMessage] = useState(" ");
     
       useEffect(() => {
         fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
@@ -27,24 +30,53 @@ export default function PostRecordScreen({handleReset, accessToken}){
 
       // TODO: name to backend
       const submitPostToBackend = async () => {
-        /// some code here
-        console.log("send name to backend")
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
+            method: "GET",
+            headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            },
+        });
+        let resp = await response.json();
+        let userid = resp.id;
+        const response2 = await fetch(`http://localhost:8000/api/v1/userdata?user_id=${userid}&filename=${speechName}`, {
+            method: "POST",
+        });
+        resp = await response2.json();
+        return resp.ok;
       }
 
 
       const handleSave = async () => {
-        try {
-          await submitPostToBackend(); 
-
-          handleReset(); 
-
-        } catch (error) { 
-          // failed to send details
-          console.error("Error submitting post: ", error);
-          alert("There was an issue saving to the server.");
-          handleReset();
+        let err = checkName(speechName)
+        if(err == null){
+          try {
+            if(await submitPostToBackend()){
+              handleReset(); 
+            } 
+            else{
+              console.log("Error sending data");
+            }
+          } catch (error) { 
+            // failed to send details
+            console.error("Error submitting post: ", error);
+            alert("There was an issue saving to the server.");
+            handleReset();
+          }
+        }
+        else{
+          setErrorMessage(err);
         }
       };
+
+      const checkName = (pName) => {
+        if(pName == ""){
+          return "Name cannot be empty";
+        }
+        else if(/[*?"<>|\\/:.]/.test(pName)){
+            return "Name contains prohibited character";
+        }
+        return null
+      }
 
 
     return (
@@ -90,7 +122,7 @@ export default function PostRecordScreen({handleReset, accessToken}){
                   
             <View style={styles.buttonGroup}>
               <TextInput testID="nameButton" style={styles.speechInput} value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
-              <View style={{height: 10}} /> 
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
               {accessToken !== null ? ( //user is signed in
                 <Pressable accessibilityRole="button" accessibilityLabel="Save" onPress={handleSave} style={styles.saveButton}>
                   <Text style={styles.buttonText}>SAVE</Text>
@@ -182,6 +214,12 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
       height: 34,
       fontFamily: 'Trebuchet MS',
+    },
+    errorMessage:{
+        color: "#ff0000",
+        alignSelf: 'center',
+        fontSize: 12,
+        fontFamily: 'Trebuchet MS'
     }
 
 });
