@@ -242,6 +242,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
 
     const openDeleteAccount = () => {
         setErrorMessage(' ');
+        setDeleteAccountCheckbox(false);
         setSignInStatus('DeletingAccount');
     }
 
@@ -396,7 +397,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                 onPress={closeSettings}  
                             ></Pressable>
                             <View style={styles.oneline}>
-                                <Checkbox value={deleteAccountCheckbox} onValueChange={setDeleteAccountCheckbox}/>
+                                <Checkbox accessibilityRole="checkbox" accessibilityLabel="ConfirmDeleteCheckbox" value={deleteAccountCheckbox} onValueChange={setDeleteAccountCheckbox}/>
                                 <Text>I understand that deleting my account is permanent and cannot be reversed</Text>
                             </View>
                             <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
