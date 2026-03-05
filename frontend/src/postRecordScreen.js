@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
 import StatCard from './statCard.js'
+import { v4 as uuidv4 } from 'uuid';
 export default function PostRecordScreen({handleReset, accessToken}){
     
 
@@ -27,17 +28,30 @@ export default function PostRecordScreen({handleReset, accessToken}){
 
       // TODO: name to backend
       const submitPostToBackend = async () => {
-        /// some code here
-        console.log("send name to backend")
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
+            method: "GET",
+            headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            },
+        });
+        let resp = await response.json();
+        let userid = resp.id;
+        const response2 = await fetch(`http://localhost:8000/api/v1/userdata?user_id=${userid}&filename=${speechName}`, {
+            method: "POST",
+        });
+        resp = await response2.json();
+        return resp.ok;
       }
 
 
       const handleSave = async () => {
         try {
-          await submitPostToBackend(); 
-
-          handleReset(); 
-
+          if(await submitPostToBackend()){
+            handleReset(); 
+          } 
+          else{
+            console.log("Error sending data");
+          }
         } catch (error) { 
           // failed to send details
           console.error("Error submitting post: ", error);
