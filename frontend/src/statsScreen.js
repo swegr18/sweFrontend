@@ -10,8 +10,7 @@ export default function StatsScreen({ onBack, accessToken }) {
   useEffect(() => {
     fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
       .then(async (res) => {
-        const data = await res.json();
-        console.log("metrics response:", data);  
+        const data = await res.json();  
         if (!res.ok) {
           throw new Error(data?.detail || data?.error || "Request failed");
         }
@@ -19,7 +18,7 @@ export default function StatsScreen({ onBack, accessToken }) {
       })
       .then(data => setMetrics(data))
       .catch(err => {
-        console.log("metrics fetch error:", err);
+        //console.log("metrics fetch error:", err);
         setError(String(err.message || err));
       });
   }, []);
