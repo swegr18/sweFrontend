@@ -18,7 +18,7 @@ export default function StatsScreen({ onBack, accessToken }) {
       })
       .then(data => setMetrics(data))
       .catch(err => {
-        console.log("metrics fetch error:", err);
+        //console.log("metrics fetch error:", err);
         setError(String(err.message || err));
       });
   }, []);
