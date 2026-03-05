@@ -57,7 +57,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     };
 
     const getName = async () => {
-        const response = await fetch("http://143.110.169.239:8000/api/v1/auth/me", {
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
             method: "GET",
             headers: {
             "Authorization": `Bearer ${accessToken}`,
@@ -68,7 +68,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     };
 
     const initialNameSet = async (at) => {
-        const response = await fetch("http://143.110.169.239:8000/api/v1/auth/me", {
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
             method: "GET",
             headers: {
             "Authorization": `Bearer ${at}`,
@@ -159,7 +159,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     };
 
     const sendNewAccount = async (pEmail, pPassword, pName) => {
-        const response = await fetch("http://143.110.169.239:8000/api/v1/auth/register", {
+        const response = await fetch("http://localhost:8000/api/v1/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -177,7 +177,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     }
 
     const verifySignIn = async (pEmail, pPassword) => {
-        const response = await fetch("http://143.110.169.239:8000/api/v1/auth/login", {
+        const response = await fetch("http://localhost:8000/api/v1/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

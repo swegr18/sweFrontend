@@ -30,7 +30,7 @@ export default function PostRecordScreen({handleReset, accessToken}){
 
       // TODO: name to backend
       const submitPostToBackend = async () => {
-        const response = await fetch("http://143.110.169.239:8000/api/v1/auth/me", {
+        const response = await fetch("http://localhost:8000/api/v1/auth/me", {
             method: "GET",
             headers: {
             "Authorization": `Bearer ${accessToken}`,
@@ -38,7 +38,7 @@ export default function PostRecordScreen({handleReset, accessToken}){
         });
         let resp = await response.json();
         let userid = resp.id;
-        const response2 = await fetch(`http://143.110.169.239:8000/api/v1/userdata?user_id=${userid}&filename=${speechName}`, {
+        const response2 = await fetch(`http://localhost:8000/api/v1/userdata?user_id=${userid}&filename=${speechName}`, {
             method: "POST",
         });
         resp = await response2.json();

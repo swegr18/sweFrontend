@@ -8,7 +8,7 @@ export default function StatsScreen({ onBack, accessToken }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
+    fetch("http://localhost:8000/api/v1/metrics/latest")
       .then(async (res) => {
         const data = await res.json();
         console.log("metrics response:", data);  
