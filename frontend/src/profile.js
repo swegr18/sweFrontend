@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; 
 import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
+import { Checkbox } from 'expo-checkbox';
 import { FontAwesome6, AntDesign } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -19,6 +20,8 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     const [errorMessage, setErrorMessage] = useState(' ');
     const [isError, setIsError] = useState(true);
     const [errorNumber, setErrorNumber] = useState(0);
+
+    const [deleteAccountCheckbox, setDeleteAccountCheckbox] = useState(false);
 
     // Open profile pop-up
     const openProfile = async () => {
@@ -135,7 +138,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             setErrorMessage('Please enter a valid email address');
         }
         else{
-            const response = await fetch("http://localhost:8000/api/v1/auth/email", {
+            const response = await fetch("http://143.110.169.239:8000/api/v1/auth/email", {
             method: "PATCH",
             headers: { 
                 "Content-Type": "application/json", 
@@ -175,7 +178,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                 setErrorMessage(msg);
             }
             else{
-                const response = await fetch("http://localhost:8000/api/v1/auth/password", {
+                const response = await fetch("http://143.110.169.239:8000/api/v1/auth/password", {
                     method: "PATCH",
                     headers: { 
                         "Content-Type": "application/json", 
@@ -235,6 +238,28 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             return null;
         }
         return resp.detail; 
+    }
+
+    const openDeleteAccount = () => {
+        setErrorMessage(' ');
+        setDeleteAccountCheckbox(false);
+        setSignInStatus('DeletingAccount');
+    }
+
+    const startDeleteAccount = () => {
+        console.log("got this far");
+        if(!deleteAccountCheckbox){
+            setErrorMessage("Please check the box before proceeding");
+        }
+        else if(password==""){
+            setErrorMessage("Please enter your password")
+        }
+        else{
+            //code to delete accounts
+            setPassword('');
+            setErrorMessage(' ');
+            signOut();
+        }
     }
 
     const emailIsValid = (emailToCheck) => {
@@ -311,7 +336,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
 
             {profilePopup && (
                 <View style={styles.popup}>
-                    {signInStatus!=='Settings' && (
+                    {signInStatus!=='Settings' && signInStatus!=='DeletingAccount' && (
                         <Text style={styles.title}>Profile</Text>
                     )}
 
@@ -339,7 +364,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
                             </View>
-                                <View>
+                            <View>
                                 <Text style={styles.subtitle}>Change Password</Text>
                                 <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='Current Password'></TextInput>
                                 <View style={styles.oneline}>
@@ -356,6 +381,33 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
                             </View>
+                            <Pressable accessibilityRole='button' accessibilityLabel='DeleteAccountButton' style={styles.deleteAccountButton}  onPress={openDeleteAccount} >
+                                <Text style={styles.buttonText}>Delete Account</Text>
+                            </Pressable>
+                        </>
+                    )}
+
+                    {signInStatus === 'DeletingAccount' && (
+                        <>
+                            <Text style={styles.title}>Delete Account</Text>
+                            <Pressable
+                                style={styles.backButton}
+                                accessibilityRole = 'button'
+                                accessibilityLabel = 'ExitSettingsButton'  
+                                onPress={closeSettings}  
+                            ></Pressable>
+                            <View style={styles.oneline}>
+                                <Checkbox accessibilityRole="checkbox" accessibilityLabel="ConfirmDeleteCheckbox" value={deleteAccountCheckbox} onValueChange={setDeleteAccountCheckbox}/>
+                                <Text>I understand that deleting my account is permanent and cannot be reversed</Text>
+                            </View>
+                            <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
+                            <Text style={styles.errorMessage}>{errorMessage}</Text>
+                            <Pressable accessibilityRole='button' accessibilityLabel='DontDeleteAccountButton' style={styles.button} onPress={openSettings}>
+                                <Text style={styles.buttonText}>Go Back</Text>
+                            </Pressable>
+                            <Pressable accessibilityRole='button' accessibilityLabel='ConfirmDeleteAccountButton' style={styles.redButton} onPress={startDeleteAccount}>
+                                <Text style={styles.buttonText}>Delete Account</Text>
+                            </Pressable>
                         </>
                     )}
 
@@ -482,9 +534,29 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         borderRadius: 5,
     },
+    redButton: {
+        backgroundColor: "#ff0000",
+        width: "120px",
+        height: "25px",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+        borderRadius: 5,
+    },
+    deleteAccountButton: {
+        backgroundColor: "#ff0000",
+        width: "100px",
+        height: "25px",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 5,
+        position: 'absolute',
+        right: 5,
+        bottom: 5,
+    },
     buttonText: {
         color: "#ffffff",
-        fontSize: "15px",
+        fontSize: "15px"
     },
     smallInput: {
         backgroundColor: "#cfc4c4",

@@ -794,3 +794,136 @@ describe('<App /> - User Settings', () => {
     expect(await screen.findByText("Current password is incorrect")).toBeTruthy();
   });
 });
+
+describe('<App /> - Deleting Account', () => {
+  it('user can open a page that allows them to delete their account', async() => {
+    render(<App />);
+    fetchSuccess = true;
+  
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    const openDeleteButton = await screen.findByRole('button', {name: /DeleteAccountButton/i});
+    fireEvent.press(openDeleteButton);
+
+    expect(await screen.findAllByText("Delete Account")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Deleting Account', () => {
+  it('user can go back to settings page from delete page', async() => {
+    render(<App />);
+    fetchSuccess = true;
+  
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    const openDeleteButton = await screen.findByRole('button', {name: /DeleteAccountButton/i});
+    fireEvent.press(openDeleteButton);
+
+    const backButton = await screen.findByRole('button', {name: /DontDeleteAccountButton/i});
+    fireEvent.press(backButton);
+
+    expect(await screen.findByText("User Settings")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Deleting Account', () => {
+  it('user can delete account', async() => {
+    render(<App />);
+    fetchSuccess = true;
+  
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    const openDeleteButton = await screen.findByRole('button', {name: /DeleteAccountButton/i});
+    fireEvent.press(openDeleteButton);
+
+    const checkbox = await screen.findByRole('checkbox', {name: /ConfirmDeleteCheckbox/i});
+    const passwordField2 = await screen.findByPlaceholderText('Password');
+    const confirmButton = await screen.findByRole('button', {name: /ConfirmDeleteAccountButton/i});
+
+    fireEvent.press(checkbox);
+    fireEvent.changeText(passwordField2, "Password12!");
+    fireEvent.press(confirmButton);
+
+    expect(await screen.findByLabelText("LoginForm")).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /CreateAccountButton/i })).toBeTruthy();
+  });
+});
+
+describe('<App /> - Deleting Account', () => {
+  it('unsuccessful account deletion gives appropriate errors', async() => {
+    render(<App />);
+    fetchSuccess = true;
+  
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitLogInButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "Password12!");
+    fireEvent.press(submitLogInButton);
+
+    const settingsButton = await screen.findByRole('button', {name: /SettingsButton/i });
+    fireEvent.press(settingsButton);
+    
+    const openDeleteButton = await screen.findByRole('button', {name: /DeleteAccountButton/i});
+    fireEvent.press(openDeleteButton);
+
+    const checkbox = await screen.findByRole('checkbox', {name: /ConfirmDeleteCheckbox/i});
+    const passwordField2 = await screen.findByPlaceholderText('Password');
+    const confirmButton = await screen.findByRole('button', {name: /ConfirmDeleteAccountButton/i});
+
+    fireEvent.press(confirmButton);
+
+    expect(await screen.findByText("Please check the box before proceeding")).toBeTruthy();
+
+    fireEvent.press(checkbox);
+    fireEvent.press(confirmButton);
+
+    expect(await screen.findByText("Please enter your password")).toBeTruthy();
+
+    fireEvent.press(checkbox);
+    fireEvent.changeText(passwordField2, "Password12!");
+    fireEvent.press(confirmButton);
+
+    expect(await screen.findByText("Please check the box before proceeding")).toBeTruthy();
+  });
+});
