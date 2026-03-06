@@ -16,7 +16,8 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
     // Page and Microphone States
     const [permissionResponse, setPermissionResponse] = useState(null);
-    
+    const [fileid, setFileid] = useState(null);
+
     const intervalRef = useRef(null);
     const sessionIdRef = useRef(null);
     const chunkIndexRef = useRef(0);
@@ -105,9 +106,9 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
         // Check Data Processing is fine
         console.log("Uploading chunk:", idx, "final:", isFinal);
-
+        setFileid(uuidv4());
         // Send to Backend API
-        const response = await fetch('http://143.110.169.239:8000/api/v1/upload-audio', {
+        const response = await fetch(`http://143.110.169.239:8000/api/v1/upload-audio?file_id=${fileid}`, {
           method: 'POST',
           body: formData,
         });
@@ -221,7 +222,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
                 {(status === 'finished' || status === 'finishing') && (
 
-                  <PostRecordScreen handleReset={handleReset} accessToken={accessToken}/>
+                  <PostRecordScreen handleReset={handleReset} accessToken={accessToken} fileid={fileid}/>
                 )}
                 
             </> 

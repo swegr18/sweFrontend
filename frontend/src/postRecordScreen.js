@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
 import StatCard from './statCard.js'
 import { v4 as uuidv4 } from 'uuid';
-export default function PostRecordScreen({handleReset, accessToken}){
+export default function PostRecordScreen({handleReset, accessToken, fileid}){
     
 
       const [metrics, setMetrics] = useState(null); ``
@@ -37,8 +37,12 @@ export default function PostRecordScreen({handleReset, accessToken}){
         });
         let resp = await response.json();
         let userid = resp.id;
-        const response2 = await fetch(`http://143.110.169.239:8000/api/v1/userdata?user_id=${userid}&filename=${speechName}`, {
-            method: "POST",
+        const url = `http://143.110.169.239:8000/api/v1/userdata?user_id=${userid}&filename=${encodeURIComponent(speechName)}&file_id=${fileid}`;
+        const response2 = await fetch(url, {
+          method: "POST",
+          headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          },
         });
         resp = await response2.json();
         return resp.ok;
