@@ -40,7 +40,6 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 const url = `http://143.110.169.239:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log(response)
                 if (!isActive) return;
                 if (response.ok && data?.ready && data?.running_wpm != null) {
                     
