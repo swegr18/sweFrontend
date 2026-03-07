@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
-import StatCard from './statCard.js'
+import StatCard from './components/statCard.js'
 import { v4 as uuidv4 } from 'uuid';
 export default function PostRecordScreen({handleReset, accessToken}){
     
@@ -10,7 +10,7 @@ export default function PostRecordScreen({handleReset, accessToken}){
       const [speechName, setSpeechName] = useState("");
 
       const [errorMessage, setErrorMessage] = useState(" ");
-    
+  
       useEffect(() => {
         fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
           .then(async (res) => {
@@ -25,7 +25,6 @@ export default function PostRecordScreen({handleReset, accessToken}){
             setError(String(err.message || err));
           });
       }, []);
-      
 
       // TODO: name to backend
       const submitPostToBackend = async () => {
@@ -84,7 +83,6 @@ export default function PostRecordScreen({handleReset, accessToken}){
             
                   {error ? 
                   <>
-                    <Text style={styles.infoText}>{error}</Text>
                     <View style={styles.cardContainer}>
                       <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '200'}}/>
                       <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
@@ -108,19 +106,23 @@ export default function PostRecordScreen({handleReset, accessToken}){
 
                    </>
                   ) : (
-                    <View style={styles.cardContainer}>
+                    <>
 
-                      <StatCard title="Duration" value={Number(metrics.duration).toPrecision(5)} style={{width: '100%'}}/>
-                      <StatCard title="Volume" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{}}/>
-                      <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{}}/>
-                      <StatCard title="Pitch" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%'}}/>
+                    <Text style={styles.loadingText}>Metrics Calculated </Text>
+                    <View style={styles.cardContainer}>
+                      
+                      <StatCard title="Duration (s)" value={Number(metrics.duration).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Volume (db)" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{width: '52%', fontSize: 10}}/>
+                      <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{width: '45%'}}/>
+                      <StatCard title="Pitch (Hz)" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%'}}/>
 
 
                     </View>
+                    </>
                   )}
                   
             <View style={styles.buttonGroup}>
-              <TextInput testID="nameButton" style={styles.speechInput} value={speechName} onChangeText={setSpeechName} placeholder={"Name..."}></TextInput>
+              <TextInput testID="nameButton" style={styles.speechInput} value={speechName} onChangeText={setSpeechName} placeholder={" Name..."}></TextInput>
               <Text style={styles.errorMessage}>{errorMessage}</Text>
               {accessToken !== null ? ( //user is signed in
                 <Pressable accessibilityRole="button" accessibilityLabel="Save" onPress={handleSave} style={styles.saveButton}>
@@ -144,13 +146,17 @@ export default function PostRecordScreen({handleReset, accessToken}){
 const styles = StyleSheet.create({
     container: {
         height: '75%',
-        width: '70%',
+        width: '80%',
         backgroundColor: '#313639',
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor: '#2e6f40',
+        borderColor: 'red',
         borderWidth: 3,
         borderRadius: 12,
+        boxShadow: 'inset 0px 0px 50px #E00043',
+        fontFamily: "Exo_700Bold"
+
+
     },
     buttonGroup: {
       position: 'absolute',
@@ -176,30 +182,30 @@ const styles = StyleSheet.create({
     buttonText:{
       alignSelf: 'center',
       color: 'white',
-      fontFamily: 'Trebuchet MS'
+      fontFamily: 'Exo_700Bold'
     },
     title: {
       position: 'absolute',
       top: 10,
       color: 'white',
-      fontFamily: 'Trebuchet MS'
+      fontFamily: 'Exo_700Bold'
     },
     infoText: {
       position: 'absolute',
       top: 30,
       color: 'white',
-      fontFamily: 'Trebuchet MS',
+      fontFamily: 'Exo_700Bold',
       color: 'red'
     },
     loadingText: {
       color: 'white',
-      fontFamily: 'Trebuchet MS',
+      fontFamily: 'Exo_700Bold',
       position: 'absolute',
-      top: 50,
+      top: 40,
     },
     cardContainer: {
       position: 'absolute',
-      top: 70,
+      top: 50,
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'space-between',
@@ -208,17 +214,19 @@ const styles = StyleSheet.create({
       gap: 5, 
     },
     speechInput: {
-      borderColor: 'green',
+      borderColor: '#ff0042',
+      backgroundColor: '#313639',
       borderWidth: 2,
-      backgroundColor: 'white',
       height: 34,
-      fontFamily: 'Trebuchet MS',
+      width:'100%',
+      fontFamily: 'Exo_700Bold',
+      color: 'white',
     },
     errorMessage:{
         color: "#ff0000",
         alignSelf: 'center',
         fontSize: 12,
-        fontFamily: 'Trebuchet MS'
+        fontFamily: 'Exo_700Bold'
     }
 
 });

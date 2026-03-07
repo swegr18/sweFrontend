@@ -16,13 +16,14 @@ export default function StatCard({ title, value, style}) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#313639',
     padding: 10,
-    borderRadius: 12,
-    borderColor: '#2e6f40',
+    borderRadius: 1,
+    borderColor: '#E00043',
+    boxShadow: 'inset 0px 0px 20px #E00043',
     borderWidth: 3,
     width: 100,
-    height:70,
+    height:73,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -32,10 +33,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2e6f40',
+    color: 'gray',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    fontFamily: 'Trebuchet MS',
+    fontFamily: 'Exo_700Bold',
 
 },
   valueContainer: {
@@ -43,14 +44,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     width: '100%',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
 
   },
   value: {
     fontSize: 36,
     fontWeight: '800',
-    color: '#111827',
-    fontFamily: 'Trebuchet MS',
+    color: 'white',
+    fontFamily: 'Exo_700Bold',
     letterSpacing: -0.5,
   },
 });

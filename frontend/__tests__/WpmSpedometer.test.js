@@ -35,6 +35,7 @@ describe('WPM Spedometer -', () => {
   isVisible: true,
   onStop: jest.fn(),
   onHidden: jest.fn(),
+  liveWPM: "On",
   };
 
 

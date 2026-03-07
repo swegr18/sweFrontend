@@ -335,7 +335,10 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
             )}
 
             {profilePopup && (
-                <View style={styles.popup}>
+                <View style={[
+                    styles.popup, 
+                    signInStatus === 'Settings' && styles.settingsPopup 
+                ]}>
                     {signInStatus!=='Settings' && signInStatus!=='DeletingAccount' && (
                         <Text style={styles.title}>Profile</Text>
                     )}
@@ -364,13 +367,14 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
                             </View>
+                            <View style={styles.spacer}></View>
                             <View>
                                 <Text style={styles.subtitle}>Change Password</Text>
                                 <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={styles.input} placeholder='Current Password'></TextInput>
-                                <View style={styles.oneline}>
-                                    <TextInput value={newPassword} secureTextEntry={true} onChangeText={setNewPassword} style={styles.smallInput} placeholder='New Password'></TextInput>
-                                    <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.smallInput} placeholder='Confirm New Password'></TextInput>
-                                </View>
+                                {/*<View style={styles.oneline}>*/} 
+                                    <TextInput value={newPassword} secureTextEntry={true} onChangeText={setNewPassword} style={styles.input} placeholder='New Password'></TextInput>
+                                    <TextInput value={confirmPassword} secureTextEntry={true} onChangeText={setConfirmPassword} style={styles.input} placeholder='Confirm New Password'></TextInput>
+                                {/*</View>*/}
                                 {errorNumber === 1 && (
                                     <Text style={isError ? styles.errorMessage : styles.successMessage}>{errorMessage}</Text>
                                 )}
@@ -396,9 +400,9 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                 accessibilityLabel = 'ExitSettingsButton'  
                                 onPress={closeSettings}  
                             ></Pressable>
-                            <View style={styles.oneline}>
+                            <View style={styles.deleteOneline}>
                                 <Checkbox accessibilityRole="checkbox" accessibilityLabel="ConfirmDeleteCheckbox" value={deleteAccountCheckbox} onValueChange={setDeleteAccountCheckbox}/>
-                                <Text>I understand that deleting my account is permanent and cannot be reversed</Text>
+                                <Text style={styles.deleteMessage}>I understand that deleting my account is permanent and cannot be reversed</Text>
                             </View>
                             <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
                             <Text style={styles.errorMessage}>{errorMessage}</Text>
@@ -449,7 +453,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                 </Pressable>
                             </View>
                             <View style={styles.oneline}>
-                                <Text>Don't have an account? </Text>
+                                <Text style={styles.message}>Don't have an account? </Text>
                                 <Pressable accessibilityRole='button'  accessibilityLabel='CreateAccountButton' onPress={startCreateAccount} >
                                     <Text style={styles.hyperlink}>Create one</Text>
                                 </Pressable>
@@ -470,7 +474,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                 </Pressable>
                             </View>
                             <View style={styles.oneline}>
-                                <Text>Already have an account? </Text>
+                                <Text style={styles.message}>Already have an account? </Text>
                                 <Pressable accessibilityRole='button' accessibilityLabel='LogInButton' onPress={signOut} >
                                     <Text style={styles.hyperlink}>Log In</Text>
                                 </Pressable>
@@ -505,8 +509,8 @@ const styles = StyleSheet.create({
         left: 8,
     },
     popup: {
-        height: "43%",
-        backgroundColor: 'green',
+        height: "50%",
+        backgroundColor: '#313639',
         alignItems: 'center',
         position: "absolute",
         top: 10,
@@ -514,25 +518,52 @@ const styles = StyleSheet.create({
         alignSelf: 'center', 
         paddingTop: 10,
         zIndex: 10,
-        borderRadius: "8px",
+        borderRadius: "2px",
+        borderWidth: 2,
+        borderColor: '#ff0042',
+        boxShadow: 'inset 0px 0px 20px #E00043',
+
+        
+    },
+    settingsPopup: {
+        height: "80%",
+        backgroundColor: '#313639',
+        alignItems: 'center',
+        position: "absolute",
+        top: 10,
+        width: "95%",
+        alignSelf: 'center', 
+        paddingTop: 10,
+        zIndex: 10,
+        borderRadius: "2px",
+        borderWidth: 2,
+        borderColor: '#ff0042',
+        boxShadow: 'inset 0px 0px 20px #E00043',
+
     },
     title: {
         fontSize: 24,
-        marginBottom: 2,
-        fontWeight: 'bold',
+        marginBottom: 10,
+        fontFamily: 'Exo_700Bold',
+        color: 'white',
     },
     subtitle: {
-        fontSize: 18,
+        fontSize: 14,
         alignSelf: "center",
+        fontFamily: 'Exo_700Bold',
+        color: 'white',
+        marginBottom: 4,
     },
     button: {
-        backgroundColor: "#2600ff",
+        backgroundColor: "#00BF06",
         width: "100px",
         height: "25px",
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center",
-        borderRadius: 5,
+        borderRadius: 3,
+        
+        
     },
     redButton: {
         backgroundColor: "#ff0000",
@@ -542,10 +573,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignSelf: "center",
         borderRadius: 5,
+        marginTop: 10,
     },
     deleteAccountButton: {
         backgroundColor: "#ff0000",
-        width: "100px",
+        width: "150px",
         height: "25px",
         alignItems: "center",
         justifyContent: "center",
@@ -555,8 +587,9 @@ const styles = StyleSheet.create({
         bottom: 5,
     },
     buttonText: {
-        color: "#ffffff",
-        fontSize: "15px"
+        fontSize: "15px",
+        fontFamily: 'Exo_700Bold',
+        color: 'white',
     },
     smallInput: {
         backgroundColor: "#cfc4c4",
@@ -570,16 +603,24 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: "#cfc4c4",
         lineHeight: 22,
-        padding: 3,
-        marginBottom: 3,
+        padding: 5,
+        marginBottom: 7,
         borderRadius: 5,
         width: 200,
+        height: 35,
         alignSelf: 'center',
+        fontFamily: 'Exo_700Bold',
+        color: 'black',
+        borderColor: '#6fff79',
+        boxShadow: 'inset 0px 0px 6px #6fff79',
+        
     },
     errorMessage:{
         color: "#ff0000",
         alignSelf: 'center',
-        fontSize: 13
+        fontSize: 13,
+        marginBottom: 8,
+        
     },
     successMessage:{
         color: "#6fff79",
@@ -587,12 +628,21 @@ const styles = StyleSheet.create({
         fontSize: 13
     },
     hyperlink: {
-        color: "#006aff",
+        color: "#6fff79",
         textDecorationLine: "underline",
     },
     oneline: {
         flexDirection: "row",
         alignSelf: 'center',
+        marginTop: 7,
+    },
+    deleteOneline :{
+        flexDirection: "row",
+        gap:6,
+        alignSelf: 'center',
+        marginTop: 7,
+        marginLeft: 20,
+        marginBottom: 20,
     },
     spread: {
         flex: 1,
@@ -600,4 +650,15 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 40,
     },
+    message : {
+        fontFamily: 'Exo_700Bold',
+        color: 'white',
+    },
+    spacer: {
+        height: 20
+    },
+    deleteMessage :{
+        fontFamily: 'Exo_700Bold',
+        color: 'white',
+    }
 });

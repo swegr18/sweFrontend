@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Path, Defs, RadialGradient, Stop, Text } from "react-native-svg"
 
-export default function ContextModeSwitch() {
-  const [activeSide, setActiveSide] = useState('left');
+export default function ContextModeSwitch({onModeChange}) {
+  const [activeSide, setActiveSide] = useState('In-Person');
 
     const SwitchButton = ({ id, text, stopColor1 = "#606060", stopColor2 = "#555", ...props }) => (
     <Svg
@@ -44,34 +44,43 @@ export default function ContextModeSwitch() {
     </Svg>
     );
 
+
+    const handlePress = (mode) => {
+      setActiveSide(mode);
+    
+      if (onModeChange) {
+        onModeChange(mode);
+      }
+    };
+
   return (
     <View style={styles.container}>
       <View style={styles.toggleContainer}>
         
-        {/* left side */}
+        {/* In-Person side */}
         <TouchableOpacity 
-          style={[styles.button, activeSide === 'left' && styles.activeButton]}
-          onPress={() => setActiveSide('left')}
+          style={[styles.button, activeSide === 'In-Person' && styles.activeButton]}
+          onPress={() => handlePress('In-Person')}
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel="In-Person"
-          accessibilityState={{ checked: activeSide === 'left' }}
+          accessibilityState={{ checked: activeSide === 'In-Person' }}
         >
-          <SwitchButton id="left-grad" text="In-Person" stopColor1={activeSide === 'left' ? "#FF5F8F" : "#828282"}
-                        stopColor2={activeSide === 'left' ? "#E00043" : "#555"} />
+          <SwitchButton id="In-Person-grad" text="In-Person" stopColor1={activeSide === 'In-Person' ? "#FF5F8F" : "#828282"}
+                        stopColor2={activeSide === 'In-Person' ? "#E00043" : "#555"} />
         </TouchableOpacity>
 
-        {/* right side */}
+        {/* Online side */}
         <TouchableOpacity 
-          style={[styles.button, activeSide === 'right' && styles.activeButton]}
-          onPress={() => setActiveSide('right')}
+          style={[styles.button, activeSide === 'Online' && styles.activeButton]}
+          onPress={() => handlePress('Online')}
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel="Online"
-          accessibilityState={{ checked: activeSide === 'right' }}
+          accessibilityState={{ checked: activeSide === 'Online' }}
         >
-          <SwitchButton id="right-grad" text="Online" stopColor1={activeSide === 'right' ? "#FF5F8F" : "#828282"}
-                        stopColor2={activeSide === 'right' ? "#E00043" : "#555"} />
+          <SwitchButton id="Online-grad" text="Online" stopColor1={activeSide === 'Online' ? "#FF5F8F" : "#828282"}
+                        stopColor2={activeSide === 'Online' ? "#E00043" : "#555"} />
         </TouchableOpacity>
 
       </View>

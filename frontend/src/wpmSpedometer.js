@@ -4,7 +4,7 @@ import AnimatedGridBackground from './components/recordBackground';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import AnimatedWave from './wpmWave'
 
-export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible, onHidden }) {
+export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible, onHidden, liveWPM }) {
     // UI animations
     const slideAnim = useRef(new Animated.Value(700)).current; // start off-screen below
 
@@ -40,8 +40,10 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                 const url = `http://143.110.169.239:8000/api/v1/live-wpm?session_id=${encodeURIComponent(sessionId)}`;
                 const response = await fetch(url);
                 const data = await response.json();
+                console.log(response)
                 if (!isActive) return;
                 if (response.ok && data?.ready && data?.running_wpm != null) {
+                    
                     console.log("running_wpm");
                     setWpm(data.running_wpm);
                  }
@@ -132,9 +134,20 @@ export default function WpmSpedometer({ sessionId, chunkIndex, onStop, isVisible
                     />
                 </View>
                 
-                <Text style={styles.wpmText}>{wpm} WPM</Text>
-                <Text style={styles.labelText}>Recording...</Text>
+                {(liveWPM === "On") && ( 
+                    <>
+                    <Text style={styles.wpmText}>{wpm} WPM</Text>
+                    <Text style={styles.labelText}>Recording...</Text> 
+                    </> )}
+
+                {(liveWPM === "Off") && ( 
+                    <>
+                    <Text style={styles.wpmText}>N/A</Text>
+                    <Text style={styles.labelText}>Recording...</Text> 
+                    </> )}
+
             </View>
+
 
             <View style={{ height: gap }} />
 

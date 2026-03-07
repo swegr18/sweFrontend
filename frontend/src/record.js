@@ -22,6 +22,9 @@ export default function RecordScreen({status, setStatus, accessToken}) {
     const chunkIndexRef = useRef(0);
     const [latestChunkIdx, setLatestChunkIdx] = useState(-1);
     const [sessionId, setSessionId] = useState(null);
+    const [context_mode, setContextMode] = useState("In-Person");
+    const[live_mode, setLiveMode] = useState("On")
+
     // Audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     
@@ -68,18 +71,17 @@ export default function RecordScreen({status, setStatus, accessToken}) {
     }
 
     
-    const uploadChunk = async (uri, isFinal = false) => {
+    const uploadChunk = async (uri, isFinal) => {
       if (!uri) return;
 
       //  reserve an index immediately (prevents duplicates if uploads overlap)
       const idx = chunkIndexRef.current++;
-      const context_mode = "Online"
       try {
         const formData = new FormData();
         formData.append("session_id", sessionIdRef.current);
         formData.append("chunk_index", String(idx));
         formData.append("is_final", isFinal ? "true" : "false");
-        formData.append("context_mode", String(context_mode));
+        formData.append("context_mode", String({context_mode}));
 
         // In Web
         if (Platform.OS === 'web') {
@@ -161,6 +163,8 @@ export default function RecordScreen({status, setStatus, accessToken}) {
               uploadChunk(uri, true); 
           }
 
+          const idx = 0
+
       } catch (error) {
           console.error("Stop failed:", error);
       }
@@ -168,13 +172,24 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
     // Updates status back to idle post recording and save
     const handleReset = () => {
+      setLiveMode("On")
+      setContextMode("Onine")
       setStatus('idle');
     };  
 
     const isRecording = () => { //tells other files whether currently recording
       return status=='recording';
     }
-    
+
+    const handleModeChange = (newMode) => {
+      setContextMode(newMode);
+    };
+
+    const handleLiveModeChange = (newMode) => {
+      setLiveMode(newMode);
+    };
+
+
    return (
             <> 
         
@@ -192,12 +207,12 @@ export default function RecordScreen({status, setStatus, accessToken}) {
                   <View style={styles.switchGroup}>
                     <View style={styles.switchContainer}>
                       <Text style={styles.switchTitle}>Context Mode</Text>
-                      <ContextModeSwitch/>
+                      <ContextModeSwitch onModeChange={handleModeChange}/>
                     </View>
                     
                     <View style={styles.switchContainer}>
                       <Text style={styles.switchTitle}>Live WPM</Text>
-                      <LiveWPMSwitch/>
+                      <LiveWPMSwitch onLiveModeChange={handleLiveModeChange}/>
                     </View>
                   </View>
                 )}
@@ -216,6 +231,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
                         onStop={stopRecording}
                         isVisible={status === 'recording'}
                         onHidden={() => setStatus('finished')}
+                        liveWPM={live_mode}
                     />
                 )}
 
@@ -235,7 +251,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: 'bold',
     color: 'white',
-    fontFamily: 'Trebuchet MS'
+    fontFamily: "Exo_700Bold"
   },
   statusText: {
     fontSize: 18,

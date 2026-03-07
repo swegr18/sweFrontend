@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Path, Defs, RadialGradient, Stop, Text } from "react-native-svg"
 
-export default function LiveWPMSwitch() {
-  const [activeSide, setActiveSide] = useState('left');
+export default function LiveWPMSwitch({onLiveModeChange}) {
+  const [activeSide, setActiveSide] = useState('On');
+
+
+  const handlePress = (mode) => {
+      setActiveSide(mode);
+    
+      if (onLiveModeChange) {
+        onLiveModeChange(mode);
+      }
+    };
 
   const SwitchButton = ({ id, text, stopColor1 = "#606060", stopColor2 = "#555", ...props }) => (
     <Svg
@@ -48,30 +57,30 @@ export default function LiveWPMSwitch() {
     <View style={styles.container}>
       <View style={styles.toggleContainer}>
         
-        {/* left side */}
+        {/* On side */}
         <TouchableOpacity 
-          style={[styles.button, activeSide === 'left' && styles.activeButton]}
-          onPress={() => setActiveSide('left')}
+          style={[styles.button, activeSide === 'On' && styles.activeButton]}
+          onPress={() => handlePress('On')}
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel="wpmOn"
-          accessibilityState={{ checked: activeSide === 'left' }}
+          accessibilityState={{ checked: activeSide === 'On' }}
         >
-          <SwitchButton id="left" text="On" stopColor1={activeSide === 'left' ? "#FF5F8F" : "#828282"}
-                        stopColor2={activeSide === 'left' ? "#E00043" : "#555"} />
+          <SwitchButton id="On" text="On" stopColor1={activeSide === 'On' ? "#FF5F8F" : "#828282"}
+                        stopColor2={activeSide === 'On' ? "#E00043" : "#555"} />
         </TouchableOpacity>
 
-        {/* right side */}
+        {/* Off side */}
         <TouchableOpacity 
-          style={[styles.button, activeSide === 'right' && styles.activeButton]}
-          onPress={() => setActiveSide('right')}
+          style={[styles.button, activeSide === 'Off' && styles.activeButton]}
+          onPress={() => handlePress('Off')}
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel="wpmOff"
-          accessibilityState={{ checked: activeSide === 'right' }}
+          accessibilityState={{ checked: activeSide === 'Off' }}
         >
-          <SwitchButton id="right" text="Off" stopColor1={activeSide === 'right' ? "#FF5F8F" : "#828282"}
-                        stopColor2={activeSide === 'right' ? "#E00043" : "#555"} />
+          <SwitchButton id="Off" text="Off" stopColor1={activeSide === 'Off' ? "#FF5F8F" : "#828282"}
+                        stopColor2={activeSide === 'Off' ? "#E00043" : "#555"} />
         </TouchableOpacity>
 
       </View>
