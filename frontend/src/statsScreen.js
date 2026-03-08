@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'; 
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import { AntDesign } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { LineChart} from "react-native-gifted-charts";
 
 export default function StatsScreen({ onBack, accessToken }) {
 
@@ -29,7 +30,7 @@ export default function StatsScreen({ onBack, accessToken }) {
       })
 
       resp = await response2.json();
-      if(!resp.ok){
+      if(!response2.ok){
         console.log(resp.detail);
         return null
       }
@@ -67,9 +68,17 @@ export default function StatsScreen({ onBack, accessToken }) {
   return (
     <View style={styles.statsScreen}>
       <Text style={styles.title}>Stats</Text>
-
+      <Pressable 
+        style={styles.backButton}
+        onPress={onBack}
+        accessibilityRole='button' 
+        accessibilityLabel='statsBackButton'
+      >
+        <AntDesign name="close" size={24} color="red" />
+      </Pressable>
       {accessToken !== null ? (
-          metrics?.map((speech,i) =>(
+        <ScrollView>
+          {metrics?.map((speech,i) => (
             <View key={speech.audio_id}>
               <View style={styles.oneline}>
                 <Pressable onPress={() => changeOpen(i)}>
@@ -80,21 +89,36 @@ export default function StatsScreen({ onBack, accessToken }) {
               {open[i] && (
                 <>
                   <Text style={styles.text}>{speech.created_at}</Text>
+                  <LineChart
+                    data={speech.graph_volume.map(v => ({ value: Number(v) }))}
+                    mostNegativeValue={-100}
+                    stepValue={10}
+
+                    height={100}
+                    width={110}
+
+                    color="#4FD1C5"
+                    thickness={3}
+                    hideDataPoints={false}
+                    dataPointsColor="#4FD1C5"
+                    dataPointsRadius={4}
+                    spacing={20}
+                    initialSpacing={10}
+                    yAxisColor="rgb(255, 255, 255)"
+                    xAxisColor="rgb(255, 255, 255)"
+                    yAxisTextStyle={{ color: "white" }}
+                    rulesColor="rgba(255,255,255,0.1)"
+                    rulesType="solid"
+                    isAnimated
+                  />
                 </>
               )}
             </View>
-          ))
+          ))}
+        </ScrollView>
       ) : (
         <Text style={styles.bigText}>Sign in or create an account to view full stats</Text>
       )}
-      <Pressable 
-        style={styles.backButton}
-        onPress={onBack}
-        accessibilityRole='button' 
-        accessibilityLabel='statsBackButton'
-      >
-        <AntDesign name="close" size={24} color="red" />
-      </Pressable>
     </View>
   );
 } 
@@ -115,7 +139,7 @@ const styles = StyleSheet.create({
   statsScreen: {
     width: "100%",
     height: "100%",
-    padding: "15px"
+    padding: 15
   },
   bigText: {
     fontSize: 20,
