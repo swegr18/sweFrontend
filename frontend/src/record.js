@@ -106,9 +106,10 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
         // Check Data Processing is fine
         console.log("Uploading chunk:", idx, "final:", isFinal);
-        setFileid(uuidv4());
+        let id = uuidv4();
+        setFileid(id);
         // Send to Backend API
-        const response = await fetch(`http://143.110.169.239:8000/api/v1/upload-audio?file_id=${fileid}`, {
+        const response = await fetch(`http://143.110.169.239:8000/api/v1/upload-audio?file_id=${id}`, {
           method: 'POST',
           body: formData,
         });
