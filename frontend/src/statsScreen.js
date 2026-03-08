@@ -3,7 +3,9 @@ import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import { AntDesign } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { LineChart} from "react-native-gifted-charts";
+import StatCard from './components/statCard.js'
+import GraphCard from './components/graphCard.js';
+import { LineChart } from "react-native-gifted-charts";
 
 export default function StatsScreen({ onBack, accessToken }) {
 
@@ -55,7 +57,8 @@ export default function StatsScreen({ onBack, accessToken }) {
         "graph_freq": [51.1,40.4,30.2,29.5,35.6,41.8,46.8],
       },
     ]
-    setOpen(new Array(mockMetrics.length).fill(true));
+    setOpen(new Array(mockMetrics.length).fill(false));
+    changeOpen(0);
     setMetrics(mockMetrics);
   }, []);
 
@@ -79,8 +82,8 @@ export default function StatsScreen({ onBack, accessToken }) {
       {accessToken !== null ? (
         <ScrollView>
           {metrics?.map((speech,i) => (
-            <View key={speech.audio_id}>
-              <View style={styles.oneline}>
+            <View key={speech.audio_id} style={styles.card}>
+              <View style={styles.dropdownline}>
                 <Pressable onPress={() => changeOpen(i)}>
                   <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
                 </Pressable>
@@ -89,29 +92,12 @@ export default function StatsScreen({ onBack, accessToken }) {
               {open[i] && (
                 <>
                   <Text style={styles.text}>{speech.created_at}</Text>
-                  <LineChart
-                    data={speech.graph_volume.map(v => ({ value: Number(v) }))}
-                    mostNegativeValue={-100}
-                    stepValue={10}
-
-                    height={100}
-                    width={110}
-
-                    color="#4FD1C5"
-                    thickness={3}
-                    hideDataPoints={false}
-                    dataPointsColor="#4FD1C5"
-                    dataPointsRadius={4}
-                    spacing={20}
-                    initialSpacing={10}
-                    yAxisColor="rgb(255, 255, 255)"
-                    xAxisColor="rgb(255, 255, 255)"
-                    yAxisTextStyle={{ color: "white" }}
-                    rulesColor="rgba(255,255,255,0.1)"
-                    rulesType="solid"
-                    isAnimated
-                  />
-                </>
+                  
+                  <View style={styles.oneline}>
+                    <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={100} lowerBound={-100}/>
+                    <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={100} lowerBound={0}/>
+                  </View>
+                </> 
               )}
             </View>
           ))}
@@ -143,14 +129,21 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontSize: 20,
+    fontFamily: 'Exo_700Bold',
+    color: 'white',
     alignSelf: 'center'
   },
-  oneline: {
+  dropdownline: {
     flexDirection: "row",
     alignSelf: 'center',
     marginTop: 7,
     width: "100%",
     marginLeft: 60,
+  },
+  oneline: {
+    flexDirection: "row",
+    alignSelf: 'center',
+    width: "100%",
   },
   dropdown: {
     position: 'absolute',
@@ -162,4 +155,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Exo_700Bold',
     color: 'white',
   },
+  card: {
+    backgroundColor: '#313639',
+    padding: 15,
+    paddingBottom: 20,
+    borderRadius: 12,
+    marginBottom: 25,
+    borderColor: 'red',
+    borderWidth: 3,
+    boxShadow: 'inset 0px 0px 50px #E00043',
+    fontFamily: "Exo_700Bold"
+  }
 });
