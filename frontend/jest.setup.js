@@ -40,20 +40,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid-1234-abcd-efgh-5678ijklmnop'),
 }));
 
-jest.mock('react-native-svg', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  
-  return {
-    __esModule: true,
-    default: (props) => <View {...props} testID="svg-root" />,
-    Svg: (props) => <View {...props} testID="svg-root" />,
-    Path: (props) => <View {...props} testID="svg-path" />,
-    Circle: (props) => <View {...props} />,
-    Rect: (props) => <View {...props} />,
-    G: (props) => <View {...props} />,
-  };
-});
 
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
@@ -87,16 +73,37 @@ jest.mock('react-native', () => {
 });
 
 jest.mock('react-native-svg', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  const createMockComponent = (name) => {
+    const Component = (props) => React.createElement(View, props, props.children);
+    Component.displayName = name; 
+    return Component;
+  };
+
   return {
     __esModule: true,
-    default: 'Svg',
-    Path: 'Path',
-    Circle: 'Circle',
-    Defs: 'Defs',
-    RadialGradient: 'RadialGradient',
-    Stop: 'Stop',
-    Text: 'Text', 
-    Rect: 'Rect'
+    default: createMockComponent('Svg'),
+    Svg: createMockComponent('Svg'),
+    Path: createMockComponent('Path'),
+    Circle: createMockComponent('Circle'),
+    Rect: createMockComponent('Rect'),
+    G: createMockComponent('G'),
+    Defs: createMockComponent('Defs'),
+    RadialGradient: createMockComponent('RadialGradient'),
+    Stop: createMockComponent('Stop'),
+    Text: createMockComponent('Text'),
+    LinearGradient: createMockComponent('LinearGradient'),
+  };
+});
+
+jest.mock('react-native-gifted-charts', () => {
+  const { View } = require('react-native');
+  return {
+    LineChart: (props) => <View {...props} testID="mock-line-chart" />,
+    BarChart: (props) => <View {...props} testID="mock-bar-chart" />,
+    PieChart: (props) => <View {...props} testID="mock-pie-chart" />,
   };
 });
 
