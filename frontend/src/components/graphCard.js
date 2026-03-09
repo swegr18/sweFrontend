@@ -28,6 +28,9 @@ export default function GraphCard({ title, values, upperBound, lowerBound, step}
     else if(len < 50){
       labelSpacing = 10;
     }
+    else{
+      labelSpacing = 20;
+    }
   }
 
   return (
