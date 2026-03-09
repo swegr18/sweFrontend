@@ -41,26 +41,39 @@ export default function StatsScreen({ onBack, accessToken }) {
       }
     }
 
-    //setMetrics(fetchGraphData()); can't use this for testing until the sending name and userid to the backend is working
-    
-    let mockMetrics = [
-      {
-        "audio_id": uuidv4(),
-        "created_at": "1/1/26 13:30:04",
-        "graph_volume": [-54.1,-53.7,-30.1,-60.2,-53.8,-54.9],
-        "graph_freq": [20.1,30.4,20.2,29.5,15.6,31.8,31.8],
-      },
-      {
-        "audio_id": uuidv4(),
-        "created_at": "1/1/26 14:20:45",
-        "graph_volume": [-31.1,-32.7,-30.1,-40.2,-35.8,-40.9],
-        "graph_freq": [51.1,40.4,30.2,29.5,35.6,41.8,46.8],
-      },
-    ]
-    setOpen(new Array(mockMetrics.length).fill(false));
-    changeOpen(0);
-    setMetrics(mockMetrics);
+    const load = async () => {
+      const data = await fetchGraphData();
+
+      if(!data){
+        return null;
+      }
+      else{
+        setMetrics(data);
+        setOpen(new Array(data.length).fill(false));
+        changeOpen(0);
+      }
+    }
+
+    if(accessToken){
+      load();
+    }
   }, []);
+
+  const formatDatetime = (unformatted) => {
+    let split = unformatted.split("T");
+    split[0] = formatDate(split[0]);
+    split[1] = split[1].slice(0,5);
+    return split;
+  }
+
+  const formatDate = (unformatted) => {
+    let split = unformatted.split("-");
+    if(split[2] < 10){
+      split[2] = split[2][1]
+    }
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    return `${split[2]}-${months[split[1]-1]}`
+  }
 
   const changeOpen = (i) => {
     let newOpen = [...open];
@@ -87,12 +100,13 @@ export default function StatsScreen({ onBack, accessToken }) {
                 <Pressable onPress={() => changeOpen(i)}>
                   <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
                 </Pressable>
-                <Text style={styles.text}>{speech.audio_id}</Text>
+                <Text style={[styles.text, {width: "80%"}]} numberOfLines={open[i] ? "" : 1}>{speech.name}</Text>
+                <Text style={styles.text}>{formatDatetime(speech.created_at)[0]}</Text>
               </View>
               {open[i] && (
                 <>
-                  <Text style={styles.text}>{speech.created_at}</Text>
-                  
+                  <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
+
                   <View style={styles.oneline}>
                     <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={100} lowerBound={-100}/>
                     <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={100} lowerBound={0}/>
@@ -139,6 +153,8 @@ const styles = StyleSheet.create({
     marginTop: 7,
     width: "100%",
     marginLeft: 60,
+    justifyContent: "space-between",
+    paddingRight: 25
   },
   oneline: {
     flexDirection: "row",
@@ -154,6 +170,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Exo_700Bold',
     color: 'white',
+  },
+  lefttext: {
+    fontSize: 14,
+    fontFamily: 'Exo_700Bold',
+    color: 'white',
+    textAlign: 'left'
+  },
+  righttext: {
+    fontSize: 14,
+    fontFamily: 'Exo_700Bold',
+    color: 'white',
+    textAlign: 'right'
   },
   card: {
     backgroundColor: '#313639',

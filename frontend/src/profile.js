@@ -247,7 +247,6 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
     }
 
     const startDeleteAccount = () => {
-        console.log("got this far");
         if(!deleteAccountCheckbox){
             setErrorMessage("Please check the box before proceeding");
         }
