@@ -87,6 +87,7 @@ export default function PostRecordScreen({handleReset, accessToken, fileid}){
             
                   {error ? 
                   <>
+                  <Text style={styles.loadingText}>Failed to fetch</Text>
                     <View style={styles.cardContainer}>
                       <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '200'}}/>
                       <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>

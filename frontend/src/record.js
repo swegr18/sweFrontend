@@ -14,7 +14,7 @@ import ContextModeSwitch from './components/contextModeSwitch';
 import LiveWPMSwitch from './components/liveWPMSwitch';
 export default function RecordScreen({status, setStatus, accessToken}) {
 
-    // Page and Microphone States
+    // page and microphone states
     const [permissionResponse, setPermissionResponse] = useState(null);
     const [fileid, setFileid] = useState(null);
 
@@ -26,10 +26,15 @@ export default function RecordScreen({status, setStatus, accessToken}) {
     const [context_mode, setContextMode] = useState("In-Person");
     const[live_mode, setLiveMode] = useState("On")
 
-    // Audio Recorder Object
+
+    // queue system
+    const uploadQueueRef = useRef([]); // holds the pending chunks
+    const isUploadingRef = useRef(false); // locks the queue while an upload is happening
+
+    // audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     
-    // Persmissions
+    // persmissions
     useEffect(() => {
         let isMounted = true;
         (async () => {
@@ -41,7 +46,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
       return () => { isMounted = false; }; // Cleanup
     }, []);
     
-    // ----Start Recording-----
+    // recording functions --
     const startRecording = async () => {
       try {
         if (permissionResponse?.status !== 'granted') {
@@ -59,9 +64,9 @@ export default function RecordScreen({status, setStatus, accessToken}) {
         await audioRecorder.prepareToRecordAsync(RecordingPresets.HIGH_QUALITY);
         audioRecorder.record();
         
-        setStatus('recording'); // Update Status for Button change
+        setStatus('recording'); // update Status for Button change
 
-        // Set up cyclic calls for live sending
+        // set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
         }, 5000);
@@ -84,16 +89,16 @@ export default function RecordScreen({status, setStatus, accessToken}) {
         formData.append("is_final", isFinal ? "true" : "false");
         formData.append("context_mode", String({context_mode}));
 
-        // In Web
+        // in Web
         if (Platform.OS === 'web') {
           const response = await fetch(uri);
           const blob = await response.blob();
 
-          // Check Blob Exists
+          // check Blob Exists
           console.log("Web Blob created. Size:", blob.size, "bytes");
           formData.append('audio', blob, `chunk_${idx}.m4a`);
         } 
-        // In Native
+        // in Native
         else {
           const fileUri = Platform.OS === 'android' && !uri.startsWith('file://') 
                           ? `file://${uri}` 
@@ -106,11 +111,11 @@ export default function RecordScreen({status, setStatus, accessToken}) {
           });
         }
 
-        // Check Data Processing is fine
+        // check Data Processing is fine
         console.log("Uploading chunk:", idx, "final:", isFinal);
         let id = uuidv4();
         setFileid(id);
-        // Send to Backend API
+        // send to Backend API
         const response = await fetch(`http://143.110.169.239:8000/api/v1/upload-audio?file_id=${id}`, {
           method: 'POST',
           body: formData,
@@ -128,6 +133,33 @@ export default function RecordScreen({status, setStatus, accessToken}) {
       }
     };
   
+
+
+    // queue system for sending data
+    const processUploadQueue = async () => {
+      // if we are already uploading, or the queue is empty, do nothing and wait.
+      if (isUploadingRef.current || uploadQueueRef.current.length === 0) {
+        return;
+      }
+
+      // 'lock' the queue
+      isUploadingRef.current = true;
+
+      // take the oldest chunk out of the queue
+      const { uri, isFinal } = uploadQueueRef.current.shift();
+
+      try {
+        // wait for the upload to completely finish
+        await uploadChunk(uri, isFinal);
+      } finally {
+        // once finished, unlock the queue
+        isUploadingRef.current = false;
+        // recursively check if there are more chunks waiting
+        processUploadQueue();
+      }
+    };
+
+
     const cycleRecording = async () => {
       try {
 
@@ -140,7 +172,8 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
         // send last 5 seconds to backend
         if (uri) {
-            await uploadChunk(uri, false);
+            uploadQueueRef.current.push({ uri, isFinal: false });
+            processUploadQueue();
         }
 
       }  catch (error) {
@@ -162,10 +195,11 @@ export default function RecordScreen({status, setStatus, accessToken}) {
           if (audioRecorder.isRecording) {
               await audioRecorder.stop();
               const uri = audioRecorder.uri;
-              uploadChunk(uri, true); 
+              if (uri) {
+              uploadQueueRef.current.push({ uri, isFinal: true });
+              processUploadQueue(); 
           }
-
-          const idx = 0
+          }
 
       } catch (error) {
           console.error("Stop failed:", error);
