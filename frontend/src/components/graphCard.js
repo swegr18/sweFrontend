@@ -2,38 +2,83 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LineChart } from "react-native-gifted-charts";
 
-export default function GraphCard({ title, values, upperBound, lowerBound}) {
+export default function GraphCard({ title, values, upperBound, lowerBound, step}) {
   
+  if(!step){
+    step = (upperBound - lowerBound) / 6;
+    step = Math.ceil(step / 10) * 10;
+    upperBound = lowerBound + (step * 6);
+  }
+
+  const len = values.length
+
+  let spacing = 10;
+  if(len != 0){
+    spacing = 85 / (len-1);
+  }
+
+  let labelSpacing = 5;
+  if(len != 0){
+    if(len < 10){
+      labelSpacing = 2;
+    }
+    else if(len < 25){
+      labelSpacing = 5;
+    }
+    else if(len < 50){
+      labelSpacing = 10;
+    }
+  }
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
-      
-      <LineChart
-            data={values.map(v => ({ value: Number(v) }))}
-            minValue={lowerBound}
-            maxValue={upperBound}
-            stepValue={10}
+    <>
+      {len === 0 ? (
+        <View style={styles.card}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.text}>Loading...</Text>
+        </View>
+      ) : (
+        <View style={styles.card}>
+          <Text style={styles.title}>{title}</Text>
         
-            height={100}
-            width={90}
-        
-            color="#4FD1C5"
-            thickness={3}
-            hideDataPoints={false}
-            dataPointsColor="#4FD1C5"
-            dataPointsRadius={3}
-            spacing={15}
-            initialSpacing={15}
-            yAxisColor="rgb(255, 255, 255)"
-            xAxisColor="rgb(255, 255, 255)"
-            yAxisTextStyle={styles.graphlabels}
-            yAxisLabelWidth={20}
-            formatYLabel={(label) => Math.round(Number(label)).toString()}
-            rulesColor="rgba(255,255,255,0.1)"
-            rulesType="solid"
-            isAnimated
-      />   
-    </View>
+          <LineChart
+              data={values.map((v, i) => ({ value: Number(v), label: (i % labelSpacing === 0 ? i.toString() : '') }))}
+              
+              minValue={lowerBound}
+              maxValue={upperBound}
+              yAxisOffset={lowerBound}
+
+              stepValue={step}
+          
+              height={135}
+              width={90}
+          
+              color="#4FD1C5"
+              thickness={2}
+              hideDataPoints={false}
+              dataPointsColor="#4FD1C5"
+              dataPointsRadius={2}
+
+              spacing={spacing}
+              initialSpacing={5}
+              endSpacing={10}
+
+              yAxisColor="rgb(255, 255, 255)"
+              xAxisColor="rgb(255, 255, 255)"
+              yAxisTextStyle={styles.graphlabels}
+
+              yAxisLabelWidth={20}
+              xAxisLabelTextStyle={styles.graphlabels}
+
+              formatYLabel={(label) => Math.round(Number(label)).toString()}
+              rulesColor="rgba(255,255,255,0.1)"
+              rulesType="solid"
+
+              disableScroll
+          />   
+        </View>
+      )}
+    </>
   );
 };
 
@@ -46,7 +91,7 @@ const styles = StyleSheet.create({
     boxShadow: 'inset 0px 0px 20px #E00043',
     borderWidth: 3,
     width: "50%",
-    height: 220,
+    height: 200,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -61,10 +106,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     fontFamily: 'Exo_700Bold',
   },
+  text: {
+    fontSize: 14,
+    fontFamily: 'Exo_700Bold',
+    color: 'white',
+  },
   graphlabels: {
     fontSize: 10,
     fontFamily: 'Exo_700Bold',
     color: 'white',
+    overflow: 'visible'
   },
 });
 

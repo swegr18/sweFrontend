@@ -80,6 +80,14 @@ export default function StatsScreen({ onBack, accessToken }) {
     newOpen[i] = !newOpen[i];
     setOpen(newOpen);
   }
+
+  const getBounds = (arr) => {
+    let upper = Math.max(...arr);
+    let lower = Math.min(...arr);
+    let upperBound = Math.ceil(upper / 10) * 10 + 10;
+    let lowerBound = Math.floor(lower / 10) * 10 - 10;
+    return [upperBound, lowerBound];
+  }
     
   return (
     <View style={styles.statsScreen}>
@@ -108,8 +116,13 @@ export default function StatsScreen({ onBack, accessToken }) {
                   <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
 
                   <View style={styles.oneline}>
-                    <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={100} lowerBound={-100}/>
-                    <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={100} lowerBound={0}/>
+                    <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
+                    <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+                  </View>
+
+                  <View style={styles.oneline}>
+                    <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
+                    <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
                   </View>
                 </> 
               )}
@@ -160,6 +173,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: 'center',
     width: "100%",
+    justifyContent: 'space-between'
   },
   dropdown: {
     position: 'absolute',
