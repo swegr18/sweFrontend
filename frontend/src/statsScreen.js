@@ -6,6 +6,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import StatCard from './components/statCard.js'
 import GraphCard from './components/graphCard.js';
 import { LineChart } from "react-native-gifted-charts";
+import { Button } from 'react-native-web';
 
 export default function StatsScreen({ onBack, accessToken }) {
 
@@ -44,10 +45,8 @@ export default function StatsScreen({ onBack, accessToken }) {
     const load = async () => {
       const data = await fetchGraphData();
 
-      if(!data){
-        return null;
-      }
-      else{
+      if(data)
+      {
         setMetrics(data);
         setOpen(new Array(data.length).fill(false));
         changeOpen(0);
@@ -102,32 +101,39 @@ export default function StatsScreen({ onBack, accessToken }) {
       </Pressable>
       {accessToken !== null ? (
         <ScrollView>
-          {metrics?.map((speech,i) => (
-            <View key={speech.audio_id} style={styles.card}>
-              <View style={styles.dropdownline}>
-                <Pressable onPress={() => changeOpen(i)}>
-                  <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
-                </Pressable>
-                <Text style={[styles.text, {width: "80%"}]} numberOfLines={open[i] ? "" : 1}>{speech.name}</Text>
-                <Text style={styles.text}>{formatDatetime(speech.created_at)[0]}</Text>
-              </View>
-              {open[i] && (
-                <>
-                  <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
-
-                  <View style={styles.oneline}>
-                    <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
-                    <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+          {metrics !== null ? (
+            <>
+              {metrics.map((speech,i) => (
+                <View key={speech.audio_id} style={styles.card}>
+                  <View style={styles.dropdownline}>
+                    <Pressable accessibilityRole='button' accessibilityLabel='DropdownButton' onPress={() => changeOpen(i)}>
+                      <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
+                    </Pressable>
+                    <Text style={[styles.text, {width: "80%"}]} numberOfLines={open[i] ? "" : 1}>{speech.name}</Text>
+                    <Text style={styles.text}>{formatDatetime(speech.created_at)[0]}</Text>
                   </View>
+                  {open[i] && (
+                    <>
+                      <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
 
-                  <View style={styles.oneline}>
-                    <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
-                    <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
-                  </View>
-                </> 
-              )}
-            </View>
-          ))}
+                      <View style={styles.oneline}>
+                        <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
+                        <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+                      </View>
+
+                      <View style={styles.oneline}>
+                        <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
+                        <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
+                      </View>
+                    </> 
+                  )}
+                </View>
+              ))}
+            </>
+          ) : (
+            <Text style={styles.text}>Loading...</Text>
+          )}
+          
         </ScrollView>
       ) : (
         <Text style={styles.bigText}>Sign in or create an account to view full stats</Text>
