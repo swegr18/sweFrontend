@@ -18,7 +18,7 @@ describe('Post Recording Screen Statistics', () => {
   test('Should display "Loading..." state initially', async () => {
     global.fetch.mockImplementation(() => new Promise(() => {}));
 
-    const { getByText } = render(<PostRecordScreen handleReset={mockHandleReset} />);
+    const { getByText } = render(<PostRecordScreen handleReset={mockHandleReset} isUploadFinished={true}/>);
 
     await waitFor(() => {
           expect(getByText(/Loading.../)).toBeTruthy();
@@ -39,7 +39,7 @@ describe('Post Recording Screen Statistics', () => {
       json: () => Promise.resolve(mockMetrics),
     });
 
-    const { getByText, queryByText} = render(<PostRecordScreen handleReset={mockHandleReset} />);
+    const { getByText, queryByText} = render(<PostRecordScreen handleReset={mockHandleReset} isUploadFinished={true} />);
 
     await waitFor(() => {
           expect(getByText(/15.5/)).toBeTruthy();
@@ -57,7 +57,7 @@ describe('Post Recording Screen Statistics', () => {
       json: () => Promise.resolve({ detail: 'Failed to analyze audio' }),
     });
 
-    const { getByText } = render(<PostRecordScreen handleReset={mockHandleReset} />);
+    const { getByText } = render(<PostRecordScreen handleReset={mockHandleReset} isUploadFinished={true}/>);
 
     // Mock failure response
     await waitFor(() => {

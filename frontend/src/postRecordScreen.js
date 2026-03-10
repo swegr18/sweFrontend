@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
 import StatCard from './components/statCard.js'
 import { v4 as uuidv4 } from 'uuid';
-export default function PostRecordScreen({handleReset, accessToken, fileid}){
+export default function PostRecordScreen({handleReset, accessToken, fileid, isUploadFinished}){
     
 
       const [metrics, setMetrics] = useState(null); ``
@@ -12,9 +12,12 @@ export default function PostRecordScreen({handleReset, accessToken, fileid}){
       const [errorMessage, setErrorMessage] = useState(" ");
   
       useEffect(() => {
+        if (!isUploadFinished) return;
+
         fetch("http://143.110.169.239:8000/api/v1/metrics/latest")
           .then(async (res) => {
             const data = await res.json();
+            console.log("Raw API Response:", data); 
             if (!res.ok) {
               throw new Error(data?.detail || data?.error || "Request failed");
             }
@@ -24,7 +27,9 @@ export default function PostRecordScreen({handleReset, accessToken, fileid}){
           .catch(err => {
             setError(String(err.message || err));
           });
-      }, []);
+          
+      }, [isUploadFinished])
+
 
       // TODO: name to backend
       const submitPostToBackend = async () => {
@@ -80,6 +85,47 @@ export default function PostRecordScreen({handleReset, accessToken, fileid}){
         return null
       }
 
+      const COLORS = {
+        green: '#00C853', // A nice vibrant green
+        amber: '#FFC107', // A standard warning amber
+        red: '#E00043'    // Your custom red
+      };
+
+      
+      const getShadowStyle = (color) => ({
+        boxShadow: `inset 0px 0px 50px ${color}`,
+        borderColor: `${color}`
+      });
+
+      
+      // duration colour
+      const getDurationColor = (duration) => {
+        return COLORS.green; 
+      };
+
+      // volume colour
+      const getVolumeColor = (db) => {
+        const v = Number(db);
+        if (v >= -18 && v <= -6) return COLORS.green; 
+        if ((v >= -24 && v < -18) || (v > -6 && v <= -3)) return COLORS.amber;
+        return COLORS.red; 
+      };
+
+      // wpm colour
+      const getWPMColor = (wpm) => {
+        const w = Number(wpm);
+        if (w >= 120 && w <= 160) return COLORS.green;
+        if ((w >= 100 && w < 120) || (w > 160 && w <= 180)) return COLORS.amber;
+        return COLORS.red; 
+      };
+
+      // pitch colour
+      const getPitchColor = (pitch) => {
+        const p = Number(pitch);
+        if (p >= 80 && p <= 260) return COLORS.green;
+        if ((p >= 60 && p < 80) || (p > 260 && p <= 300)) return COLORS.amber;
+        return COLORS.red; 
+      };
 
     return (
         <View style={styles.container}>
@@ -116,10 +162,10 @@ export default function PostRecordScreen({handleReset, accessToken, fileid}){
                     <Text style={styles.loadingText}>Metrics Calculated </Text>
                     <View style={styles.cardContainer}>
                       
-                      <StatCard title="Duration (s)" value={Number(metrics.duration).toPrecision(5)} style={{width: '100%'}}/>
-                      <StatCard title="Volume (db)" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{width: '52%', fontSize: 10}}/>
-                      <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{width: '45%'}}/>
-                      <StatCard title="Pitch (Hz)" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Duration (s)" value={Number(metrics.duration).toPrecision(5)} style={{width: '100%', ...getShadowStyle(getDurationColor(metrics.duration))}}/>
+                      <StatCard title="Volume (db)" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{width: '52%', fontSize: 10, ...getShadowStyle(getVolumeColor(metrics.avg_volume_dbfs))}}/>
+                      <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{width: '45%', ...getShadowStyle(getWPMColor(metrics.wpm))}}/>
+                      <StatCard title="Pitch (Hz)" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%', ...getShadowStyle(getPitchColor(metrics.avg_pitch_hz))}}/>
 
 
                     </View>

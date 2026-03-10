@@ -30,6 +30,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
     // queue system
     const uploadQueueRef = useRef([]); // holds the pending chunks
     const isUploadingRef = useRef(false); // locks the queue while an upload is happening
+    const [isUploadFinished, setIsUploadFinished] = useState(false);
 
     // audio Recorder Object
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -65,7 +66,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
         audioRecorder.record();
         
         setStatus('recording'); // update Status for Button change
-
+        setIsUploadFinished(false)
         // set up cyclic calls for live sending
         intervalRef.current = setInterval(async () => {
           await cycleRecording()
@@ -87,12 +88,18 @@ export default function RecordScreen({status, setStatus, accessToken}) {
         formData.append("session_id", sessionIdRef.current);
         formData.append("chunk_index", String(idx));
         formData.append("is_final", isFinal ? "true" : "false");
-        formData.append("context_mode", String({context_mode}));
+        formData.append("context_mode", JSON.stringify(context_mode));
 
         // in Web
         if (Platform.OS === 'web') {
           const response = await fetch(uri);
           const blob = await response.blob();
+          
+          if (blob.size === 0) {
+              if (!isFinal){console.log("Blob is 0 bytes. Skipping upload.");}
+              if (isFinal) setIsUploadFinished(true);
+              return;
+          }
 
           // check Blob Exists
           console.log("Web Blob created. Size:", blob.size, "bytes");
@@ -152,12 +159,19 @@ export default function RecordScreen({status, setStatus, accessToken}) {
         // wait for the upload to completely finish
         await uploadChunk(uri, isFinal);
       } finally {
-        // once finished, unlock the queue
-        isUploadingRef.current = false;
-        // recursively check if there are more chunks waiting
-        processUploadQueue();
-      }
-    };
+
+          isUploadingRef.current = false;
+          
+          if (isFinal) {
+            console.log("Final chunk uploaded!");
+            setIsUploadFinished(true);
+          }
+          
+          // Always recurse — let the next item in queue handle its own isFinal logic
+          processUploadQueue(); // ← move outside the if/else
+          }
+    }
+  
 
 
     const cycleRecording = async () => {
@@ -273,7 +287,7 @@ export default function RecordScreen({status, setStatus, accessToken}) {
 
                 {(status === 'finished' || status === 'finishing') && (
 
-                  <PostRecordScreen handleReset={handleReset} accessToken={accessToken} fileid={fileid}/>
+                  <PostRecordScreen handleReset={handleReset} accessToken={accessToken} fileid={fileid} isUploadFinished={isUploadFinished}/>
                 )}
                 
             </> 
