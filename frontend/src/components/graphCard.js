@@ -13,12 +13,12 @@ export default function GraphCard({ title, values, upperBound, lowerBound, step}
   const len = values.length
 
   let spacing = 10;
-  if(len != 0){
+  if(len > 1){
     spacing = 85 / (len-1);
   }
 
   let labelSpacing = 5;
-  if(len != 0){
+  if(len > 1){
     if(len < 10){
       labelSpacing = 2;
     }
@@ -34,54 +34,47 @@ export default function GraphCard({ title, values, upperBound, lowerBound, step}
   }
 
   return (
-    <>
-      {len === 0 ? (
-        <View style={styles.card}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.text}>Loading...</Text>
-        </View>
-      ) : (
-        <View style={styles.card}>
-          <Text style={styles.title}>{title}</Text>
-        
-          <LineChart
-              data={values.map((v, i) => ({ value: Number(v), label: (i % labelSpacing === 0 ? i.toString() : '') }))}
+    <View style={styles.card}>
+      <Text style={styles.title}>{title}</Text>
+       
+      <LineChart accessible accessibilityRole="image" accessibilityLabel={`${title} Graph`}
+        data={values.map((v, i) => ({ value: Number(v), label: (i % labelSpacing === 0 ? i.toString() : '') }))}
               
-              minValue={lowerBound}
-              maxValue={upperBound}
-              yAxisOffset={lowerBound}
+        minValue={lowerBound}
+        maxValue={upperBound}
+        yAxisOffset={lowerBound}
 
-              stepValue={step}
+        stepValue={step}
+         
+        height={135}
+        width={90}
           
-              height={135}
-              width={90}
-          
-              color="#4FD1C5"
-              thickness={2}
-              hideDataPoints={false}
-              dataPointsColor="#4FD1C5"
-              dataPointsRadius={2}
+        color="#4FD1C5"
+        thickness={2}
+        hideDataPoints={false}
+        dataPointsColor="#4FD1C5"
+        dataPointsRadius={2}
 
-              spacing={spacing}
-              initialSpacing={5}
-              endSpacing={10}
+        spacing={spacing}
+        initialSpacing={5}
+        endSpacing={10}
 
-              yAxisColor="rgb(255, 255, 255)"
-              xAxisColor="rgb(255, 255, 255)"
-              yAxisTextStyle={styles.graphlabels}
+        yAxisColor="rgb(255, 255, 255)"
+        xAxisColor="rgb(255, 255, 255)"
+        yAxisTextStyle={styles.graphlabels}
 
-              yAxisLabelWidth={20}
-              xAxisLabelTextStyle={styles.graphlabels}
+        yAxisLabelWidth={20}
+        xAxisLabelTextStyle={styles.graphlabels}
 
-              formatYLabel={(label) => Math.round(Number(label)).toString()}
-              rulesColor="rgba(255,255,255,0.1)"
-              rulesType="solid"
+        formatYLabel={(label) => Math.round(Number(label)).toString()}
+        rulesColor="rgba(255,255,255,0.1)"
+        rulesType="solid"
 
-              disableScroll
-          />   
-        </View>
-      )}
-    </>
+        disableScroll
+      />   
+    </View>
+      
+    
   );
 };
 
