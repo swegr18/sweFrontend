@@ -35,7 +35,7 @@ beforeEach(() => {
               }]),
           })
         }
-        else{
+        else if(metricsNumber == 1){
           return Promise.resolve({
             ok: true,
             json: () =>
@@ -48,6 +48,54 @@ beforeEach(() => {
                 context_mode: 'Online',
                 graph_volume: [-30.5,-41.3,-50.8,-28.4,-43.4],
                 graph_freq: [120.1,134.2,135.7,125.8,145.6],
+               }]),
+          })
+        }
+        else if(metricsNumber == 2){
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve([{
+                audio_id: 'fake_audio_id',
+                name: 'test speech name 3',
+                created_at: '2026-03-21T09:45:04',
+                duration: 40.5,
+                wpm: 150.1,
+                context_mode: 'Online',
+                graph_volume: new Array(40).fill(-50),
+                graph_freq: new Array(40).fill(150),
+               }]),
+          })
+        }
+        else if(metricsNumber == 3){
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve([{
+                audio_id: 'fake_audio_id',
+                name: 'test speech name 4',
+                created_at: '2026-03-21T09:45:04',
+                duration: 58.5,
+                wpm: 150.1,
+                context_mode: 'Online',
+                graph_volume: new Array(58).fill(-30),
+                graph_freq: new Array(58).fill(120),
+               }]),
+          })
+        }
+        else if(metricsNumber == 4){
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve([{
+                audio_id: 'fake_audio_id',
+                name: 'test speech name 5',
+                created_at: '2026-03-21T09:45:04',
+                duration: 1.1,
+                wpm: 180,
+                context_mode: 'In-Person',
+                graph_volume: [-39],
+                graph_freq: [154],
                }]),
           })
         }
@@ -243,5 +291,91 @@ describe('<App /> - Showing Stats', () => {
     expect(await screen.findByText("test speech name 2")).toBeTruthy();
     expect(await screen.findByText("21-Mar")).toBeTruthy();
     expect(await screen.findByText("09:45")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Showing Stats', () => {
+  it('spacing is accurate for different length speeches', async () => {
+    render(<App />);
+    fetchSuccess = true;
+    metricsNumber = 2;
+
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+    
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+    
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeProfileButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeProfileButton);
+    
+    const statsButton = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton);
+
+    expect(await screen.findByText("test speech name 3")).toBeTruthy();
+    expect(await screen.findByText("21-Mar")).toBeTruthy();
+    expect(await screen.findByText("09:45")).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /VOLUME \(db\) Graph/i})).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /PITCH \(Hz\) Graph/i})).toBeTruthy();
+
+    metricsNumber = 3;
+    const closeStatsButton = await screen.findByRole('button', {name: /statsBackButton/i });
+    fireEvent.press(closeStatsButton);
+
+    const statsButton2 = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton2);
+
+    expect(await screen.findByText("test speech name 4")).toBeTruthy();
+    expect(await screen.findByText("21-Mar")).toBeTruthy();
+    expect(await screen.findByText("09:45")).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /VOLUME \(db\) Graph/i})).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /PITCH \(Hz\) Graph/i})).toBeTruthy();
+
+    metricsNumber = 4;
+    const closeStatsButton2 = await screen.findByRole('button', {name: /statsBackButton/i });
+    fireEvent.press(closeStatsButton2);
+
+    const statsButton3 = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton3);
+
+    expect(await screen.findByText("test speech name 5")).toBeTruthy();
+    expect(await screen.findByText("21-Mar")).toBeTruthy();
+    expect(await screen.findByText("09:45")).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /VOLUME \(db\) Graph/i})).toBeTruthy();
+    expect(await screen.findByRole('image', {name: /PITCH \(Hz\) Graph/i})).toBeTruthy();
+  });
+});
+
+describe('<App /> - Showing Stats', () => {
+  it('rounding function works', async () => {
+    render(<App />);
+    fetchSuccess = true;
+    metricsNumber = 1;
+
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+    
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+    
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeProfileButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeProfileButton);
+    
+    const statsButton = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton);
+
+    expect(await screen.findByText("test speech name 2")).toBeTruthy();
+    expect(await screen.findByText("-30"));
+    expect(await screen.findByText("-41"));
   });
 });

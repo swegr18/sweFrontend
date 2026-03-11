@@ -99,11 +99,15 @@ jest.mock('react-native-svg', () => {
 });
 
 jest.mock('react-native-gifted-charts', () => {
-  const { View } = require('react-native');
+  const { View, Text } = require('react-native');
   return {
-    LineChart: (props) => <View {...props} testID="mock-line-chart" />,
-    BarChart: (props) => <View {...props} testID="mock-bar-chart" />,
-    PieChart: (props) => <View {...props} testID="mock-pie-chart" />,
+    LineChart: ({data, formatYLabel, ...props}) => (
+      <View {...props} testID="mock...-bar-chart">
+        {data?.map((d) => (
+          <Text key={d} accessible>{formatYLabel ? formatYLabel(d.value) : d.value}</Text>
+        ))}
+      </View>
+    ),
   };
 });
 
