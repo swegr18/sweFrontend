@@ -125,6 +125,8 @@ export default function StatsScreen({ onBack, accessToken }) {
                         <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
                         <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
                       </View>
+
+                      <StatCard title={"CONTEXT MODE"} value={speech.context_mode.replace(/"/g, "")} style={{width: "100%", height: 50}} valueSize={20} oneLine={true}/>
                     </> 
                   )}
                 </View>

@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function StatCard({ title, value, style}) {
+export default function StatCard({ title, value, style, valueSize, oneLine=false}) {
   
   return (
     <View style={[styles.card, style]}>
-      <Text style={styles.title}>{title}</Text>
-      
-      <View style={styles.valueContainer}>
-        <Text style={styles.value}>{value}</Text>   
+      <View style={oneLine ? styles.row : styles.column}>
+        <Text style={styles.title}>{title}</Text>
+        
+        <View style={styles.valueContainer}>
+          <Text style={[styles.value, {fontSize: valueSize}]}>{value}</Text>   
+        </View>
       </View>
     </View>
   );
@@ -43,9 +45,9 @@ const styles = StyleSheet.create({
     marginTop: 0,
     flexDirection: 'row',
     alignItems: 'baseline',
-    width: '100%',
+    width: 'auto',
     justifyContent: 'flex-end',
-    paddingBottom: 10,
+    paddingBottom: 5,
 
   },
   value: {
@@ -54,6 +56,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Exo_700Bold',
     letterSpacing: -0.5,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  column: {
+    flexDirection: "column",
   },
 });
 
