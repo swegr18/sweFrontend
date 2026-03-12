@@ -7,12 +7,16 @@ import StatCard from './components/statCard.js'
 import GraphCard from './components/graphCard.js';
 import { LineChart } from "react-native-gifted-charts";
 import { Button } from 'react-native-web';
+import FilterPopup from './components/filterPopup.js';
 
 export default function StatsScreen({ onBack, accessToken }) {
 
   const [metrics, setMetrics] = useState(null);
   const [open, setOpen] = useState([]);
   const [error, setError] = useState("");
+
+  const [filters, setFilters] = useState('All');
+  const [filteredMetrics, setFilteredMetrics] = useState(null);
 
   useEffect(() => {
     const fetchGraphData = async () => {
@@ -48,6 +52,7 @@ export default function StatsScreen({ onBack, accessToken }) {
       if(data)
       {
         setMetrics(data);
+        setFilteredMetrics(data);
         setOpen(new Array(data.length).fill(false));
         changeOpen(0);
       }
@@ -57,6 +62,22 @@ export default function StatsScreen({ onBack, accessToken }) {
       load();
     }
   }, []);
+  
+  const filter = () => {
+    let filtered = [];
+    if(filters == 'All'){
+      filtered = metrics;
+    }
+    else{
+      filtered = metrics.filter((metric) => metric.context_mode.replace(/"/g, "") === filters)
+    }
+    setFilteredMetrics(filtered);
+    let newOpen = Array(filtered.length).fill(false);
+    if(newOpen.length > 0){
+      newOpen[0] = true;
+    }
+    setOpen(newOpen);
+  }
 
   const formatDatetime = (unformatted) => {
     let split = unformatted.split("T");
@@ -87,6 +108,8 @@ export default function StatsScreen({ onBack, accessToken }) {
     let lowerBound = Math.floor(lower / 10) * 10 - 10;
     return [upperBound, lowerBound];
   }
+
+
     
   return (
     <View style={styles.statsScreen}>
@@ -100,10 +123,12 @@ export default function StatsScreen({ onBack, accessToken }) {
         <AntDesign name="close" size={24} color="red" />
       </Pressable>
       {accessToken !== null ? (
+        <>
+        <FilterPopup filters={filters} setFilters={setFilters} resetFilter={filter}/>
         <ScrollView>
           {metrics !== null ? (
             <>
-              {metrics.map((speech,i) => (
+              {filteredMetrics.map((speech,i) => (
                 <View key={speech.audio_id} style={styles.card}>
                   <View style={styles.dropdownline}>
                     <Pressable accessibilityRole='button' accessibilityLabel='DropdownButton' onPress={() => changeOpen(i)}>
@@ -137,6 +162,7 @@ export default function StatsScreen({ onBack, accessToken }) {
           )}
           
         </ScrollView>
+        </>
       ) : (
         <Text style={styles.bigText}>Sign in or create an account to view full stats</Text>
       )}
