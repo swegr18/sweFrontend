@@ -12,7 +12,7 @@ export default function App() {
   const [status, setStatus] = useState('idle');
   const [activeScreen, setActiveScreen] = useState('main');
 
-  const [accessToken, setAccessToken] = useState(null); //tells the system which account is currently logged in to
+  const [accessToken, setAccessToken] = useState(null); // tells the system which account is currently logged in to
 
   // funtions to give to other pages
   const goToDetail = () => setActiveScreen('stats');
