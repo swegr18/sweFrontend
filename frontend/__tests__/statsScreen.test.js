@@ -99,6 +99,32 @@ beforeEach(() => {
                }]),
           })
         }
+        else if(metricsNumber == 5){
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve([{
+                audio_id: 'fake_audio_id',
+                name: 'test speech name',
+                created_at: '2026-01-01T13:30:00',
+                duration: 10.5,
+                wpm: 95.8,
+                context_mode: 'In-Person',
+                graph_volume: [-40.5,-42.3,-45.8,-30.4,-51.8,-51.7,-56.5,-34.9,-39.0,-42.6],
+                graph_freq: [90.4,138.5,14.3,193.6,162.7,183.6,202.5,304.5,265.4,200.0],
+               },
+               {
+                audio_id: 'fake_audio_id',
+                name: 'test speech name 2',
+                created_at: '2026-03-21T09:45:04',
+                duration: 5.1,
+                wpm: 150.1,
+                context_mode: 'Online',
+                graph_volume: [-30.5,-41.3,-50.8,-28.4,-43.4],
+                graph_freq: [120.1,134.2,135.7,125.8,145.6],
+              }]),
+          })
+        }
       }
       else{
         return Promise.resolve({
@@ -377,5 +403,118 @@ describe('<App /> - Showing Stats', () => {
     expect(await screen.findByText("test speech name 2")).toBeTruthy();
     expect(await screen.findByText("-30"));
     expect(await screen.findByText("-41"));
+  });
+});
+
+describe('<App /> - Filtering', () => {
+  it('can open filter pop-up', async () => {
+    render(<App />);
+    fetchSuccess = true;
+    metricsNumber = 0;
+
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+    
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+    
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeProfileButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeProfileButton);
+    
+    const statsButton = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton);
+
+    const filterButton = await screen.findByRole('button', { name: /FilterButton/i});
+    fireEvent.press(filterButton);
+
+    expect(await screen.findByText("Filter")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Filtering', () => {
+  it('can filter by In-Person, Online and All', async () => {
+    render(<App />);
+    fetchSuccess = true;
+    metricsNumber = 5;
+
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+    
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+    
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeProfileButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeProfileButton);
+    
+    const statsButton = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton);
+
+    const filterButton = await screen.findByRole('button', { name: /FilterButton/i});
+    fireEvent.press(filterButton);
+    const inPersonButton = await screen.findByRole('button', {name: /In-Person/i });
+    fireEvent.press(inPersonButton);
+    fireEvent.press(filterButton);
+
+    expect(await screen.findByText("test speech name")).toBeTruthy();
+    expect(screen.queryByText("test speech name 2")).toBeNull();
+
+    fireEvent.press(filterButton);
+    const onlineButton = await screen.findByRole('button', {name: /Online/i });
+    fireEvent.press(onlineButton);
+    fireEvent.press(filterButton);
+
+    expect(await screen.findByText("test speech name 2")).toBeTruthy();
+    expect(screen.queryByText("test speech name")).toBeNull();
+
+    fireEvent.press(filterButton);
+    const allButton = await screen.findByRole('button', {name: /All/i });
+    fireEvent.press(allButton);
+    fireEvent.press(filterButton);
+
+    expect(await screen.findByText("test speech name 2")).toBeTruthy();
+    expect(await screen.findByText("test speech name")).toBeTruthy();
+  });
+});
+
+describe('<App /> - Filtering', () => {
+  it('appropriate message when filter leads to no results', async () => {
+    render(<App />);
+    fetchSuccess = true;
+    metricsNumber = 1;
+
+    const profileButton = screen.getByRole('button', { name: /ProfileButton/i });
+    fireEvent.press(profileButton);
+    
+    const emailField = await screen.findByPlaceholderText('Email Address');
+    const passwordField = await screen.findByPlaceholderText('Password');
+    const submitButton = await screen.findByRole('button', { name: /LoginSubmit/i });
+    
+    fireEvent.changeText(emailField, "testemail@gmail.com");
+    fireEvent.changeText(passwordField, "password12!");
+    fireEvent.press(submitButton);
+
+    const closeProfileButton = await screen.findByRole('button', {name: /ClosePopup/i});
+    fireEvent.press(closeProfileButton);
+    
+    const statsButton = await screen.findByRole('button', { name: /statsButton/i });
+    fireEvent.press(statsButton);
+
+    const filterButton = await screen.findByRole('button', { name: /FilterButton/i});
+    fireEvent.press(filterButton);
+    const inPersonButton = await screen.findByRole('button', {name: /In-Person/i });
+    fireEvent.press(inPersonButton);
+    fireEvent.press(filterButton);
+
+    expect(await screen.findByText("Current filters gave no results")).toBeTruthy();
   });
 });

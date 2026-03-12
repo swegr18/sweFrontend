@@ -5,7 +5,7 @@ import Svg, { Path, Defs, RadialGradient, Stop, Text } from "react-native-svg"
 export default function FilterSwitch({filter, onFilterChange}) {
   const [activeSide, setActiveSide] = useState(filter);
   
-      const SwitchButton = ({ id, text, stopColor1 = "#606060", stopColor2 = "#555", ...props }) => (
+      const SwitchButton = ({ id, text, stopColor1, stopColor2, ...props }) => (
       <Svg
           xmlns="http://www.w3.org/2000/svg"
           width={120}
@@ -47,9 +47,7 @@ export default function FilterSwitch({filter, onFilterChange}) {
       const handlePress = (mode) => {
         setActiveSide(mode);
       
-        if (onFilterChange) {
-          onFilterChange(mode);
-        }
+        onFilterChange(mode);
       };
   
     return (

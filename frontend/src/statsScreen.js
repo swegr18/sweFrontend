@@ -128,34 +128,43 @@ export default function StatsScreen({ onBack, accessToken }) {
         <ScrollView>
           {metrics !== null ? (
             <>
-              {filteredMetrics.map((speech,i) => (
-                <View key={speech.audio_id} style={styles.card}>
-                  <View style={styles.dropdownline}>
-                    <Pressable accessibilityRole='button' accessibilityLabel='DropdownButton' onPress={() => changeOpen(i)}>
-                      <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
-                    </Pressable>
-                    <Text style={[styles.text, {width: "80%"}]} numberOfLines={open[i] ? "" : 1}>{speech.name}</Text>
-                    <Text style={styles.text}>{formatDatetime(speech.created_at)[0]}</Text>
-                  </View>
-                  {open[i] && (
-                    <>
-                      <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
-
-                      <View style={styles.oneline}>
-                        <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
-                        <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+              {filteredMetrics.length === 0 ? (
+                <>
+                  <Text style={styles.bigText}>Current filters gave no results</Text>
+                </>
+              ) : (
+                <>
+                  {filteredMetrics.map((speech,i) => (
+                    <View key={speech.audio_id} style={styles.card}>
+                      <View style={styles.dropdownline}>
+                        <Pressable accessibilityRole='button' accessibilityLabel='DropdownButton' onPress={() => changeOpen(i)}>
+                          <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />
+                        </Pressable>
+                        <Text style={[styles.text, {width: "80%"}]} numberOfLines={open[i] ? "" : 1}>{speech.name}</Text>
+                        <Text style={styles.text}>{formatDatetime(speech.created_at)[0]}</Text>
                       </View>
+                      {open[i] && (
+                        <>
+                          <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
 
-                      <View style={styles.oneline}>
-                        <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
-                        <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
-                      </View>
+                          <View style={styles.oneline}>
+                            <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
+                            <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+                          </View>
 
-                      <StatCard title={"CONTEXT MODE"} value={speech.context_mode.replace(/"/g, "")} style={{width: "100%", height: 50}} valueSize={20} oneLine={true}/>
-                    </> 
-                  )}
-                </View>
+                          <View style={styles.oneline}>
+                            <GraphCard title={"VOLUME (db)"} values={speech.graph_volume} upperBound={-getBounds(speech.graph_volume)[1]} lowerBound={getBounds(speech.graph_volume)[1]} step={10}/>
+                            <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
+                          </View>
+
+                          <StatCard title={"CONTEXT MODE"} value={speech.context_mode.replace(/"/g, "")} style={{width: "100%", height: 50}} valueSize={20} oneLine={true}/>
+                        </> 
+                      )}
+                    </View>
               ))}
+                </>
+              )}
+              
             </>
           ) : (
             <Text style={styles.text}>Loading...</Text>
