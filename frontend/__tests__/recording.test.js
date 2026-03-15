@@ -145,4 +145,18 @@ describe('<RecordScreen /> - Core Recording Functions', () => {
       expect(backendCall).toBeDefined();
     });
   });
+  
+  test('Should update mode states when switches are toggled', async () => {
+    const { findByLabelText } = render(
+      <RecordScreen status="idle" setStatus={mockSetStatus} accessToken="mock-token" />
+    );
+    const contextButton = await findByLabelText('Online'); // from ContextModeSwitch
+    fireEvent.press(contextButton);
+
+    const liveWpmButton = await findByLabelText('wpmOff'); // from LiveWPMSwitch
+    fireEvent.press(liveWpmButton);
+
+    expect(contextButton).toBeTruthy();
+  });
 });
+

@@ -486,6 +486,7 @@ describe('<App /> - Filtering', () => {
   });
 });
 
+
 describe('<App /> - Filtering', () => {
   it('appropriate message when filter leads to no results', async () => {
     render(<App />);
