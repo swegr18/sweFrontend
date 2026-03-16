@@ -40,11 +40,95 @@ describe('System Integration: Login Flow', () => {
 });
 
 
+describe('System Integration: Create Account Flow', () => {
+  const uniqueId = Date.now();
+  const testEmail = `testuser+${uniqueId}@example.com`;
+  const testUsername = `testuser_${uniqueId}`;
+  const testPassword = "MySecretPassword123$";
+  
 
-describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () => {
-  let authToken = '';
+  it('opens the profile popup, creates and account, is logged in', () => {
+    cy.visit('http://localhost:8081'); 
+
+    cy.get('[aria-label="ProfileButton"]').click();
+
+    // click profile button to open the login screen
+    cy.get('[aria-label="createAccount"]').click();
+
+    // find the email input using its placeholder text
+    cy.get('input[placeholder="Email Address"]').type(testEmail);
+
+    cy.get('input[placeholder="First Name"]').type(testUsername);
+
+
+    cy.get('input[placeholder="Password"]').type('MySecretPassword123$');
+    cy.get('input[placeholder="Confirm Password"]').type('MySecretPassword123$');
+
+    // submit
+    cy.get('[aria-label="CreateAccountSubmit"]').click();
+
+    // check if worked
+    cy.contains('Hello,').should('be.visible');
+
+
+    cy.contains('Hello,').should('be.visible');
+  });
+});
+
+
+describe('System Integration: Delete Account Flow', () => {
 
   before(() => {
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:8000/api/v1/auth/register',
+      failOnStatusCode: false, 
+      body: {
+        email: "testuser@example.com",
+        username: "test",
+        password: "MySecretPassword123$"
+      }
+    }).then((response) => {
+      if (response.status === 409) {
+        cy.log('Account already exists - moving on anyway.');
+      } else if (response.status === 200 || response.status === 201) {
+        cy.log('New account created for this test.');
+      }
+    });
+  });
+
+   it('opens the profile, logs in, and deletes account', () => {
+    cy.visit('http://localhost:8081'); 
+
+    // click profile button to open the login screen
+    cy.get('[aria-label="ProfileButton"]').click();
+
+    // find the email input using its placeholder text
+    cy.get('input[placeholder="Email Address"]').type('testuser@example.com');
+
+    cy.get('input[placeholder="Password"]').type('MySecretPassword123$');
+
+    // submit
+    cy.get('[aria-label="LoginSubmit"]').click();
+
+    // check if worked
+    cy.contains('Hello,').should('be.visible');
+
+    cy.get('[aria-label="SettingsButton"]').click();
+    cy.get('[aria-label="DeleteAccountButton"]').click();
+    cy.get('[aria-label="ConfirmDeleteCheckbox"]').click();
+    cy.get('input[placeholder="Password"]').type('MySecretPassword123$');
+    cy.get('[aria-label="ConfirmDeleteAccountButton"]').click();
+    cy.contains('have an account?').should('be.visible');
+
+  });
+});
+
+
+describe('System Integration: Audio and Stats Flow', () => {
+  let authToken = '';
+
+  beforeEach(() => {
     cy.visit('http://localhost:8081'); 
     // log in and remember the token for the dummy file later
     cy.get('[aria-label="ProfileButton"]').click();
@@ -61,11 +145,9 @@ describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () 
 
     cy.contains('Hello,').should('be.visible');
     cy.get('[aria-label="ClosePopup"]').click();
-  });
+  });  
 
-  it('uploads dummy audio, clicks through the UI, and checks stats', () => {
-    
-    // dummy audio file from fixtures folder
+  it('uploads dummy audio, interacts with recording UI, and checks metrics arrive back', () => {
     cy.fixture('dummy.m4a', 'binary').then((audioBinary) => {
       const blob = Cypress.Blob.binaryStringToBlob(audioBinary, 'audio/m4a');
       const testSessionId = crypto.randomUUID();
@@ -97,7 +179,6 @@ describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () 
     cy.wait(1000); 
     cy.get('[aria-label="Stop"]').click();
 
-
     cy.request({
       method: 'GET',
       url: 'http://localhost:8000/api/v1/metrics/latest',
@@ -106,20 +187,19 @@ describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () 
         'Authorization': `Bearer ${authToken}` 
       }
     }).then((response) => {
-
       cy.log('RAW /metrics/latest RESPONSE:', JSON.stringify(response.body));
-      
       console.log('CYPRESS API CHECK:', response.body);
       
       expect(response.status).to.eq(200);
-      expect(response.body.duration).to.be.closeTo(2.58, 0.2); // Allows a tiny bit of math variance
+      expect(response.body.duration).to.be.closeTo(2.58, 0.2); 
       expect(response.body.context_mode).to.include('Online');
     });
 
     cy.get('[aria-label="Delete"]').click();
+  });
 
-   // intercept calls so they don't go to real server
-   cy.intercept('GET', '**/api/v1/auth/me', {
+  it('display data on the stats screen', () => {
+    cy.intercept('GET', '**/api/v1/auth/me', {
       statusCode: 200,
       body: {
         id: "fake-user-uuid-123",
@@ -128,7 +208,6 @@ describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () 
       }
     }).as('getMe');
     
-   // intercept calls so they don't go to real server
     cy.intercept('POST', '**/api/v1/graphs*', {
       statusCode: 200,
       body: [
@@ -154,6 +233,6 @@ describe('Full E2E Flow: Record, Stop, Post Record Stats, Go to Stats Page', () 
     cy.contains('300.5').should('be.visible'); // Duration
     cy.contains('155').should('be.visible');   // WPM
     cy.contains('In-Person').should('be.visible'); // Context Mode
-
   });
+
 });

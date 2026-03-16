@@ -403,7 +403,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                                 <Checkbox accessibilityRole="checkbox" accessibilityLabel="ConfirmDeleteCheckbox" value={deleteAccountCheckbox} onValueChange={setDeleteAccountCheckbox}/>
                                 <Text style={styles.deleteMessage}>I understand that deleting my account is permanent and cannot be reversed</Text>
                             </View>
-                            <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
+                            <TextInput accessibilityLabel="passwordDeleteEntry" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} placeholder='Password'/>
                             <Text style={styles.errorMessage}>{errorMessage}</Text>
                             <Pressable accessibilityRole='button' accessibilityLabel='DontDeleteAccountButton' style={styles.button} onPress={openSettings}>
                                 <Text style={styles.buttonText}>Go Back</Text>
@@ -454,7 +454,7 @@ export default function LogonPopup({ isRecording, accessToken, setAccessToken })
                             <View style={styles.oneline}>
                                 <Text style={styles.message}>Don't have an account? </Text>
                                 <Pressable accessibilityRole='button'  accessibilityLabel='CreateAccountButton' onPress={startCreateAccount} >
-                                    <Text style={styles.hyperlink}>Create one</Text>
+                                    <Text accessibilityLabel='createAccount' style={styles.hyperlink}>Create one</Text>
                                 </Pressable>
                             </View>
                         </View>
