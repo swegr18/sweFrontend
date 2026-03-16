@@ -50,13 +50,11 @@ export default function RecordScreen({status, setStatus, accessToken}) {
     // recording functions --
     const startRecording = async () => {
       try {
-        if (permissionResponse?.status !== 'granted') {
-          const response = await AudioModule.requestRecordingPermissionsAsync();
-          setPermissionResponse(response);
-          if (response.status !== 'granted') {
-            setStatus('nomicrophone')
-            return;
-          }
+        const freshPermission = await AudioModule.requestRecordingPermissionsAsync();
+        setPermissionResponse(freshPermission);
+              if (freshPermission?.status !== 'granted') {
+          setStatus('nomicrophone');
+          return;
         }
         const sid = uuidv4();
         sessionIdRef.current = sid;
@@ -268,7 +266,10 @@ export default function RecordScreen({status, setStatus, accessToken}) {
                 )}
 
                 {status === 'nomicrophone' && (
-                  <Button title="Record" onPress={stopRecording} color='green' style={styles.homeButton} />
+                  <TouchableOpacity onPress={startRecording} style={styles.homeButton} accessibilityRole="button"  accessibilityLabel="Record">
+                    <RecordButton width={60} height={60} />
+                  </TouchableOpacity>
+         
                 )}
         
                 {status === 'nomicrophone' && (

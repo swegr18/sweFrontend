@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Animated, Button, Easing, Dimensions, TextInput, Pressable, ActivityIndicator} from 'react-native';
 import StatCard from './components/statCard.js'
 import { v4 as uuidv4 } from 'uuid';
 export default function PostRecordScreen({handleReset, accessToken, fileid, isUploadFinished}){
@@ -146,7 +146,10 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
             
                   {!metrics ? (
                     <>
-                   <Text style={styles.loadingText}>Loading...</Text>
+                   <View style={{ padding: 20, position: 'absolute',
+      top: 10,}}>
+                      <ActivityIndicator testID="loading-spinner" size="large" color="#E00043" /> 
+                    </View>
                    <View style={styles.cardContainer}>
                       <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
                       <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
     },
     title: {
       position: 'absolute',
-      top: 10,
+      top: 6,
       color: 'white',
       fontFamily: 'Exo_700Bold'
     },
