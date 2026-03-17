@@ -68,8 +68,8 @@ describe('WPM Spedometer -', () => {
   });
 
  
-  test('Should update data every 3 seconds (Live wpm)', async () => {
-    // First value
+  test('Should update data every 5 seconds (Live wpm)', async () => {
+    // first value
     fetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ ready: true, running_wpm: 120 }),
@@ -79,14 +79,13 @@ describe('WPM Spedometer -', () => {
 
     await waitFor(() => expect(getByText(/120/)).toBeTruthy());
 
-     // Second value 
+     // second value 
     fetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ ready: true, running_wpm: 155 }),
     });
 
-    
-    // advance 3 seconds into future
+    // advance 5 seconds into future
     act(() => {
       jest.advanceTimersByTime(5000);
     });
@@ -94,9 +93,9 @@ describe('WPM Spedometer -', () => {
     await waitFor(() => {
       expect(getByText(/155/)).toBeTruthy();
     });
-
-    
   });
-  
 });
+
+
+
 
