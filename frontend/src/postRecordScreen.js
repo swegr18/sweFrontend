@@ -127,6 +127,22 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
         return COLORS.red; 
       };
 
+      // transcribe colour
+      const getTranscribeColor = (x) => {
+        const p = Number(x);
+        if (p >= 0 && p <= 0.05) return COLORS.green;
+        if ((p >= 0.05 && p < 0.1)) return COLORS.amber;
+        return COLORS.red; 
+      };
+
+      // filler colour
+      const getFillerColor = (x) => {
+        const p = Number(x);
+        if (p >= 0 && p <= 0.02) return COLORS.green;
+        if ((p >= 0.02 && p < 0.05)) return COLORS.amber;
+        return COLORS.red; 
+      };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Speech Statistics</Text>
@@ -136,9 +152,11 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
                   <Text style={styles.loadingText}>Failed to fetch</Text>
                     <View style={styles.cardContainer}>
                       <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '200'}}/>
-                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
-                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{width: '52%'}}/>
+                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{width: '45%'}}/>
                       <StatCard title="Pitch" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Prop. Fillers" value={Number(0.000).toPrecision(3)} style={{width: '100%'}}/>
+                      <StatCard title="Transcribability" value={Number(0.000).toPrecision(3)} style={{width: '100%'}}/>
 
                     </View>
                   </>
@@ -146,15 +164,16 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
             
                   {!metrics ? (
                     <>
-                   <View style={{ padding: 20, position: 'absolute',
-      top: 10,}}>
+                   <View style={{ padding: 20, position: 'absolute',top: 10,}}>
                       <ActivityIndicator testID="loading-spinner" size="large" color="#E00043" /> 
                     </View>
                    <View style={styles.cardContainer}>
                       <StatCard title="Duration" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
-                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{}}/>
-                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{}}/>
+                      <StatCard title="Volume" value={Number(0.000).toPrecision(3)} style={{width: '52%'}}/>
+                      <StatCard title="WPM" value={Number(0.000).toPrecision(3)} style={{width: '45%'}}/>
                       <StatCard title="Pitch" value={Number(0.000).toPrecision(5)} style={{width: '100%'}}/>
+                      <StatCard title="Prop. Fillers" value={Number(0.000).toPrecision(3)} style={{width: '100%'}}/>
+                      <StatCard title="Transcribability" value={Number(0.000).toPrecision(3)} style={{width: '100%'}}/>
 
                     </View>
 
@@ -169,6 +188,8 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
                       <StatCard title="Volume (db)" value={Number(metrics.avg_volume_dbfs).toPrecision(3)} style={{width: '52%', fontSize: 10, ...getShadowStyle(getVolumeColor(metrics.avg_volume_dbfs))}}/>
                       <StatCard title="WPM" value={Number(metrics.wpm).toPrecision(3)} style={{width: '45%', ...getShadowStyle(getWPMColor(metrics.wpm))}}/>
                       <StatCard title="Pitch (Hz)" value={Number(metrics.avg_pitch_hz).toPrecision(5)} style={{width: '100%', ...getShadowStyle(getPitchColor(metrics.avg_pitch_hz))}}/>
+                      <StatCard title="Prop. Fillers" value={Number(metrics.filler_proportion).toPrecision(3)} style={{width: '100%', ...getShadowStyle(getFillerColor(metrics.filler_proportion))}}/>
+                      <StatCard title="Transcribability" value={Number(metrics.transcribability).toPrecision(3)} style={{width: '100%', ...getShadowStyle(getTranscribeColor(metrics.transcribability))}}/>
 
 
                     </View>
@@ -199,7 +220,8 @@ export default function PostRecordScreen({handleReset, accessToken, fileid, isUp
 
 const styles = StyleSheet.create({
     container: {
-        height: '75%',
+        marginTop:40,
+        height: '90%',
         width: '80%',
         backgroundColor: '#313639',
         alignItems: 'center',
