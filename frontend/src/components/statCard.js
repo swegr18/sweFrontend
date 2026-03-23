@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     boxShadow: 'inset 0px 0px 20px #E00043',
     borderWidth: 3,
     width: 100,
-    height:73,
+    height:62,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: 'gray',
     textTransform: 'uppercase',
@@ -51,11 +51,12 @@ const styles = StyleSheet.create({
 
   },
   value: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '800',
     color: 'white',
     fontFamily: 'Exo_700Bold',
     letterSpacing: -0.5,
+    transform: [{ translateY: -4 }],
   },
   row: {
     flexDirection: "row",

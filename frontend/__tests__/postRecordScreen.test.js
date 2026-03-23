@@ -165,4 +165,48 @@ test('Should validate speech name and show error messages on Save', async () => 
     expect(mockHandleReset).toHaveBeenCalled();
   });
 
+
+  //new
+  test('Should be able to see transcribability metric', async () => {
+    const metrics = {
+      duration: 10,
+      avg_volume_dbfs: -2, 
+      wpm: 110,            
+      avg_pitch_hz: 300,
+      filler_proportion: 0.02,
+      transcribability: 0.98  
+    };
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(metrics),
+    });
+
+    const { findByText } = render(<PostRecordScreen handleReset={mockHandleReset} isUploadFinished={true} />);
+    
+    expect(await findByText('Transcribability')).toBeTruthy();
+  });
+
+
+  // new
+  test('Should be able to see proportion of filler words', async () => {
+    const metrics = {
+      duration: 10,
+      avg_volume_dbfs: -2, 
+      wpm: 110,            
+      avg_pitch_hz: 300,
+      filler_proportion: 0.02,
+      transcribability: 0.98  
+    };
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(metrics),
+    });
+
+    const { findByText } = render(<PostRecordScreen handleReset={mockHandleReset} isUploadFinished={true} />);
+    
+    expect(await findByText('Prop. Fillers')).toBeTruthy();
+  });
+
 });
