@@ -148,8 +148,8 @@ export default function StatsScreen({ onBack, accessToken }) {
                           <Text style={[styles.text, {textAlign:'right'}]}>{formatDatetime(speech.created_at)[1]}</Text>
 
                           <View style={styles.oneline}>
-                            <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%", height: 80}}/>
-                            <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%", height: 80}}/>
+                            <StatCard title={"DURATION (s)"} value={speech.duration} style={{width: "50%"}}/>
+                            <StatCard title={"WPM"} value={speech.wpm} style={{width: "50%"}}/>
                           </View>
 
                           <View style={styles.oneline}>
@@ -157,7 +157,10 @@ export default function StatsScreen({ onBack, accessToken }) {
                             <GraphCard title={"PITCH (Hz)"} values={speech.graph_freq} upperBound={getBounds(speech.graph_freq)[0]} lowerBound={0}/>
                           </View>
 
-                          <StatCard title={"CONTEXT MODE"} value={speech.context_mode.replace(/"/g, "")} style={{width: "100%", height: 50}} valueSize={20} oneLine={true}/>
+                          <StatCard title={"PROP. FILLERS"} value={speech.filler_proportion.toPrecision(3)} style={{width: "100%"}}/>
+                          <StatCard title={"TRANSCRIBABILITY"} value={speech.transcribability.toPrecision(5)} style={{width: "100%"}}/>
+
+                          <StatCard title={"CONTEXT MODE"} value={speech.context_mode.replace(/"/g, "")} style={{width: "100%"}}/>
                         </> 
                       )}
                     </View>
