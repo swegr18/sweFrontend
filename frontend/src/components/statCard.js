@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function StatCard({ title, value, style, valueSize, oneLine=false}) {
+export default function StatCard({ title, value, style, valueSize}) {
   
   return (
     <View style={[styles.card, style]}>
-      <View style={oneLine ? styles.row : styles.column}>
+      <View style={styles.column}>
         <Text style={styles.title}>{title}</Text>
         
         <View style={styles.valueContainer}>
@@ -57,12 +57,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Exo_700Bold',
     letterSpacing: -0.5,
     transform: [{ translateY: -4 }],
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
   },
   column: {
     flexDirection: "column",

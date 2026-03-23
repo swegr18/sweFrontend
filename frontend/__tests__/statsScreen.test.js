@@ -32,6 +32,8 @@ beforeEach(() => {
                 context_mode: 'In-Person',
                 graph_volume: [-40.5,-42.3,-45.8,-30.4,-51.8,-51.7,-56.5,-34.9,-39.0,-42.6],
                 graph_freq: [90.4,138.5,14.3,193.6,162.7,183.6,202.5,304.5,265.4,200.0],
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
               }]),
           })
         }
@@ -48,6 +50,8 @@ beforeEach(() => {
                 context_mode: 'Online',
                 graph_volume: [-30.5,-41.3,-50.8,-28.4,-43.4],
                 graph_freq: [120.1,134.2,135.7,125.8,145.6],
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
                }]),
           })
         }
@@ -64,6 +68,8 @@ beforeEach(() => {
                 context_mode: 'Online',
                 graph_volume: new Array(40).fill(-50),
                 graph_freq: new Array(40).fill(150),
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
                }]),
           })
         }
@@ -80,6 +86,8 @@ beforeEach(() => {
                 context_mode: 'Online',
                 graph_volume: new Array(58).fill(-30),
                 graph_freq: new Array(58).fill(120),
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
                }]),
           })
         }
@@ -96,6 +104,8 @@ beforeEach(() => {
                 context_mode: 'In-Person',
                 graph_volume: [-39],
                 graph_freq: [154],
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
                }]),
           })
         }
@@ -112,6 +122,8 @@ beforeEach(() => {
                 context_mode: 'In-Person',
                 graph_volume: [-40.5,-42.3,-45.8,-30.4,-51.8,-51.7,-56.5,-34.9,-39.0,-42.6],
                 graph_freq: [90.4,138.5,14.3,193.6,162.7,183.6,202.5,304.5,265.4,200.0],
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
                },
                {
                 audio_id: 'fake_audio_id',
@@ -122,6 +134,8 @@ beforeEach(() => {
                 context_mode: 'Online',
                 graph_volume: [-30.5,-41.3,-50.8,-28.4,-43.4],
                 graph_freq: [120.1,134.2,135.7,125.8,145.6],
+                filler_proportion: 0.0129342,
+                transcribability: 95.12341,
               }]),
           })
         }
