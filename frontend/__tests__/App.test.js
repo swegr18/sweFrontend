@@ -50,10 +50,10 @@ describe('<App /> - Recording Controls', () => {
 
 // Remove Record button once it is pressed   
 describe('<App /> - Recording Controls', () => {
-   it.skip('Should hide Record button when recording is active', async () => {
+  it('Should hide Record button when recording is active', async () => {
     render(<App />);
     AudioModule.requestRecordingPermissionsAsync.mockResolvedValueOnce({status: 'granted'});
-    const recordButton = screen.findByRole('button', { name: /Record/i });
+    const recordButton = screen.getByRole('button', { name: /Record/i });
     fireEvent.press(recordButton);
 
     await waitFor(() => {
