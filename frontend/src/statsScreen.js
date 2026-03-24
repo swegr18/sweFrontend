@@ -109,8 +109,6 @@ export default function StatsScreen({ onBack, accessToken }) {
     return [upperBound, lowerBound];
   }
 
-
-    
   return (
     <View style={styles.statsScreen}>
       <Text style={styles.title}>Stats</Text>
@@ -135,7 +133,7 @@ export default function StatsScreen({ onBack, accessToken }) {
               ) : (
                 <>
                   {filteredMetrics.map((speech,i) => (
-                    <View key={speech.audio_id} style={styles.card}>
+                    <View key={`${speech.audio_id}_${i}`} style={styles.card}>
                       <View style={styles.dropdownline}>
                         <Pressable accessibilityRole='button' accessibilityLabel='DropdownButton' onPress={() => changeOpen(i)}>
                           <FontAwesome style={styles.dropdown} name={open[i] ? "angle-down" : "angle-right"} size={30} color="white" />

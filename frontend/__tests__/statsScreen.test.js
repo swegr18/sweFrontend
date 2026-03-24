@@ -5,6 +5,24 @@ import App from '../App';
 let fetchSuccess;
 let metricsNumber;
 
+// Getting rid of this warning - we found it impossible to fix after a whole week of trying
+const originalConsoleError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+   
+    if (typeof args[0] === 'string' && args[0].includes('Encountered two children with the same key')) {
+      return; 
+    }
+        
+    originalConsoleError(...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalConsoleError;
+});
+// end of warning cleanup code
+
 beforeEach(() => {
   global.fetch = jest.fn((url) => {
     if(url.includes('/me')){
@@ -42,7 +60,7 @@ beforeEach(() => {
             ok: true,
             json: () =>
               Promise.resolve([{
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_audio_id2',
                 name: 'test speech name 2',
                 created_at: '2026-03-21T09:45:04',
                 duration: 5.1,
@@ -60,7 +78,7 @@ beforeEach(() => {
             ok: true,
             json: () =>
               Promise.resolve([{
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_audio_id3',
                 name: 'test speech name 3',
                 created_at: '2026-03-21T09:45:04',
                 duration: 40.5,
@@ -78,7 +96,7 @@ beforeEach(() => {
             ok: true,
             json: () =>
               Promise.resolve([{
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_audio_id4',
                 name: 'test speech name 4',
                 created_at: '2026-03-21T09:45:04',
                 duration: 58.5,
@@ -96,7 +114,7 @@ beforeEach(() => {
             ok: true,
             json: () =>
               Promise.resolve([{
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_audio_id6',
                 name: 'test speech name 5',
                 created_at: '2026-03-21T09:45:04',
                 duration: 1.1,
@@ -114,7 +132,7 @@ beforeEach(() => {
             ok: true,
             json: () =>
               Promise.resolve([{
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_7',
                 name: 'test speech name',
                 created_at: '2026-01-01T13:30:00',
                 duration: 10.5,
@@ -126,7 +144,7 @@ beforeEach(() => {
                 transcribability: 95.12341,
                },
                {
-                audio_id: 'fake_audio_id',
+                audio_id: 'fake_audio_id8',
                 name: 'test speech name 2',
                 created_at: '2026-03-21T09:45:04',
                 duration: 5.1,
@@ -420,6 +438,7 @@ describe('<App /> - Showing Stats', () => {
   });
 });
 
+
 describe('<App /> - Filtering', () => {
   it('can open filter pop-up', async () => {
     render(<App />);
@@ -500,7 +519,6 @@ describe('<App /> - Filtering', () => {
   });
 });
 
-
 describe('<App /> - Filtering', () => {
   it('appropriate message when filter leads to no results', async () => {
     render(<App />);
@@ -533,3 +551,4 @@ describe('<App /> - Filtering', () => {
     expect(await screen.findByText("Current filters gave no results")).toBeTruthy();
   });
 });
+

@@ -38,7 +38,7 @@ export default function GraphCard({ title, values, upperBound, lowerBound, step}
       <Text style={styles.title}>{title}</Text>
        
       <LineChart accessible accessibilityRole="image" accessibilityLabel={`${title} Graph`}
-        data={values.map((v, i) => ({ value: Number(v), label: (i % labelSpacing === 0 ? i.toString() : '') }))}
+        data={values.map((v, i) => ({ value: Number(v), label: (i % labelSpacing === 0 ? i.toString() : ''),key: `${title}_point_${i}`, id: `${title}_point_${i}` }))}
         minValue={lowerBound}
         maxValue={upperBound}
         yAxisOffset={lowerBound}
