@@ -14,3 +14,7 @@
 
 1. all steps as above
 2. npx cypress run or npx cypress open
+
+## How to run the JEST unit tests
+1. all steps as above
+2. npm test or npm test -- --coverage
